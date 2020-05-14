@@ -28,7 +28,7 @@ namespace KeyTrainWPF
             (Colors.OrangeRed,      -150),
             (Colors.Orange,         -75),
             (Colors.YellowGreen,    -25),
-            (Colors.GreenYellow,    50),    
+            (Colors.LawnGreen,    50),    
             (Colors.Green,          100),
             (Colors.ForestGreen,    double.MaxValue)
         };

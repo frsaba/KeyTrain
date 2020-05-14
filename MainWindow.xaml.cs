@@ -25,7 +25,7 @@ namespace WpfApp1
         //    "consectetur adipiscing elit, sed do eiusmod tempor " +
         //    "incididunt ut labore et dolore magna aliqua. ");
 
-        LessonGenerator generator = new RandomizedLesson();
+        static LessonGenerator generator = new RandomizedLesson();
         static Stopwatch timer;
         const string spaceReplacement = "·"; //could be "␣" but it takes up 2 spaces which is a weird look)
         int ratingsDrawn = 0;
@@ -38,6 +38,8 @@ namespace WpfApp1
             (Colors.Silver,         0.2),
             (Colors.LightGreen,    double.MaxValue)
         };
+        static HashSet<char> selectedChars = new HashSet<char>();
+
 
         new static class Cursor
         {
@@ -61,32 +63,53 @@ namespace WpfApp1
         }
         class LetterRating
         {
-            public const int width = 35;
+            public const int width = 45;
+            public const int height = 45;
             static UniformGrid grid;
+            static MainWindow window;
             Label l = new Label();
-            //Border border = new Border();
+            char letter = '-';
+            static SolidColorBrush normalBorder = new SolidColorBrush(Colors.Black);
+            static SolidColorBrush highlightBorder = new SolidColorBrush(Colors.White);
+            SolidColorBrush borderColor { get => selectedChars.Contains(letter) ? highlightBorder : normalBorder; }
             public LetterRating(char letter, Color bgcolor)
             {
+                this.letter = letter;
                 l.Content = letter.ToString();
                 l.Width = width;
-
-                l.HorizontalAlignment = HorizontalAlignment.Center;
+                l.Height = height;
+                
                 l.HorizontalContentAlignment = HorizontalAlignment.Center;
-                l.VerticalAlignment = VerticalAlignment.Center;
-                l.Padding = new Thickness(5, 3, 5, 0);
-                l.FontSize = 25;
+                l.VerticalContentAlignment = VerticalAlignment.Center;
+                //l.Padding = new Thickness(5);
+                l.FontSize = 30;
+                l.FontWeight = FontWeights.DemiBold;
                 l.Background = new SolidColorBrush(bgcolor);
                 l.Foreground = new SolidColorBrush(Colors.Black);
                 l.FontWeight = FontWeights.Normal;
-                
-                l.BorderBrush = new SolidColorBrush(Colors.Black);
+
+                l.BorderBrush = borderColor;
                 l.BorderThickness = new Thickness(1);
+
+                l.MouseEnter += (obj, mouseEvent) => { l.BorderBrush = highlightBorder; l.BorderThickness = new Thickness(2); };
+                l.MouseLeave += (obj, mouseEvent) => { l.BorderBrush = borderColor; l.BorderThickness =  new Thickness(1); };
+                l.MouseUp +=    (obj, mouseEvent) => {
+                    _ = selectedChars.Contains(letter) ? selectedChars.Remove(letter) : selectedChars.Add(letter);
+
+                    if(generator.GetType() == typeof(RandomizedLesson)) {
+                        ((RandomizedLesson)generator).Emphasize(selectedChars);
+                        Text = generator.NextText();
+                        window.Reset();
+                        
+                    }
+                };
 
                 grid.Children.Add(l);
             }
-            public static void SetParent(UniformGrid grid)
+            public static void SetParent(UniformGrid grid, MainWindow window)
             {
                 LetterRating.grid = grid;
+                LetterRating.window = window;
             }
 
         }
@@ -110,7 +133,6 @@ namespace WpfApp1
                 remaining = RunWithStyle(new SectionStyle());
        
 
-        //TODO: move this to a different class?
         static (Color, Color) activeBgColors = (Colors.Silver, wrapperBackground);
         static (Color, Color) activeFgColors = (Colors.Black, Colors.White);
         static TimeSpan blinkTime = TimeSpan.FromMilliseconds(600);
@@ -127,7 +149,7 @@ namespace WpfApp1
         {
             InitializeComponent();
             Text = generator.CurrentText;
-            LetterRating.SetParent(letterRatings);
+            LetterRating.SetParent(letterRatings, this);
             cursorBlinker = new Timer((e) =>
             {
                 Dispatcher.Invoke(() =>
@@ -141,6 +163,7 @@ namespace WpfApp1
                 });
                 blinkState = !blinkState;
             }, null, TimeSpan.Zero, blinkTime);
+            //new LetterRating('T', Colors.DarkGreen);
             Reset();
         }
 

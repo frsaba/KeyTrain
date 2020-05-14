@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+using static Pythonic.ListHelpers;
 
 namespace KeyTrainWPF
 {
@@ -56,6 +58,7 @@ namespace KeyTrainWPF
     {
         private string text;
         private List<string> dict;
+        private List<string> options;
         private int length;
         Random random;
 
@@ -63,9 +66,10 @@ namespace KeyTrainWPF
         public override string NextText()
         {
             text = "";
+
             while (true)
             {
-                string nextWord = dict[random.Next(dict.Count)];
+                string nextWord =  options[random.Next(options.Count)] ;
                 if (text.Length + nextWord.Length < length)
                 {
                     text = string.Join(' ', text, nextWord);
@@ -79,14 +83,27 @@ namespace KeyTrainWPF
             text = text.Trim();
             return text;
         }
+
+        public void Emphasize(HashSet<char> emphasized)
+        {
+            options = ConcatToList<List<string>>(
+                dict.Where(word => emphasized.All(e => word.ToUpper().Contains(e))).ToList(),
+                dict.Where(word => emphasized.Any(e => word.ToUpper().Contains(e))).ToList(),
+                dict ).First(d => d.Count > 0);
+            
+        }
+        
+
         public RandomizedLesson(List<string> dictonary, int maxlength = defaultLessonLength)
         {
             dict = dictonary;
+            options = dict;
             length = maxlength;
             random = new Random();
             NextText();
         }
-        public RandomizedLesson(string dictionaryFile = "Resources/dictionaryEN.txt", int maxlength = defaultLessonLength) :
+
+        public RandomizedLesson(string dictionaryFile = "Resources/dictionaryHU.txt", int maxlength = defaultLessonLength) :
             this(File.ReadAllLines(dictionaryFile).ToList(), maxlength) {}
 
     }

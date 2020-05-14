@@ -15,7 +15,7 @@
           TextElement.FontSize  ="30" 
           TextElement.FontFamily="Monaco"
           TextElement.FontWeight="Bold">
-        <Grid x:Name="HUD" Background="#1f1f1f" VerticalAlignment="Top" Height="175" >
+        <Grid x:Name="HUD" Background="#1f1f1f" VerticalAlignment="Top" Height="245" >
             <TextBlock  HorizontalAlignment="Left" Margin="115,15,0,0"  TextWrapping="Wrap" VerticalAlignment="Top" Height="60" RenderTransformOrigin="0,0">
                 <Run x:Name="wpmcounter" Text="0.00" TextElement.FontSize="44"/>
                 <Run Text="words per minute" TextElement.FontSize="15"/>
@@ -31,7 +31,7 @@
             <TextBlock HorizontalAlignment="Right" Margin="0,72,106,0"  TextWrapping="Wrap" VerticalAlignment="Top" Height="60" RenderTransformOrigin="1,0" TextAlignment="Right" Width="165">
                 <Run Text="Gain:" TextElement.FontSize="13"/><Run Text=" "/>
                 <Run x:Name="missgain" Text="0" TextElement.FontSize="20"/></TextBlock>
-            <UniformGrid Name="letterRatings" Margin="50,110,54,0" Rows="2" Columns="16" HorizontalAlignment="Center">
+            <UniformGrid Name="letterRatings" Margin="50,110,54,0" Rows="3" Columns="16" HorizontalAlignment="Center">
             </UniformGrid>
         </Grid>
         <TextBlock x:Name="Main" Foreground="White" Padding="40,40,40,40" HorizontalAlignment="Center" TextWrapping="Wrap"  VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" 

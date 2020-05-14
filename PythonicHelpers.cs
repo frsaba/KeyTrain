@@ -17,6 +17,11 @@ namespace Pythonic
                 if (obj.GetType() == typeof(List<T>))
                 {
                     result.AddRange((List<T>)obj);
+                    
+                }
+                else if (obj is IEnumerable<T>)
+                {
+                    result.AddRange(obj as IEnumerable<T>);
                 }
                 else if (typeof(T).IsAssignableFrom(obj.GetType()))
                 {
