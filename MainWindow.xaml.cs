@@ -13,6 +13,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Dynamic;
 using System.Threading;
+using System.ComponentModel;
 
 namespace WpfApp1
 {
@@ -90,7 +91,7 @@ namespace WpfApp1
 
         }
 
-        Run RunWithStyle(SectionStyle style = null, string text = "")
+        static Run RunWithStyle(SectionStyle style = null, string text = "")
         {
             style ??= new SectionStyle();
             Run r = new Run(text);
@@ -99,23 +100,19 @@ namespace WpfApp1
             return r;
         }
 
-        List<SectionStyle> sections = new List<SectionStyle>
-        {   // typed
-            new SectionStyle(fgColor:Colors.Gray),
-            //missed
-            new SectionStyle(bgColor:Color.FromRgb(201, 23, 10)),
-            //active
-            new SectionStyle(fgColor:Colors.Black, bgColor:Colors.Silver), 
-            //remaining
-            new SectionStyle()
+        
+        static SectionStyle missedStyle = new SectionStyle(fgColor: Color.FromRgb(201, 23, 10));
+        static SectionStyle typedstyle = new SectionStyle(fgColor: Colors.Gray);
 
-        };
+        static Run typed  = RunWithStyle(typedstyle),
+                mistakes  = RunWithStyle(new SectionStyle(bgColor: Color.FromRgb(201, 23, 10))),
+                active    = RunWithStyle(new SectionStyle(fgColor: Colors.Black, bgColor: Colors.Silver)),
+                remaining = RunWithStyle(new SectionStyle());
+       
 
         //TODO: move this to a different class?
-        static (SolidColorBrush, SolidColorBrush) activeBgColors = 
-            (new SolidColorBrush( Colors.Silver), new SolidColorBrush(wrapperBackground));
-        static (SolidColorBrush, SolidColorBrush) activeFgColors = 
-            (new SolidColorBrush( Colors.Black), new SolidColorBrush(Colors.White));
+        static (Color, Color) activeBgColors = (Colors.Silver, wrapperBackground);
+        static (Color, Color) activeFgColors = (Colors.Black, Colors.White);
         static TimeSpan blinkTime = TimeSpan.FromMilliseconds(600);
         Timer cursorBlinker;
         bool blinkState = true;
@@ -125,7 +122,6 @@ namespace WpfApp1
             cursorBlinker.Change(TimeSpan.Zero, blinkTime);
         }
         
-        SectionStyle missedStyle = new SectionStyle(fgColor: Color.FromRgb(201, 23, 10));
         
         public MainWindow()
         {
@@ -138,10 +134,8 @@ namespace WpfApp1
                 {
                     if(Keyboard.FocusedElement == this)
                     {
-                        var ic = Main.Inlines;
-                        Run r = (Run)ic.ElementAt(ic.Count - 2);
-                        r.Background = blinkState ? activeBgColors.Item1 : activeBgColors.Item2;
-                        r.Foreground = blinkState ? activeFgColors.Item1 : activeFgColors.Item2;
+                        active.Background = new SolidColorBrush( blinkState ? activeBgColors.Item1 : activeBgColors.Item2);
+                        active.Foreground = new SolidColorBrush( blinkState ? activeFgColors.Item1 : activeFgColors.Item2);
                     }
                     
                 });
@@ -159,15 +153,14 @@ namespace WpfApp1
             }
         }
 
-        static string typed, mistakes, active, remaining = Text;
         SortedSet<int> misses = new SortedSet<int>();      
 
         //TODO: manual overflow. builtin often linebreaks on inline borders which is distracting
         void UpdateMain()
         {
-            remaining = Text.Substring(Cursor.position + 1);
-            active = Cursor.drawnLetter.ToString();
-            string[] p = new string[] {mistakes, active, remaining };
+            remaining.Text = Text.Substring(Cursor.position + 1);
+            active.Text = Cursor.drawnLetter.ToString();
+            Run[] p = new Run[] {mistakes, active, remaining };
             var ic = Main.Inlines;
 
             int mcount = misses.Count == 0 || misses.Last() != Cursor.position ? 
@@ -178,7 +171,7 @@ namespace WpfApp1
             while (ic.Count  < typed_il_count + 3)
             {
                 var il = ConcatToList<Inline>(
-                    RunWithStyle(sections[0]),
+                    RunWithStyle(new SectionStyle(fgColor: Colors.Gray)), //TODO: replace with typedstyle
                     RunWithStyle(missedStyle),
                     Main.Inlines.ToList());
                 OverwriteMainIC(il);
@@ -188,21 +181,13 @@ namespace WpfApp1
             mborders.InsertRange(1, misses.Take(mcount).SelectMany(
                 x => new int[] { x, x + 1 } ));
 
-            for (int i = 0; i < ic.Count; i++)
+            for (int i = 0; i < ic.Count - 3; i++)
             {
                 Run r = (Run)ic.ElementAt(i);
-                //active, mistakes, remaining
-                if (i >= ic.Count - 3)
-                {
-                    r.Text = p[i - typed_il_count];
-                }
-                //typed
-                else
-                {
-                    r.Text = Text.Substring(mborders[i], mborders[i+1] - mborders[i]);
-                    if (i % 2 == 1) //Are we drawing an error?
-                        r.Text = r.Text.Replace(" ", spaceReplacement);
-                }
+ 
+                r.Text = Text.Substring(mborders[i], mborders[i+1] - mborders[i]);
+                if (i % 2 == 1) //Are we drawing an error?
+                    r.Text = r.Text.Replace(" ", spaceReplacement);
             }
         }
 
@@ -213,9 +198,9 @@ namespace WpfApp1
             //Backspace
             if (e.Text == "\b" )
             {
-                if(string.IsNullOrEmpty(mistakes) == false)
+                if(string.IsNullOrEmpty(mistakes.Text) == false)
                 {
-                    mistakes = mistakes.Remove(mistakes.Length - 1);
+                    mistakes.Text = mistakes.Text.Remove(mistakes.Text.Length - 1);
                     UpdateMain();
                 }
                 return;
@@ -232,9 +217,9 @@ namespace WpfApp1
             Debug.Content = $"Key: {c}, Correct: {Cursor.letter}";
 
             //Correct letter
-            if (c == Cursor.letter && string.IsNullOrEmpty(mistakes))
+            if (c == Cursor.letter && string.IsNullOrEmpty(mistakes.Text))
             {
-                typed += c;
+                typed.Text += c;
                 timer.Stop();
                 times[Cursor.position] = timer.Elapsed;
                 ResetCursorBlink();
@@ -243,7 +228,7 @@ namespace WpfApp1
             else //Miss
             {
                 misses.Add(Cursor.position);      
-                mistakes += c;
+                mistakes.Text += c;
             }
 
             timer.Start();
@@ -272,7 +257,7 @@ namespace WpfApp1
         {
             double margins = letterRatings.Margin.Left + letterRatings.Margin.Right;
             letterRatings.Columns = (int)Math.Min(
-            ((windowWidth - margins) / LetterRating.width),
+            (windowWidth - margins) / LetterRating.width,
                 ratingsDrawn);
         }
 
@@ -328,17 +313,14 @@ namespace WpfApp1
 
         void Reset(bool update = true)
         {
-            typed = ""; mistakes = ""; active = ""; remaining = Text;
+            typed.Text = ""; mistakes.Text = ""; active.Text = ""; remaining.Text = Text;
             misses.Clear();
             timer = new Stopwatch();
             times = new TimeSpan[Text.Length];
-            //Debug.Content += "times: " + Text.Length;
             Cursor.position = 0;
             List<Inline> inlines = new List<Inline>();
-            foreach (var s in sections)
-            {
-                inlines.Add(RunWithStyle(s, s.startText));
-            }
+            inlines.AddRange(ConcatToList<Run>(typed, mistakes, active, remaining));
+
             OverwriteMainIC(inlines);
             if(update) UpdateMain();
         }
