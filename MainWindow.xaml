@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="KeyTrain" Height="550"  Width="750" MinHeight="450" MinWidth="600"
+        Title="KeyTrain" Height="550"  Width="750" MinHeight="500" MinWidth="600"
         PreviewTextInput="Window_PreviewTextInput"
         PreviewKeyDown="Window_PreviewKeyDown"
         SizeChanged="Window_SizeChanged" Icon="/icon.png">
 
     <Grid x:Name="Wrapper" Background="#1f1f1f" 
           TextElement.Foreground="Silver" 
-          TextElement.FontSize  ="30" 
+          TextElement.FontSize  ="33" 
           TextElement.FontFamily="Monaco"
           TextElement.FontWeight="Bold">
         <Grid x:Name="HUD" Background="#1f1f1f" VerticalAlignment="Top" Height="245" >
@@ -31,13 +31,11 @@
             <TextBlock HorizontalAlignment="Right" Margin="0,72,106,0"  TextWrapping="Wrap" VerticalAlignment="Top" Height="60" RenderTransformOrigin="1,0" TextAlignment="Right" Width="165">
                 <Run Text="Gain:" TextElement.FontSize="13"/><Run Text=" "/>
                 <Run x:Name="missgain" Text="0" TextElement.FontSize="20"/></TextBlock>
-            <UniformGrid Name="letterRatings" Margin="50,110,54,0" Rows="3" Columns="16" HorizontalAlignment="Center">
+            <UniformGrid Name="letterRatings" Margin="50,110,54,0" Rows="3" Columns="16" HorizontalAlignment="Center" >
             </UniformGrid>
         </Grid>
         <TextBlock x:Name="Main" Foreground="White" Padding="40,40,40,40" HorizontalAlignment="Center" TextWrapping="Wrap"  VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" 
                    TextAlignment="Left" Height="234" Margin="0,180,0,0" Grid.ColumnSpan="2"  
-                   Text="dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore" MinWidth="200"/>
-        <Label x:Name="Debug" Content="Label" HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" Foreground="White" FontSize="20" RenderTransformOrigin="0,1" Height="34"/>
-
+                   Text="dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore" MinWidth="200" LineHeight="40"/>
     </Grid>
 </Window>

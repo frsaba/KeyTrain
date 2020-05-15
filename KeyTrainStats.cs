@@ -6,6 +6,7 @@ using System.Linq;
 using System.Diagnostics;
 using System.Windows.Markup;
 using static Pythonic.ListHelpers;
+using static KeyTrainWPF.KeyTrainStatsConversion;
 using System.Windows.Media;
 using System.Security.Policy;
 
@@ -31,7 +32,8 @@ namespace KeyTrainWPF
             (Colors.LawnGreen,      50),    
             (Colors.Green,          100),
             (Colors.ForestGreen,    double.MaxValue),
-            (Color.FromArgb(150,99,99,99),       double.PositiveInfinity) //invalid delta -> no data
+            //(Color.FromArgb(150,99,99,99),       double.PositiveInfinity) //invalid delta -> no data
+            (Colors.Transparent,       double.PositiveInfinity) //invalid delta -> no data
         };
 
         public static void Enter(string text, TimeSpan[] times, SortedSet<int> misses, double? totalMinutes = null)
@@ -57,41 +59,46 @@ namespace KeyTrainWPF
             WPMLOG.Add(WPM(text.Length, (double)totalMinutes));
             MISSLOG.Add(misses.Count);
         }
-
-        //TODO: property/expression body here?
-        public static DefaultDict<char, Color> GetLetterRatings(HashSet<char> alwaysInclude = null)
+        /// <summary>
+        /// Compares each letter's average to the overall letter average and rates them via colors defined by RatingPalette
+        /// </summary>
+        /// <param name="alwaysInclude">Include these characters even if there's no data about them.</param>
+        /// <returns>For each letter: Tuple of rating (color) and whether there was data available (hadData bool) </returns>
+        public static DefaultDict<char, (Color color, bool hadData)> GetLetterRatings(HashSet<char> alwaysInclude = null)
         {
             alwaysInclude ??= new HashSet<char>();
 
-            DefaultDict<char, Color> result = new DefaultDict<char, Color>();
+            DefaultDict<char, (Color, bool)> result = new DefaultDict<char, (Color, bool)>();
             double avgAllLetters = LPM_From_WPM(WPMLOG.DefaultIfEmpty(0).Average());
             foreach (char c in charTimes.Keys.Union(alwaysInclude))
             {
                 double avgThisLetter = charTimes[c].avgLPM;
 
                 double delta = avgThisLetter - avgAllLetters;
+                bool hadData = double.IsFinite(avgThisLetter);
                 for (int i = 0; i < RatingPalette.Count; i++)
                 {
                     if(delta <= RatingPalette[i].delta)
                     {
-                        result[c] = RatingPalette[i].color;
+                        result[c] = (RatingPalette[i].color, hadData);
                         break;
                     }
                 }
-               
 
                 Trace.WriteLine($"{c}: {avgThisLetter}");
-
-
-                
             }
             return result;
         }
 
+        
+    }
+
+    static class KeyTrainStatsConversion
+    {
         public static double LPM(int length, double minutes) => length / minutes;
         public static double LPM_From_WPM(double WPM) => 5 * WPM;
         public static double WPM_From_ms(double milliseconds) => 12000 / milliseconds;
-        
+
         public static double WPM(int length, double minutes) => LPM(length, minutes) / 5;
     }
 
@@ -100,7 +107,7 @@ namespace KeyTrainWPF
     {
         public List<double> values { get; private set; }
         public double average { get; private set; }
-        public double avgLPM => 60000 / average;
+        public double avgLPM => 60000 / average; //returns infinity when there's no data
 
         public TimeData()
         {
@@ -134,18 +141,18 @@ namespace KeyTrainWPF
 
         private int missAcc, correctAcc;
 
-        public double average { get; private set; }
+        public double missratio { get; private set; }
         public MissData()
         {
             values = new List<(int, int)>();
-            average = 0;
+            missratio = 0;
             missAcc = 0; correctAcc = 0;
         }
 
         public void Add(int missed, int correct)
         {
             values.Add((missed, correct));
-            average = total > 0 ? totalMissed / total :  0;
+            missratio = total > 0 ? (double)totalMissed / total :  0;
         }
         public void Log(bool miss)
         {

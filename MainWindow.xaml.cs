@@ -9,12 +9,13 @@ using System.Diagnostics;
 using KeyTrainWPF;
 using Pythonic;
 using static Pythonic.ListHelpers;
-using static KeyTrainWPF.KeyTrainStats;
+using static KeyTrainWPF.KeyTrainStatsConversion;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Dynamic;
 using System.Threading;
 using System.ComponentModel;
+using static KeyTrainWPF.DarkStyles.MainWindow;
 
 namespace WpfApp1
 {
@@ -22,25 +23,17 @@ namespace WpfApp1
     public partial class MainWindow : Window
     {
         static string Text;
-        //LessonGenerator generator = new PresetTextLesson("Lorem ipsum dolor sit amet, " +
+        //static LessonGenerator generator = new PresetTextLesson("Lorem ipsum dolor sit amet, " +
         //    "consectetur adipiscing elit, sed do eiusmod tempor " +
         //    "incididunt ut labore et dolore magna aliqua. ");
 
         static LessonGenerator generator = new RandomizedLesson();
+        static HashSet<char> selectedChars = new HashSet<char>();
+        SortedSet<int> misses = new SortedSet<int>();
         static Stopwatch timer;
-        const string spaceReplacement = "·"; //could be "␣" but it takes up 2 spaces which is a weird look)
+        
         int ratingsDrawn = 0;
         static TimeSpan[] times;
-
-        static Color wrapperBackground = (Color)ColorConverter.ConvertFromString("#1f1f1f");
-        static List<(Color color, double delta)> gainPalette = new List<(Color, double)>
-        {
-            (Colors.Tomato,      -0.5),
-            (Colors.Silver,         0.2),
-            (Colors.LightGreen,    double.MaxValue)
-        };
-        static HashSet<char> selectedChars = new HashSet<char>();
-
 
         new static class Cursor
         {
@@ -48,54 +41,31 @@ namespace WpfApp1
             public static char letter { get => Text[position]; }
             public static char drawnLetter { get => Text[position]; }
         }
-        class SectionStyle
+        
+        class LetterRating : LetterRatingStyle
         {
-            public string startText;
-            public Color fg;
-            public Color bg;
-
-            public SectionStyle(string text = "", Color? fgColor = null, Color? bgColor = null)
-            {
-                startText = text;
-                //TODO: inherit from wrapper
-                fg = fgColor ?? Colors.White;
-                bg = bgColor ?? wrapperBackground;
-            }
-        }
-        class LetterRating
-        {
-            public const int width = 45;
-            public const int height = 45;
-            static UniformGrid grid;
-            static MainWindow window;
+           
+            public static UniformGrid grid;
+            public static MainWindow window;
             Label l = new Label();
             char letter = '-';
-            static SolidColorBrush normalBorder = new SolidColorBrush(Colors.Black);
-            static SolidColorBrush highlightBorder = new SolidColorBrush(Colors.White);
-            SolidColorBrush borderColor { get => selectedChars.Contains(letter) ? highlightBorder : normalBorder; }
-            public LetterRating(char letter, Color bgcolor)
+            bool hasData = true;
+            bool isSelected => selectedChars.Contains(letter);
+
+            SolidColorBrush borderColor { get => isSelected ? highlightBorder : (hasData ? normalColor : inactiveColor); }
+            public LetterRating(char letter, Color bgcolor, bool hasData = true)
             {
                 this.letter = letter;
+                this.hasData = hasData;
                 l.Content = letter.ToString();
-                l.Width = width;
-                l.Height = height;
-                
-                l.HorizontalContentAlignment = HorizontalAlignment.Center;
-                l.VerticalContentAlignment = VerticalAlignment.Center;
-                //l.Padding = new Thickness(5);
-                l.FontSize = 30;
-                l.FontWeight = FontWeights.DemiBold;
-                l.Background = new SolidColorBrush(bgcolor);
-                l.Foreground = new SolidColorBrush(Colors.Black);
-                l.FontWeight = FontWeights.Normal;
+                SetLabelStyle(ref l,bgcolor, hasData);
 
+                l.Foreground = hasData ? normalColor : inactiveColor;
                 l.BorderBrush = borderColor;
-                l.BorderThickness = new Thickness(1);
-
                 l.MouseEnter += (obj, mouseEvent) => { l.BorderBrush = highlightBorder; l.BorderThickness = new Thickness(2); };
                 l.MouseLeave += (obj, mouseEvent) => { l.BorderBrush = borderColor; l.BorderThickness =  new Thickness(1); };
                 l.MouseUp +=    (obj, mouseEvent) => {
-                    _ = selectedChars.Contains(letter) ? selectedChars.Remove(letter) : selectedChars.Add(letter);
+                    _ = isSelected ? selectedChars.Remove(letter) : selectedChars.Add(letter);
 
                     if(generator.GetType() == typeof(RandomizedLesson)) {
                         ((RandomizedLesson)generator).Emphasize(selectedChars);
@@ -105,10 +75,14 @@ namespace WpfApp1
                     }
                 };
                 ToolTip t = new ToolTip();
-                if (charTimes[letter].values.Count > 0)
+                var ct = KeyTrainStats.charTimes[letter];
+                var ms = KeyTrainStats.charMisses[letter];
+                
+                if (ct.values.Count > 0) //if(active) might do the same thing
                 {
-                    t.Content = $"Average speed: {WPM_From_ms(charTimes[letter].average):0.00} WPM\n" +
-                        $"Last speed: {WPM_From_ms(charTimes[letter].values.Last()):0.00} WPM";
+                    t.Content = $"Avg. speed: {WPM_From_ms(ct.average):0.00} WPM\n" +
+                                $"Last speed: {WPM_From_ms(ct.values.Last()):0.00} WPM\n" +
+                                $"Miss ratio: {ms.missratio * 100:0.##}%";
                 }
                 else
                 {
@@ -125,20 +99,9 @@ namespace WpfApp1
                 LetterRating.window = window;
             }
 
-        }
+            
 
-        static Run RunWithStyle(SectionStyle style = null, string text = "")
-        {
-            style ??= new SectionStyle();
-            Run r = new Run(text);
-            r.Foreground = new SolidColorBrush(style.fg);
-            r.Background = new SolidColorBrush(style.bg);
-            return r;
         }
-
-        
-        static SectionStyle missedStyle = new SectionStyle(fgColor: Color.FromRgb(201, 23, 10));
-        static SectionStyle typedstyle = new SectionStyle(fgColor: Colors.Gray);
 
         static Run typed  = RunWithStyle(typedstyle),
                 mistakes  = RunWithStyle(new SectionStyle(bgColor: Color.FromRgb(201, 23, 10))),
@@ -146,8 +109,7 @@ namespace WpfApp1
                 remaining = RunWithStyle(new SectionStyle());
        
 
-        static (Color, Color) activeBgColors = (Colors.Silver, wrapperBackground);
-        static (Color, Color) activeFgColors = (Colors.Black, Colors.White);
+
         static TimeSpan blinkTime = TimeSpan.FromMilliseconds(600);
         Timer cursorBlinker;
         bool blinkState = true;
@@ -176,7 +138,7 @@ namespace WpfApp1
                 });
                 blinkState = !blinkState;
             }, null, TimeSpan.Zero, blinkTime);
-            //new LetterRating('T', Colors.DarkGreen);
+            
             Reset();
             UpdateHUD();
         }
@@ -190,8 +152,7 @@ namespace WpfApp1
             }
         }
 
-        SortedSet<int> misses = new SortedSet<int>();      
-
+        
         //TODO: manual overflow. builtin often linebreaks on inline borders which is distracting
         void UpdateMain()
         {
@@ -251,7 +212,7 @@ namespace WpfApp1
             catch { return; }
             
 
-            Debug.Content = $"Key: {c}, Correct: {Cursor.letter}";
+            //Debug.Content = $"Key: {c}, Correct: {Cursor.letter}";
 
             //Correct letter
             if (c == Cursor.letter && string.IsNullOrEmpty(mistakes.Text))
@@ -287,14 +248,20 @@ namespace WpfApp1
             if (e.HeightChanged)
             {
                 Main.Margin = new Thickness(0,
-                    (e.NewSize.Height - HUD.Height - Main.Height - Debug.ActualHeight) / 4 + HUD.Height, 0, 0);
+                    (e.NewSize.Height - HUD.Height - Main.Height) / 4 + HUD.Height, 0, 0);
             }
         }
-        private void RatingsChanged(double windowWidth)
+        private void RatingsChanged(double windowWidth = 0, double spacing = 2)
         {
+            if (windowWidth == 0)
+            {
+                MainWindow w = LetterRating.window;
+                windowWidth = Math.Max(w.Width, w.ActualWidth);
+            }
+
             double margins = letterRatings.Margin.Left + letterRatings.Margin.Right;
             letterRatings.Columns = (int)Math.Min(
-            (windowWidth - margins) / LetterRating.width,
+            (windowWidth - margins) / (LetterRating.width + spacing),
                 ratingsDrawn);
         }
 
@@ -326,29 +293,21 @@ namespace WpfApp1
             ConditionalFormat(wpmgain, wpm - oldWPMAvg);
             ConditionalFormat(missgain, misscount - oldMissAvg, inverted: true);
             DrawLetterRatings();
-        }
-
-        void ConditionalFormat(Run run, double value, bool inverted = false)
-        {
-            run.Text = $"{value:+0.00;-0.00;0}";
-            for (int i = 0; i < gainPalette.Count; i++)
-            {
-                if ((inverted ? -value : value) < gainPalette[i].delta)
-                {
-                    run.Foreground = new SolidColorBrush(gainPalette[i].color);
-                    break;
-                }
-            }
+            RatingsChanged();
         }
 
         void DrawLetterRatings()
         {
             letterRatings.Children.Clear(); //TODO: overwrite existing instead
-            DefaultDict<char,Color> lrs = KeyTrainStats.GetLetterRatings(generator.alphabet);
+            DefaultDict<char,(Color color, bool active)> lrs = 
+                KeyTrainStats.GetLetterRatings(alwaysInclude:generator.alphabet);
             ratingsDrawn = lrs.Count;
-            foreach (char key in lrs.Keys.OrderBy(c => lrs[c] == RatingPalette.Last().color).ThenBy(c => c))
+            foreach (char key in lrs.Keys.
+                OrderBy(c => !lrs[c].active)
+                .ThenBy(c => !char.IsLetterOrDigit(c))
+                .ThenBy(c => c))
             {
-                new LetterRating(key, lrs[key]);
+                new LetterRating(key, lrs[key].color, lrs[key].active);
             }
             RatingsChanged(Width);
         }

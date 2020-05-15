@@ -95,14 +95,14 @@ namespace KeyTrainWPF
             text = text.Trim();
             return text;
         }
-        public override HashSet<Char> alphabet { get; protected set; }
+        public override HashSet<char> alphabet { get; protected set; }
 
         public void Emphasize(HashSet<char> emphasized)
         {
             options = ConcatToList<List<string>>(
                 dict.Where(word => emphasized.All(e => word.ToUpper().Contains(e))).ToList(),
                 dict.Where(word => emphasized.Any(e => word.ToUpper().Contains(e))).ToList(),
-                dict ).First(d => d.Count > 0);
+                dict ).First(d => d.Count > 10);
             
         }
         
