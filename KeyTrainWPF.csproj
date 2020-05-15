@@ -5,6 +5,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>icon.ico</ApplicationIcon>
+    <RootNamespace>KeyTrain</RootNamespace>
+    <AssemblyName>KeyTrain</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

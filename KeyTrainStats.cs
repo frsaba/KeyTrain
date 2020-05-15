@@ -6,12 +6,15 @@ using System.Linq;
 using System.Diagnostics;
 using System.Windows.Markup;
 using static Pythonic.ListHelpers;
-using static KeyTrainWPF.KeyTrainStatsConversion;
+using static KeyTrain.KeyTrainStatsConversion;
 using System.Windows.Media;
 using System.Security.Policy;
 
-namespace KeyTrainWPF
-{
+namespace KeyTrain
+{   
+    /// <summary>
+    /// Class for legging and querying keyboard training statistics
+    /// </summary>
     static class KeyTrainStats
     {
 
@@ -34,31 +37,40 @@ namespace KeyTrainWPF
             (Colors.ForestGreen,    double.MaxValue),
             //(Color.FromArgb(150,99,99,99),       double.PositiveInfinity) //invalid delta -> no data
             (Colors.Transparent,       double.PositiveInfinity) //invalid delta -> no data
-        };
+        }; //TODO: move to DarkStyles
 
+        /// <summary>
+        /// Log the lesson's data to database
+        /// </summary>
+        /// <param name="text">The text that was used</param>
+        /// <param name="times">The timestamps of each keypress</param>
+        /// <param name="misses">Index of characters which very missed</param>
+        /// <param name="totalMinutes">Time the lesson took in minutes. Calculated from times if left empty </param>
         public static void Enter(string text, TimeSpan[] times, SortedSet<int> misses, double? totalMinutes = null)
         {
+            DefaultDict<char, (int misses, int total)> counts = new DefaultDict<char, (int, int)>();
+
             for (int i= 0; i < text.Length; i++)
             {
                 char c = char.ToUpper(text[i]);
                 charTimes[c].Add(i > 0 ? times[i] - times[i-1] : times[i] );
-                charMisses[c].Log(misses.Contains(i));
-                //charTimes[char.ToUpper(text[i])].Add(times[i] - times.ElementAtOrDefault(i - 1));
+                counts[c] = (counts[c].misses + (misses.Contains(i) ? 1 : 0), counts[c].total + 1);
             }
             foreach (char k in charTimes.Keys)
             {
-                charMisses[k].Flatten();
-                Trace.WriteLine
-                    ($"{k} - AVGSPEED: {charTimes[k].average:0.00} " +
-                    $"MISSES: {string.Join(';', charMisses[k].values.Select(x => $"{x.missed}/{x.correct}").ToList())} ");
+                charMisses[k].Add(counts[k].misses, counts[k].total);
+                Trace.WriteLine(
+                    $"{k} - AVGSPEED: {charTimes[k].average:0.00} " +
+                    $"MISSES: {string.Join(';', charMisses[k].values.Select(x => $"{x.missed}/{x.total}").ToList())} ");
                     
                 //Trace.WriteLine($"{k} - AVGSPEED: {charTimes[k].average:0.00} values: {string.Join(';', charTimes[k].values)} ");
             }
 
-            totalMinutes ??= times.Sum(x => x.TotalMinutes);
+            totalMinutes ??= times.Last().TotalMinutes - times.First().TotalMinutes;
             WPMLOG.Add(WPM(text.Length, (double)totalMinutes));
             MISSLOG.Add(misses.Count);
         }
+
         /// <summary>
         /// Compares each letter's average to the overall letter average and rates them via colors defined by RatingPalette
         /// </summary>
@@ -85,7 +97,7 @@ namespace KeyTrainWPF
                     }
                 }
 
-                Trace.WriteLine($"{c}: {avgThisLetter}");
+                //Trace.WriteLine($"{c}: {avgThisLetter}");
             }
             return result;
         }
@@ -133,36 +145,24 @@ namespace KeyTrainWPF
 
     }
 
+    //Counts are logged separately for each text in order to facilitate by-time visualization
     class MissData
     {
-        public List<(int missed, int correct)> values { get; private set; }
+        public List<(int missed, int total)> values { get; private set; }
         public int totalMissed => values.Select(x => x.missed).Sum();
-        public int total => values.Select(x => x.missed + x.correct).Sum();
-
-        private int missAcc, correctAcc;
+        public int total => values.Select(x => x.total).Sum();
 
         public double missratio { get; private set; }
         public MissData()
         {
             values = new List<(int, int)>();
             missratio = 0;
-            missAcc = 0; correctAcc = 0;
         }
 
-        public void Add(int missed, int correct)
+        public void Add(int missed, int outOf)
         {
-            values.Add((missed, correct));
-            missratio = total > 0 ? (double)totalMissed / total :  0;
-        }
-        public void Log(bool miss)
-        {
-            if (miss == true) missAcc++; else correctAcc++;
-        }
-
-        public void Flatten()
-        {
-            Add(missAcc, correctAcc);
-            missAcc = 0; correctAcc = 0;
+            values.Add((missed, outOf));
+            missratio = total > 0 ? (double)totalMissed / total : 0;
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Windows.Media;
 using System.Windows.Documents;
 using System.Windows.Controls;
 
-namespace KeyTrainWPF
+namespace KeyTrain
 {
     /// <summary>
     /// Defines MainWindow's dark theme styling.
@@ -27,11 +27,15 @@ namespace KeyTrainWPF
                     (Colors.LightGreen,    double.MaxValue)
                 };
 
-            public static SectionStyle missedStyle = new SectionStyle(fgColor: Color.FromRgb(201, 23, 10));
-            public static SectionStyle typedstyle = new SectionStyle(fgColor: Colors.Gray);
+            public static SectionStyle 
+                 errorStyle     = new SectionStyle(fgColor: Color.FromRgb(201, 23, 10)),
+                 typedStyle     = new SectionStyle(fgColor: Colors.Gray),
+                 mistakesStyle  = new SectionStyle(bgColor: Color.FromRgb(201, 23, 10)),
+                 activeStyle    = new SectionStyle(fgColor: Colors.Black, bgColor: Colors.Silver),
+                 remainingStyle = new SectionStyle();
 
-            public static (Color, Color) activeBgColors = (Colors.Silver, wrapperBackground);
-            public static (Color, Color) activeFgColors = (Colors.Black, Colors.White);
+            public static (Color, Color) cursorBgColors = (Colors.Silver, wrapperBackground);
+            public static (Color, Color) cursorFgColors = (Colors.Black, Colors.White);
 
             public const string spaceReplacement = "·"; //could be "␣" but it takes up 2 spaces which is a weird look)
 
@@ -51,28 +55,41 @@ namespace KeyTrainWPF
 
             public class LetterRatingStyle
             {
-                public static int width {get; private set;}= 45;
-                public static int height {get; private set;} = 45;
-                protected static SolidColorBrush normalColor = new SolidColorBrush(Colors.Black);
-                protected static SolidColorBrush inactiveColor = new SolidColorBrush(Colors.Gray);
-                protected static SolidColorBrush highlightBorder = new SolidColorBrush(Colors.White);
+                public static int width {get; private set;}= 40;
+                public static int height {get; private set;} = 40;
+                public static int fontSize {get; private set;} = 25;
+                protected static SolidColorBrush 
+                    normalColor = new SolidColorBrush(Colors.Black),
+                    inactiveColor = new SolidColorBrush(Colors.Gray),
+                    highlightBorder = new SolidColorBrush(Colors.White);
 
-                protected void SetLabelStyle(ref Label l, Color bgcolor, bool hasData)
+                protected Label LabelWithStyle(Color bgcolor, bool hasData)
                 {
+                    Label l = new Label();
+
                     l.Width = width;
                     l.Height = height;
 
                     l.HorizontalContentAlignment = HorizontalAlignment.Center;
                     l.VerticalContentAlignment = VerticalAlignment.Center;
-                    l.FontSize = 30;
+                    l.FontSize = fontSize;
                     l.FontWeight = FontWeights.DemiBold;
                     l.Background = new SolidColorBrush(bgcolor);
                     l.FontWeight = FontWeights.Normal;
 
                     l.BorderThickness = new Thickness(1);
+
+                    return l;
                 }
             }
 
+            //TODO:generalize this, ratios / customizable thresholds
+            /// <summary>
+            /// Format run based on the value inside
+            /// </summary>
+            /// <param name="run">The Run to writo to</param>
+            /// <param name="value">Value to display</param>
+            /// <param name="inverted">True: positve = worse</param>
             public static void ConditionalFormat(Run run, double value, bool inverted = false)
             {
                 run.Text = $"{value:+0.00;-0.00;0}";
@@ -86,6 +103,10 @@ namespace KeyTrainWPF
                 }
             }
 
+            /// <summary>
+            /// Creates a new Run with the given SectionStyle and text
+            /// </summary>
+            /// <returns></returns>
             public static Run RunWithStyle(SectionStyle style = null, string text = "")
             {
                 style ??= new SectionStyle();

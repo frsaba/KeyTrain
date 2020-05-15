@@ -6,18 +6,18 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Diagnostics;
-using KeyTrainWPF;
+using KeyTrain;
 using Pythonic;
 using static Pythonic.ListHelpers;
-using static KeyTrainWPF.KeyTrainStatsConversion;
+using static KeyTrain.KeyTrainStatsConversion;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Dynamic;
 using System.Threading;
 using System.ComponentModel;
-using static KeyTrainWPF.DarkStyles.MainWindow;
+using static KeyTrain.DarkStyles.MainWindow;
 
-namespace WpfApp1
+namespace KeyTrainWPF
 {
    
     public partial class MainWindow : Window
@@ -38,8 +38,8 @@ namespace WpfApp1
         new static class Cursor
         {
             public static int position = 0;
-            public static char letter { get => Text[position]; }
-            public static char drawnLetter { get => Text[position]; }
+            public static char letter => Text[position];
+            //public static char drawnLetter => Text[position]; 
         }
         
         class LetterRating : LetterRatingStyle
@@ -47,7 +47,7 @@ namespace WpfApp1
            
             public static UniformGrid grid;
             public static MainWindow window;
-            Label l = new Label();
+            Label l;
             char letter = '-';
             bool hasData = true;
             bool isSelected => selectedChars.Contains(letter);
@@ -57,8 +57,8 @@ namespace WpfApp1
             {
                 this.letter = letter;
                 this.hasData = hasData;
+                l = LabelWithStyle(bgcolor, hasData);
                 l.Content = letter.ToString();
-                SetLabelStyle(ref l,bgcolor, hasData);
 
                 l.Foreground = hasData ? normalColor : inactiveColor;
                 l.BorderBrush = borderColor;
@@ -71,23 +71,18 @@ namespace WpfApp1
                         ((RandomizedLesson)generator).Emphasize(selectedChars);
                         Text = generator.NextText();
                         window.Reset();
-                        
                     }
                 };
                 ToolTip t = new ToolTip();
                 var ct = KeyTrainStats.charTimes[letter];
                 var ms = KeyTrainStats.charMisses[letter];
-                
-                if (ct.values.Count > 0) //if(active) might do the same thing
-                {
-                    t.Content = $"Avg. speed: {WPM_From_ms(ct.average):0.00} WPM\n" +
-                                $"Last speed: {WPM_From_ms(ct.values.Last()):0.00} WPM\n" +
-                                $"Miss ratio: {ms.missratio * 100:0.##}%";
-                }
-                else
-                {
-                    t.Content = "No data";
-                }
+
+                t.Content = hasData ?   
+                    $"Avg. speed: {WPM_From_ms(ct.average):0.00} WPM\n" +
+                    $"Last speed: {WPM_From_ms(ct.values.Last()):0.00} WPM\n" +
+                    $"Miss ratio: {ms.missratio * 100:0.##}%" 
+                    :"No data";
+
 
                 l.ToolTip = t;
                 ToolTipService.SetInitialShowDelay(l,750);
@@ -98,18 +93,15 @@ namespace WpfApp1
                 LetterRating.grid = grid;
                 LetterRating.window = window;
             }
-
-            
-
         }
 
-        static Run typed  = RunWithStyle(typedstyle),
-                mistakes  = RunWithStyle(new SectionStyle(bgColor: Color.FromRgb(201, 23, 10))),
-                active    = RunWithStyle(new SectionStyle(fgColor: Colors.Black, bgColor: Colors.Silver)),
-                remaining = RunWithStyle(new SectionStyle());
-       
+        static Run typed  = RunWithStyle(typedStyle),
+                mistakes  = RunWithStyle(mistakesStyle),
+                active    = RunWithStyle(activeStyle),
+                remaining = RunWithStyle(remainingStyle);
 
 
+        //TODO: move cursor blinking, at least move it outside the MainWindow constructor
         static TimeSpan blinkTime = TimeSpan.FromMilliseconds(600);
         Timer cursorBlinker;
         bool blinkState = true;
@@ -125,24 +117,25 @@ namespace WpfApp1
             InitializeComponent();
             Text = generator.CurrentText;
             LetterRating.SetParent(letterRatings, this);
-            cursorBlinker = new Timer((e) =>
+            cursorBlinker = new Timer((e) => 
             {
                 Dispatcher.Invoke(() =>
                 {
                     if(Keyboard.FocusedElement == this)
                     {
-                        active.Background = new SolidColorBrush( blinkState ? activeBgColors.Item1 : activeBgColors.Item2);
-                        active.Foreground = new SolidColorBrush( blinkState ? activeFgColors.Item1 : activeFgColors.Item2);
+                        active.Background = new SolidColorBrush( blinkState ? cursorBgColors.Item1 : cursorBgColors.Item2);
+                        active.Foreground = new SolidColorBrush( blinkState ? cursorFgColors.Item1 : cursorFgColors.Item2);
                     }
                     
                 });
                 blinkState = !blinkState;
-            }, null, TimeSpan.Zero, blinkTime);
+            }, null, TimeSpan.Zero, blinkTime); 
             
             Reset();
             UpdateHUD();
         }
 
+        // InlineCollection cannot be instantiated directly so we cannot just .prepend and set it. This is how we replace Main.Inlines with a new List<Inlines>
         void OverwriteMainIC(List<Inline> inlines)
         {
             Main.Inlines.Clear();
@@ -154,11 +147,13 @@ namespace WpfApp1
 
         
         //TODO: manual overflow. builtin often linebreaks on inline borders which is distracting
+        /// <summary>
+        /// Formats the main textblock's inlines based on the current state. Mainly concerned with highlighting the errors in red
+        /// </summary>
         void UpdateMain()
         {
             remaining.Text = Text.Substring(Cursor.position + 1);
-            active.Text = Cursor.drawnLetter.ToString();
-            Run[] p = new Run[] {mistakes, active, remaining };
+            active.Text = Cursor.letter.ToString();
             var ic = Main.Inlines;
 
             int mcount = misses.Count == 0 || misses.Last() != Cursor.position ? 
@@ -169,8 +164,8 @@ namespace WpfApp1
             while (ic.Count  < typed_il_count + 3)
             {
                 var il = ConcatToList<Inline>(
-                    RunWithStyle(new SectionStyle(fgColor: Colors.Gray)), //TODO: replace with typedstyle
-                    RunWithStyle(missedStyle),
+                    RunWithStyle(typedStyle),
+                    RunWithStyle(errorStyle),
                     Main.Inlines.ToList());
                 OverwriteMainIC(il);
             }
@@ -210,7 +205,6 @@ namespace WpfApp1
                 if (e.Text.First() == '\\') { return; }
             }
             catch { return; }
-            
 
             //Debug.Content = $"Key: {c}, Correct: {Cursor.letter}";
 
@@ -238,7 +232,6 @@ namespace WpfApp1
 
         }
 
-        //This causes massive jump in memory usage in debug mode for some reason
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e) 
         {
             if (e.WidthChanged)
@@ -265,6 +258,7 @@ namespace WpfApp1
                 ratingsDrawn);
         }
 
+        //Reset with Ctrl+R
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if(Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.R)
@@ -273,6 +267,9 @@ namespace WpfApp1
             }
         }
 
+        /// <summary>
+        /// Advances to the next text chunk
+        /// </summary>
         void NextText()
         {
             KeyTrainStats.Enter(Text, times, misses, timer.Elapsed.TotalMinutes);

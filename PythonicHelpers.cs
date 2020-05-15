@@ -35,6 +35,10 @@ namespace Pythonic
 
             return result;
         }
+
+        /// <summary>
+        /// Dictionary that automatically inserts new keys with default values
+        /// </summary>
         public class DefaultDict<TKey, TValue> : Dictionary<TKey, TValue> where TValue : new()
         {
             public new TValue this[TKey key]

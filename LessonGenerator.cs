@@ -7,8 +7,11 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using static Pythonic.ListHelpers;
 
-namespace KeyTrainWPF
+namespace KeyTrain
 {
+    /// <summary>
+    /// Abstract class for generating keyboard lessons
+    /// </summary>
     abstract class LessonGenerator
     {
         public const int defaultLessonLength = 45;
@@ -16,7 +19,9 @@ namespace KeyTrainWPF
         public abstract string NextText();
         public abstract HashSet<Char> alphabet { get; protected set; }
     }
-
+    /// <summary>
+    /// Keyboard lessons with predefined text, split into chunks
+    /// </summary>
     class PresetTextLesson : LessonGenerator
     {
         static List<string> queuedTexts;
@@ -66,6 +71,9 @@ namespace KeyTrainWPF
         }
     }
 
+    /// <summary>
+    /// Keyboard lessons with randomly generated text, emphasizing certain keys as you need
+    /// </summary>
     class RandomizedLesson : LessonGenerator
     {
         private string text;
@@ -95,8 +103,15 @@ namespace KeyTrainWPF
             text = text.Trim();
             return text;
         }
+        /// <summary>
+        /// The set of characters that the dictionary uses more than 50 times
+        /// </summary>
         public override HashSet<char> alphabet { get; protected set; }
 
+        /// <summary>
+        /// Sets the options to only contain words that contain all given characters, or if that's not enough, any of the given characters
+        /// </summary>
+        /// <param name="emphasized">Set of words to emphasize</param>
         public void Emphasize(HashSet<char> emphasized)
         {
             options = ConcatToList<List<string>>(
@@ -105,8 +120,9 @@ namespace KeyTrainWPF
                 dict ).First(d => d.Count > 10);
             
         }
-        
 
+        /// <param name="dictonary">List of words the generator can use</param>
+        /// <param name="maxlength">Exclusive maximum length of each generated text chunk</param>
         public RandomizedLesson(List<string> dictonary, int maxlength = defaultLessonLength)
         {
             dict = dictonary;
@@ -119,6 +135,8 @@ namespace KeyTrainWPF
             NextText();
         }
 
+        /// <param name="dictionaryFile">Path to text file that contains all the words the generator can use (1 word/phrase per line)</param>
+        /// <param name="maxlength">Exclusive maximum length of each generated text chunk</param>
         public RandomizedLesson(string dictionaryFile = "Resources/dictionaryHU.txt", int maxlength = defaultLessonLength) :
             this(File.ReadAllLines(dictionaryFile).ToList(), maxlength) {}
 
