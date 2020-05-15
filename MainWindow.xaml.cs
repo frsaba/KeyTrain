@@ -47,6 +47,7 @@ namespace KeyTrainWPF
            
             public static UniformGrid grid;
             public static MainWindow window;
+            public static string toInclude = " .,;?!";
             Label l;
             char letter = '-';
             bool hasData = true;
@@ -297,7 +298,8 @@ namespace KeyTrainWPF
         {
             letterRatings.Children.Clear(); //TODO: overwrite existing instead
             DefaultDict<char,(Color color, bool active)> lrs = 
-                KeyTrainStats.GetLetterRatings(alwaysInclude:generator.alphabet);
+                KeyTrainStats.GetLetterRatings(
+                    alwaysInclude:generator.alphabet.Union(LetterRating.toInclude).ToHashSet());
             ratingsDrawn = lrs.Count;
             foreach (char key in lrs.Keys.
                 OrderBy(c => !lrs[c].active)

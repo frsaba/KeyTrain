@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using static Pythonic.ListHelpers;
 
@@ -14,7 +15,7 @@ namespace KeyTrain
     /// </summary>
     abstract class LessonGenerator
     {
-        public const int defaultLessonLength = 45;
+        public const int defaultLessonLength = 100;
         public abstract string CurrentText { get; }
         public abstract string NextText();
         public abstract HashSet<Char> alphabet { get; protected set; }
@@ -78,8 +79,10 @@ namespace KeyTrain
     {
         private string text;
         private List<string> dict;
-        private List<string> options;
-        private int length;
+         private List<string> shuffled;
+        private int place = 0;
+        private int chunkLength;
+        private List<char> punctuation = new List<char>();
         Random random;
 
         public override string CurrentText => text.Trim();
@@ -89,10 +92,16 @@ namespace KeyTrain
 
             while (true)
             {
-                string nextWord =  options[random.Next(options.Count)] ;
-                if (text.Length + nextWord.Length < length)
+                string nextWord =  shuffled[++place % shuffled.Count];
+                if(text == "")
                 {
-                    text = string.Join(' ', text, nextWord);
+                    text = nextWord;
+                }
+                else if (text.Length + nextWord.Length < chunkLength)
+                {
+                    char pct = punctuation.ElementAtOrDefault(random.Next(punctuation.Count + 1)); //+1 causes invalid indexes so we still generate just spaces some of the time
+                    string sep = pct != '\0' || pct == text.Length ? pct + " " : " ";
+                    text = string.Join(sep, text, nextWord);
                 }
                 else
                 {
@@ -109,16 +118,24 @@ namespace KeyTrain
         public override HashSet<char> alphabet { get; protected set; }
 
         /// <summary>
-        /// Sets the options to only contain words that contain all given characters, or if that's not enough, any of the given characters
+        /// Sets the options to only contain words that contain all given characters, or if that's not enough, any of the given characters.
+        /// Emphasizing punctuation characters means they will be randomly inserted between words by NextText().
+        /// Emphasizing whitespace means the generator will favor shorter words
         /// </summary>
         /// <param name="emphasized">Set of words to emphasize</param>
         public void Emphasize(HashSet<char> emphasized)
         {
-            options = ConcatToList<List<string>>(
-                dict.Where(word => emphasized.All(e => word.ToUpper().Contains(e))).ToList(),
-                dict.Where(word => emphasized.Any(e => word.ToUpper().Contains(e))).ToList(),
+            var normal = emphasized.Where(c => char.IsLetterOrDigit(c));
+            var options = ConcatToList<List<string>>(
+                dict.Where(word => normal.All(e => word.ToUpper().Contains(e))).ToList(),
+                dict.Where(word => normal.Any(e => word.ToUpper().Contains(e))).ToList(),
                 dict ).First(d => d.Count > 10);
-            
+            punctuation = emphasized.Where(c => char.IsPunctuation(c)).ToList();
+            if(emphasized.Any(c => char.IsWhiteSpace(c)))
+            {
+                options = options.OrderBy(w => w.Length).Take(Math.Max(options.Count / 100, 150)).ToList();
+            }
+            shuffled = options.OrderBy(x => random.Next()).ToList();
         }
 
         /// <param name="dictonary">List of words the generator can use</param>
@@ -126,9 +143,9 @@ namespace KeyTrain
         public RandomizedLesson(List<string> dictonary, int maxlength = defaultLessonLength)
         {
             dict = dictonary;
-            options = dict;
-            length = maxlength;
+            chunkLength = maxlength;
             random = new Random();
+            shuffled = dict.OrderBy(x=> random.Next()).ToList();
 
             //all characters which appear at least 50 times in the dictionary
             alphabet = dict.SelectMany(x => x.ToUpper()).GroupBy(x => x).Where(x => x.Count() > 50).SelectMany(x => x).ToHashSet();
