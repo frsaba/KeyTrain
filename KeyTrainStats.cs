@@ -14,23 +14,24 @@ namespace KeyTrainWPF
     static class KeyTrainStats
     {
 
-        static DefaultDict<char, TimeData> charTimes = new DefaultDict<char, TimeData>();
-        static DefaultDict<char, MissData> charMisses = new DefaultDict<char, MissData>();
+        public static DefaultDict<char, TimeData> charTimes { get; private set; } = new DefaultDict<char, TimeData>() ;
+        public static DefaultDict<char, MissData> charMisses { get; private set; } = new DefaultDict<char, MissData>();
         
         public static List<double> WPMLOG { get; private set; } =  new List<double>();
-        public static double LastWPM => WPMLOG.LastOrDefault();
+        public static double LastWPM => WPMLOG.DefaultIfEmpty(0).Last();
 
         public static List<int> MISSLOG { get; private set; } = new List<int>();
         public static int LastMissCount => MISSLOG.LastOrDefault();
 
-        static List<(Color color, double delta)> RatingPalette = new List<(Color, double)>
+        public static List<(Color color, double delta)> RatingPalette { get; private set; } = new List<(Color, double)>
         {
             (Colors.OrangeRed,      -150),
             (Colors.Orange,         -75),
             (Colors.YellowGreen,    -25),
-            (Colors.LawnGreen,    50),    
+            (Colors.LawnGreen,      50),    
             (Colors.Green,          100),
-            (Colors.ForestGreen,    double.MaxValue)
+            (Colors.ForestGreen,    double.MaxValue),
+            (Color.FromArgb(150,99,99,99),       double.PositiveInfinity) //invalid delta -> no data
         };
 
         public static void Enter(string text, TimeSpan[] times, SortedSet<int> misses, double? totalMinutes = null)
@@ -58,24 +59,29 @@ namespace KeyTrainWPF
         }
 
         //TODO: property/expression body here?
-        public static DefaultDict<char, Color> GetLetterRatings()
+        public static DefaultDict<char, Color> GetLetterRatings(HashSet<char> alwaysInclude = null)
         {
+            alwaysInclude ??= new HashSet<char>();
+
             DefaultDict<char, Color> result = new DefaultDict<char, Color>();
-            double avgAllLetters = LPM(WPMLOG.Average());
-            foreach (char c in charTimes.Keys)
+            double avgAllLetters = LPM_From_WPM(WPMLOG.DefaultIfEmpty(0).Average());
+            foreach (char c in charTimes.Keys.Union(alwaysInclude))
             {
                 double avgThisLetter = charTimes[c].avgLPM;
-                Trace.WriteLine($"{c}: {avgThisLetter}");
 
                 double delta = avgThisLetter - avgAllLetters;
                 for (int i = 0; i < RatingPalette.Count; i++)
                 {
-                    if(delta < RatingPalette[i].delta)
+                    if(delta <= RatingPalette[i].delta)
                     {
                         result[c] = RatingPalette[i].color;
                         break;
                     }
                 }
+               
+
+                Trace.WriteLine($"{c}: {avgThisLetter}");
+
 
                 
             }
@@ -83,7 +89,9 @@ namespace KeyTrainWPF
         }
 
         public static double LPM(int length, double minutes) => length / minutes;
-        public static double LPM(double WPM) => 5 * WPM;
+        public static double LPM_From_WPM(double WPM) => 5 * WPM;
+        public static double WPM_From_ms(double milliseconds) => 12000 / milliseconds;
+        
         public static double WPM(int length, double minutes) => LPM(length, minutes) / 5;
     }
 
@@ -137,7 +145,7 @@ namespace KeyTrainWPF
         public void Add(int missed, int correct)
         {
             values.Add((missed, correct));
-            average = totalMissed / total;
+            average = total > 0 ? totalMissed / total :  0;
         }
         public void Log(bool miss)
         {

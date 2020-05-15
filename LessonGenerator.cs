@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using static Pythonic.ListHelpers;
 
@@ -12,6 +14,7 @@ namespace KeyTrainWPF
         public const int defaultLessonLength = 45;
         public abstract string CurrentText { get; }
         public abstract string NextText();
+        public abstract HashSet<Char> alphabet { get; protected set; }
     }
 
     class PresetTextLesson : LessonGenerator
@@ -19,9 +22,18 @@ namespace KeyTrainWPF
         static List<string> queuedTexts;
         static int currTextid = 0;
         public override string CurrentText => queuedTexts[currTextid % queuedTexts.Count].Trim();
+        public override HashSet<Char> alphabet{ get; protected set;}
+
         public PresetTextLesson(string text, int maxLength = defaultLessonLength)
         {
             text = text.Trim();
+
+            alphabet = new HashSet<char>();
+            foreach (char ch in text.ToUpper())
+            {
+                alphabet.Add(ch);
+            }
+
             queuedTexts = new List<string>();
 
             //Divide up the text into about to equal chunks, each of which is smaller than maxLength
@@ -83,6 +95,7 @@ namespace KeyTrainWPF
             text = text.Trim();
             return text;
         }
+        public override HashSet<Char> alphabet { get; protected set; }
 
         public void Emphasize(HashSet<char> emphasized)
         {
@@ -100,6 +113,9 @@ namespace KeyTrainWPF
             options = dict;
             length = maxlength;
             random = new Random();
+
+            //all characters which appear at least 50 times in the dictionary
+            alphabet = dict.SelectMany(x => x.ToUpper()).GroupBy(x => x).Where(x => x.Count() > 50).SelectMany(x => x).ToHashSet();
             NextText();
         }
 

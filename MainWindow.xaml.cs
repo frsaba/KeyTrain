@@ -9,6 +9,7 @@ using System.Diagnostics;
 using KeyTrainWPF;
 using Pythonic;
 using static Pythonic.ListHelpers;
+using static KeyTrainWPF.KeyTrainStats;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Dynamic;
@@ -103,7 +104,19 @@ namespace WpfApp1
                         
                     }
                 };
+                ToolTip t = new ToolTip();
+                if (charTimes[letter].values.Count > 0)
+                {
+                    t.Content = $"Average speed: {WPM_From_ms(charTimes[letter].average):0.00} WPM\n" +
+                        $"Last speed: {WPM_From_ms(charTimes[letter].values.Last()):0.00} WPM";
+                }
+                else
+                {
+                    t.Content = "No data";
+                }
 
+                l.ToolTip = t;
+                ToolTipService.SetInitialShowDelay(l,750);
                 grid.Children.Add(l);
             }
             public static void SetParent(UniformGrid grid, MainWindow window)
@@ -165,6 +178,7 @@ namespace WpfApp1
             }, null, TimeSpan.Zero, blinkTime);
             //new LetterRating('T', Colors.DarkGreen);
             Reset();
+            UpdateHUD();
         }
 
         void OverwriteMainIC(List<Inline> inlines)
@@ -294,21 +308,26 @@ namespace WpfApp1
 
         void NextText()
         {
-            double oldWPMAvg = KeyTrainStats.WPMLOG.DefaultIfEmpty(0).Average();
-            double oldMissAvg = KeyTrainStats.MISSLOG.DefaultIfEmpty(0).Average();
             KeyTrainStats.Enter(Text, times, misses, timer.Elapsed.TotalMinutes);
-            double wpm = KeyTrainStats.LastWPM;
-            int misscount = KeyTrainStats.LastMissCount;
-            wpmcounter.Text =   $"{wpm:0.00}";
-            misscounter.Text =  $"{misscount:0}";
-            ConditionalFormat(wpmgain, wpm - oldWPMAvg);
-            ConditionalFormat(missgain, misscount - oldMissAvg, inverted:true);
-            DrawLetterRatings();
+            UpdateHUD();
 
             Text = generator.NextText();
             Reset();
         }
         
+        void UpdateHUD()
+        {
+            double oldWPMAvg = KeyTrainStats.WPMLOG.DefaultIfEmpty(0).Average();
+            double oldMissAvg = KeyTrainStats.MISSLOG.DefaultIfEmpty(0).Average();
+            double wpm = KeyTrainStats.LastWPM;
+            int misscount = KeyTrainStats.LastMissCount;
+            wpmcounter.Text = $"{wpm:0.00}";
+            misscounter.Text = $"{misscount:0}";
+            ConditionalFormat(wpmgain, wpm - oldWPMAvg);
+            ConditionalFormat(missgain, misscount - oldMissAvg, inverted: true);
+            DrawLetterRatings();
+        }
+
         void ConditionalFormat(Run run, double value, bool inverted = false)
         {
             run.Text = $"{value:+0.00;-0.00;0}";
@@ -325,9 +344,9 @@ namespace WpfApp1
         void DrawLetterRatings()
         {
             letterRatings.Children.Clear(); //TODO: overwrite existing instead
-            DefaultDict<char,Color> lrs = KeyTrainStats.GetLetterRatings();
+            DefaultDict<char,Color> lrs = KeyTrainStats.GetLetterRatings(generator.alphabet);
             ratingsDrawn = lrs.Count;
-            foreach (char key in lrs.Keys.OrderBy(x => x))
+            foreach (char key in lrs.Keys.OrderBy(c => lrs[c] == RatingPalette.Last().color).ThenBy(c => c))
             {
                 new LetterRating(key, lrs[key]);
             }
