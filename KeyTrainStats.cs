@@ -152,17 +152,17 @@ namespace KeyTrain
         public int totalMissed => values.Select(x => x.missed).Sum();
         public int total => values.Select(x => x.total).Sum();
 
-        public double missratio { get; private set; }
+        public double errorRate { get; private set; }
         public MissData()
         {
             values = new List<(int, int)>();
-            missratio = 0;
+            errorRate = 0;
         }
 
         public void Add(int missed, int outOf)
         {
             values.Add((missed, outOf));
-            missratio = total > 0 ? (double)totalMissed / total : 0;
+            errorRate = total > 0 ? (double)totalMissed / total : 0;
         }
     }
 }

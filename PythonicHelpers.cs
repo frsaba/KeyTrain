@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Text;
 
 namespace Pythonic
@@ -9,6 +10,7 @@ namespace Pythonic
     //TODO: IEnumerable-ify
     static class ListHelpers
     {
+        //public static List<T> ConcatToList<T>(params object[] toConcat)
         public static List<T> ConcatToList<T>(params object[] toConcat)
         {
             List<T> result = new List<T>();
@@ -56,7 +58,6 @@ namespace Pythonic
                 set { base[key] = value; }
             }
         }
-
 
     }    
     

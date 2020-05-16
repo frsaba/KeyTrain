@@ -15,7 +15,7 @@ namespace KeyTrain
     /// </summary>
     abstract class LessonGenerator
     {
-        public const int defaultLessonLength = 100;
+        public const int defaultLessonLength = 150;
         public abstract string CurrentText { get; }
         public abstract string NextText();
         public abstract HashSet<Char> alphabet { get; protected set; }
@@ -100,7 +100,13 @@ namespace KeyTrain
                 else if (text.Length + nextWord.Length < chunkLength)
                 {
                     char pct = punctuation.ElementAtOrDefault(random.Next(punctuation.Count + 1)); //+1 causes invalid indexes so we still generate just spaces some of the time
-                    string sep = pct != '\0' || pct == text.Length ? pct + " " : " ";
+                    string sep = " ";
+                    if (pct != '\0' && pct != text.Last())
+                    {
+                        sep = pct + " ";
+                    }
+                        
+                       // = pct != '\0' || pct != text.Last() ? pct + " " : " ";
                     text = string.Join(sep, text, nextWord);
                 }
                 else
@@ -123,13 +129,13 @@ namespace KeyTrain
         /// Emphasizing whitespace means the generator will favor shorter words
         /// </summary>
         /// <param name="emphasized">Set of words to emphasize</param>
-        public void Emphasize(HashSet<char> emphasized)
+        public void Emphasize(HashSet<char> emphasized, int minSampleSize = 10)
         {
             var normal = emphasized.Where(c => char.IsLetterOrDigit(c));
-            var options = ConcatToList<List<string>>(
-                dict.Where(word => normal.All(e => word.ToUpper().Contains(e))).ToList(),
-                dict.Where(word => normal.Any(e => word.ToUpper().Contains(e))).ToList(),
-                dict ).First(d => d.Count > 10);
+            var options = ConcatToList<IEnumerable<string>>(
+                dict.Where(word => normal.All(e => word.ToUpper().Contains(e))),
+                dict.Where(word => normal.Any(e => word.ToUpper().Contains(e))),
+                dict ).First(d => d.Count() > minSampleSize).ToList();
             punctuation = emphasized.Where(c => char.IsPunctuation(c)).ToList();
             if(emphasized.Any(c => char.IsWhiteSpace(c)))
             {

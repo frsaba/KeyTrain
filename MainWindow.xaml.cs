@@ -24,8 +24,8 @@ namespace KeyTrainWPF
     {
         static string Text;
         //static LessonGenerator generator = new PresetTextLesson("Lorem ipsum dolor sit amet, " +
-        //    "consectetur adipiscing elit, sed do eiusmod tempor " +
-        //    "incididunt ut labore et dolore magna aliqua. ");
+            //"consectetur adipiscing elit, sed do eiusmod tempor " +
+            //"incididunt ut labore et dolore magna aliqua. ");
 
         static LessonGenerator generator = new RandomizedLesson();
         static HashSet<char> selectedChars = new HashSet<char>();
@@ -81,12 +81,13 @@ namespace KeyTrainWPF
                 t.Content = hasData ?   
                     $"Avg. speed: {WPM_From_ms(ct.average):0.00} WPM\n" +
                     $"Last speed: {WPM_From_ms(ct.values.Last()):0.00} WPM\n" +
-                    $"Miss ratio: {ms.missratio * 100:0.##}%" 
+                    $"Error rate: {ms.errorRate * 100:0.##}%" 
                     :"No data";
-
+                t.FontFamily = new FontFamily("Courier");
 
                 l.ToolTip = t;
                 ToolTipService.SetInitialShowDelay(l,750);
+                
                 grid.Children.Add(l);
             }
             public static void SetParent(UniformGrid grid, MainWindow window)
@@ -103,7 +104,7 @@ namespace KeyTrainWPF
 
 
         //TODO: move cursor blinking, at least move it outside the MainWindow constructor
-        static TimeSpan blinkTime = TimeSpan.FromMilliseconds(600);
+        
         Timer cursorBlinker;
         bool blinkState = true;
         void ResetCursorBlink()
@@ -112,14 +113,13 @@ namespace KeyTrainWPF
             cursorBlinker.Change(TimeSpan.Zero, blinkTime);
         }
         
-        
+
         public MainWindow()
         {
             InitializeComponent();
             Text = generator.CurrentText;
             LetterRating.SetParent(letterRatings, this);
-            cursorBlinker = new Timer((e) => 
-            {
+            cursorBlinker = new Timer((e) => {
                 Dispatcher.Invoke(() =>
                 {
                     if(Keyboard.FocusedElement == this)
@@ -155,7 +155,7 @@ namespace KeyTrainWPF
         {
             remaining.Text = Text.Substring(Cursor.position + 1);
             active.Text = Cursor.letter.ToString();
-            var ic = Main.Inlines;
+            var ic = Main.Inlines; 
 
             int mcount = misses.Count == 0 || misses.Last() != Cursor.position ? 
                 misses.Count : misses.Count - 1;
@@ -198,12 +198,14 @@ namespace KeyTrainWPF
                     UpdateMain();
                 }
                 return;
-            } 
+            }
 
+            Trace.WriteLine(e.Text);
             char c;
             try { 
                 c = e.Text[0];
                 if (e.Text.First() == '\\') { return; }
+                
             }
             catch { return; }
 
@@ -299,7 +301,7 @@ namespace KeyTrainWPF
             letterRatings.Children.Clear(); //TODO: overwrite existing instead
             DefaultDict<char,(Color color, bool active)> lrs = 
                 KeyTrainStats.GetLetterRatings(
-                    alwaysInclude:generator.alphabet.Union(LetterRating.toInclude).ToHashSet());
+                    alwaysInclude: generator.alphabet.Union(LetterRating.toInclude).ToHashSet());
             ratingsDrawn = lrs.Count;
             foreach (char key in lrs.Keys.
                 OrderBy(c => !lrs[c].active)
