@@ -65,8 +65,8 @@ namespace KeyTrainWPF
 
                 l.Foreground = hasData ? normalColor : inactiveColor;
                 l.BorderBrush = borderColor;
-                l.MouseEnter += (obj, mouseEvent) => { l.BorderBrush = highlightBorder; l.BorderThickness = new Thickness(2); };
-                l.MouseLeave += (obj, mouseEvent) => { l.BorderBrush = borderColor; l.BorderThickness =  new Thickness(1); };
+                l.MouseEnter += (obj, mouseEvent) => { l.BorderBrush = highlightBorder; l.BorderThickness = new Thickness(3); };
+                l.MouseLeave += (obj, mouseEvent) => { l.BorderBrush = borderColor; l.BorderThickness =  new Thickness(2); };
                 l.MouseUp +=    (obj, mouseEvent) => {
                     _ = isSelected ? selectedChars.Remove(letter) : selectedChars.Add(letter);
 
@@ -76,19 +76,19 @@ namespace KeyTrainWPF
                         window.Reset();
                     }
                 };
-                ToolTip t = new ToolTip();
                 var ct = stats.charTimes[letter];
                 var ms = stats.charMisses[letter];
 
-                t.Content = hasData ?   
-                    $"Avg. speed: {WPM_From_ms(ct.average):0.00} WPM\n" +
-                    $"Last speed: {WPM_From_ms(ct.values.Last()):0.00} WPM\n" +
-                    $"Error rate: {ms.errorRate * 100:0.##}%" 
-                    :"No data";
-                t.FontFamily = new FontFamily("Courier");
+                
 
-                l.ToolTip = t;
-                ToolTipService.SetInitialShowDelay(l,750);
+                l.ToolTip = new ToolTip() {
+                    Content = hasData ?
+                       $"Avg. speed: {WPM_From_ms(ct.average):0.00} WPM\n" +
+                       $"Last speed: {WPM_From_ms(ct.values.Last()):0.00} WPM\n" +
+                       $"Error rate: {ms.errorRate:p}"
+                       : "No data", 
+                    FontFamily = new FontFamily("Courier")};
+                ToolTipService.SetInitialShowDelay(l,stdTooltipDelay);
                 
                 grid.Children.Add(l);
             }
@@ -134,6 +134,8 @@ namespace KeyTrainWPF
                 blinkState = !blinkState;
             }, null, TimeSpan.Zero, blinkTime);
             stats = KeyTrainSerializer.Deserialize(profileLocation);
+            ToolTipService.SetInitialShowDelay(HUD_WPM, stdTooltipDelay);
+            ToolTipService.SetInitialShowDelay(HUD_misses, stdTooltipDelay);
 
 
             Reset();
@@ -305,10 +307,14 @@ namespace KeyTrainWPF
             int misscount = stats.LastMissCount;
             wpmcounter.Text = $"{wpm:0.00}";
             misscounter.Text = $"{misscount:0}";
+            HUD_WPM.ToolTip = new ToolTip() { 
+                Content = $"Average: {stats.WPMLOG.Average():0.##} WPM" };
+            HUD_misses.ToolTip = new ToolTip() {
+                Content = $"Overall error rate: {stats.charMisses.Average(x => x.Value.errorRate):p}" };
             ConditionalFormat(wpmgain, wpm - oldWPMAvg);
             ConditionalFormat(missgain, misscount - oldMissAvg, inverted: true);
             DrawLetterRatings();
-            RatingsChanged();
+            //RatingsChanged();
         }
 
         void DrawLetterRatings()

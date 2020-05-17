@@ -39,7 +39,7 @@ namespace KeyTrain
             public static (Color, Color) cursorFgColors = (Colors.Black, Colors.White);
 
             public const string spaceReplacement = "·"; //could be "␣" but it takes up 2 spaces which is a weird look)
-
+            public const int stdTooltipDelay = 750;
             public class SectionStyle
             {
                 public string startText;
@@ -78,7 +78,7 @@ namespace KeyTrain
                     l.Background = new SolidColorBrush(bgcolor);
                     l.FontWeight = FontWeights.Normal;
 
-                    l.BorderThickness = new Thickness(1);
+                    l.BorderThickness = new Thickness(2);
 
                     return l;
                 }

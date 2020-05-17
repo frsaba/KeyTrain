@@ -10,28 +10,34 @@
         PreviewKeyDown="Window_PreviewKeyDown"
         SizeChanged="Window_SizeChanged" Icon="/icon.png"
         Closing="Window_Closing">
-
+        
     <Grid x:Name="Wrapper" Background="#1f1f1f" 
           TextElement.Foreground="Silver" 
           TextElement.FontSize  ="33" 
           TextElement.FontFamily="Monaco"
           TextElement.FontWeight="Bold">
         <Grid x:Name="HUD" Background="#1f1f1f" VerticalAlignment="Top" Height="245" >
-            <TextBlock HorizontalAlignment="Left" Margin="115,15,0,0"  TextWrapping="Wrap" VerticalAlignment="Top" Height="60" RenderTransformOrigin="0,0">
-                <Run x:Name="wpmcounter" Text="0.00" TextElement.FontSize="44"/>
-                <Run Text="words per minute" TextElement.FontSize="15"/>
-            </TextBlock>
-            <TextBlock  HorizontalAlignment="Right" Margin="0,15,115,0"  TextWrapping="Wrap" VerticalAlignment="Top" Height="54" Width="190" RenderTransformOrigin="1,0" TextAlignment="Right">
-                <Run x:Name="misscounter" Text="0" TextElement.FontSize="44"/>
-                <Run Text="misses" TextElement.FontSize="15"/>
-            </TextBlock>
-            <TextBlock  HorizontalAlignment="Left" Margin="115,72,0,0"  TextWrapping="Wrap" VerticalAlignment="Top" Height="60" RenderTransformOrigin="0,0">
-                <Run Text="Gain:" TextElement.FontSize="13"/>
-                <Run x:Name="wpmgain" Text="0.00"  TextElement.FontSize="20"/><Run Text=" "/>
-            </TextBlock>
-            <TextBlock HorizontalAlignment="Right" Margin="0,72,106,0"  TextWrapping="Wrap" VerticalAlignment="Top" Height="60" RenderTransformOrigin="1,0" TextAlignment="Right" Width="165">
-                <Run Text="Gain:" TextElement.FontSize="13"/><Run Text=" "/>
-                <Run x:Name="missgain" Text="0" TextElement.FontSize="20"/></TextBlock>
+            <Grid x:Name="HUD_WPM" Margin="110,0,335,123" ToolTip="WPM:" RenderTransformOrigin="0,0">
+                <TextBlock HorizontalAlignment="Left" Margin="5,15,0,0"  TextWrapping="Wrap" VerticalAlignment="Top" Height="60" RenderTransformOrigin="0,0">
+                    <Run x:Name="wpmcounter" Text="0.00" TextElement.FontSize="44"/>
+                    <Run Text="words per minute" TextElement.FontSize="15"/>
+                </TextBlock>
+                <TextBlock  HorizontalAlignment="Left" Margin="5,72,0,0"  TextWrapping="Wrap" VerticalAlignment="Top" Height="60" RenderTransformOrigin="0,0">
+                    <Run Text="Gain:" TextElement.FontSize="13"/>
+                    <Run x:Name="wpmgain" Text="0.00"  TextElement.FontSize="20"/><Run Text=" "/>
+                </TextBlock>
+            </Grid>
+            <Grid x:Name="HUD_misses" Margin="452,0,105,135" ToolTip="Error rate:" RenderTransformOrigin="1,0">
+                <TextBlock  HorizontalAlignment="Right" Margin="0,15,5,0"  TextWrapping="Wrap" VerticalAlignment="Top" Height="54" Width="190" RenderTransformOrigin="1,0" TextAlignment="Right">
+                    <Run x:Name="misscounter" Text="0" TextElement.FontSize="44"/>
+                    <Run Text="misses" TextElement.FontSize="15"/>
+                </TextBlock>
+                <TextBlock HorizontalAlignment="Right" Margin="0,72,0,0"  TextWrapping="Wrap" VerticalAlignment="Top" Height="60" RenderTransformOrigin="1,0" TextAlignment="Right" Width="186">
+                    <Run Text="Gain:" TextElement.FontSize="13"/><Run Text=" "/>
+                    <Run x:Name="missgain" Text="0" TextElement.FontSize="20"/>
+                </TextBlock>
+            </Grid>
+
             <UniformGrid Name="letterRatings" Margin="50,110,54,0" Rows="3" Columns="16" HorizontalAlignment="Center" VerticalAlignment="Top" >
             </UniformGrid>
         </Grid>
