@@ -10,18 +10,18 @@ namespace Pythonic
     //TODO: IEnumerable-ify
     static class ListHelpers
     {
-        //public static List<T> ConcatToList<T>(params object[] toConcat)
         public static List<T> ConcatToList<T>(params object[] toConcat)
         {
             List<T> result = new List<T>();
             foreach (var obj in toConcat)
             {
-                if (obj.GetType() == typeof(List<T>))
-                {
-                    result.AddRange((List<T>)obj);
+                //if (obj.GetType() == typeof(List<T>))
+                //{
+                //    result.AddRange((List<T>)obj);
                     
-                }
-                else if (obj is IEnumerable<T>)
+                //}
+                //else if (obj is IEnumerable<T>)
+                if (obj is IEnumerable<T>)
                 {
                     result.AddRange(obj as IEnumerable<T>);
                 }

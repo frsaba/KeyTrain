@@ -15,7 +15,7 @@ namespace KeyTrain
     /// </summary>
     abstract class LessonGenerator
     {
-        public const int defaultLessonLength = 150;
+        public const int defaultLessonLength = 45;
         public abstract string CurrentText { get; }
         public abstract string NextText();
         public abstract HashSet<Char> alphabet { get; protected set; }
@@ -34,11 +34,7 @@ namespace KeyTrain
         {
             text = text.Trim();
 
-            alphabet = new HashSet<char>();
-            foreach (char ch in text.ToUpper())
-            {
-                alphabet.Add(ch);
-            }
+            alphabet = text.ToUpper().ToHashSet();
 
             queuedTexts = new List<string>();
 
@@ -84,6 +80,8 @@ namespace KeyTrain
         private int chunkLength;
         private List<char> punctuation = new List<char>();
         Random random;
+        const int minSampleSize = 10;
+
 
         public override string CurrentText => text.Trim();
         public override string NextText()
@@ -129,7 +127,7 @@ namespace KeyTrain
         /// Emphasizing whitespace means the generator will favor shorter words
         /// </summary>
         /// <param name="emphasized">Set of words to emphasize</param>
-        public void Emphasize(HashSet<char> emphasized, int minSampleSize = 10)
+        public void Emphasize(HashSet<char> emphasized, int minSampleSize = minSampleSize)
         {
             var normal = emphasized.Where(c => char.IsLetterOrDigit(c));
             var options = ConcatToList<IEnumerable<string>>(
