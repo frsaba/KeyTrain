@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Runtime.ExceptionServices;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace Pythonic
@@ -41,6 +42,7 @@ namespace Pythonic
         /// <summary>
         /// Dictionary that automatically inserts new keys with default values
         /// </summary>
+        [Serializable]
         public class DefaultDict<TKey, TValue> : Dictionary<TKey, TValue> where TValue : new()
         {
             public new TValue this[TKey key]
@@ -57,6 +59,17 @@ namespace Pythonic
                 }
                 set { base[key] = value; }
             }
+
+            protected DefaultDict(SerializationInfo information, StreamingContext context)
+                : base(information, context)
+            {
+
+            }
+            public DefaultDict()
+            {
+
+            }
+
         }
 
     }    

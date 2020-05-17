@@ -31,7 +31,9 @@ namespace KeyTrainWPF
         static HashSet<char> selectedChars = new HashSet<char>();
         SortedSet<int> misses = new SortedSet<int>();
         static Stopwatch timer;
-        
+        static KeyTrainStats stats = new KeyTrainStats();
+        static string profileLocation = "Profile/profile.kts";
+
         int ratingsDrawn = 0;
         static TimeSpan[] times;
 
@@ -75,8 +77,8 @@ namespace KeyTrainWPF
                     }
                 };
                 ToolTip t = new ToolTip();
-                var ct = KeyTrainStats.charTimes[letter];
-                var ms = KeyTrainStats.charMisses[letter];
+                var ct = stats.charTimes[letter];
+                var ms = stats.charMisses[letter];
 
                 t.Content = hasData ?   
                     $"Avg. speed: {WPM_From_ms(ct.average):0.00} WPM\n" +
@@ -130,8 +132,10 @@ namespace KeyTrainWPF
                     
                 });
                 blinkState = !blinkState;
-            }, null, TimeSpan.Zero, blinkTime); 
-            
+            }, null, TimeSpan.Zero, blinkTime);
+            stats = KeyTrainSerializer.Deserialize(profileLocation);
+
+
             Reset();
             UpdateHUD();
         }
@@ -200,7 +204,7 @@ namespace KeyTrainWPF
                 return;
             }
 
-            Trace.WriteLine(e.Text);
+            //Trace.WriteLine(e.Text);
             char c;
             try { 
                 c = e.Text[0];
@@ -261,12 +265,18 @@ namespace KeyTrainWPF
                 ratingsDrawn);
         }
 
-        //Reset with Ctrl+R
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
+            //Reset with Ctrl+R
             if(Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.R)
             {
                 Reset();
+            }
+
+            //Export with Ctrl+E 
+            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.E)
+            {
+                KeyTrainSerializer.Serialize(stats, profileLocation);
             }
         }
 
@@ -275,19 +285,24 @@ namespace KeyTrainWPF
         /// </summary>
         void NextText()
         {
-            KeyTrainStats.Enter(Text, times, misses, timer.Elapsed.TotalMinutes);
+            stats.Enter(Text, times, misses, timer.Elapsed.TotalMinutes);
             UpdateHUD();
 
             Text = generator.NextText();
             Reset();
         }
-        
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            KeyTrainSerializer.Serialize(stats, profileLocation);
+        }
+
         void UpdateHUD()
         {
-            double oldWPMAvg = KeyTrainStats.WPMLOG.DefaultIfEmpty(0).Average();
-            double oldMissAvg = KeyTrainStats.MISSLOG.DefaultIfEmpty(0).Average();
-            double wpm = KeyTrainStats.LastWPM;
-            int misscount = KeyTrainStats.LastMissCount;
+            double oldWPMAvg = stats.WPMLOG.DefaultIfEmpty(0).Average();
+            double oldMissAvg = stats.MISSLOG.DefaultIfEmpty(0).Average();
+            double wpm = stats.LastWPM;
+            int misscount = stats.LastMissCount;
             wpmcounter.Text = $"{wpm:0.00}";
             misscounter.Text = $"{misscount:0}";
             ConditionalFormat(wpmgain, wpm - oldWPMAvg);
@@ -300,7 +315,7 @@ namespace KeyTrainWPF
         {
             letterRatings.Children.Clear(); //TODO: overwrite existing instead
             DefaultDict<char,(Color color, bool active)> lrs = 
-                KeyTrainStats.GetLetterRatings(
+                stats.GetLetterRatings(
                     alwaysInclude: generator.alphabet.Union(LetterRating.toInclude).ToHashSet());
             ratingsDrawn = lrs.Count;
             foreach (char key in lrs.Keys.

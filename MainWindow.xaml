@@ -8,7 +8,8 @@
         Title="KeyTrain" Height="550"  Width="750" MinHeight="500" MinWidth="600"
         PreviewTextInput="Window_PreviewTextInput"
         PreviewKeyDown="Window_PreviewKeyDown"
-        SizeChanged="Window_SizeChanged" Icon="/icon.png">
+        SizeChanged="Window_SizeChanged" Icon="/icon.png"
+        Closing="Window_Closing">
 
     <Grid x:Name="Wrapper" Background="#1f1f1f" 
           TextElement.Foreground="Silver" 
