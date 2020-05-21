@@ -17,6 +17,7 @@ using System.Threading;
 using System.ComponentModel;
 using static KeyTrain.DarkStyles.MainWindow;
 using Microsoft.Win32;
+using System.IO;
 
 namespace KeyTrainWPF
 {
@@ -28,7 +29,8 @@ namespace KeyTrainWPF
         //"consectetur adipiscing elit, sed do eiusmod tempor " +
         //"incididunt ut labore et dolore magna aliqua. ");
 
-        static IEnumerable<string> generator_dictionaries = new string[] { "Resources/dictionaryHU.txt", "Resources/dictionaryEN.txt" };
+            //TODO: serialze dict file choice (general config file-class?)
+        static IEnumerable<string> generator_dictionaries = new string[] { "Resources/dictionaryEN.txt" };
         static LessonGenerator generator = RandomizedLesson.FromDictionaryFiles(generator_dictionaries);
         static HashSet<char> selectedChars = new HashSet<char>();
         SortedSet<int> misses = new SortedSet<int>();
@@ -127,7 +129,7 @@ namespace KeyTrainWPF
             cursorBlinker = new Timer((e) => {
                 Dispatcher.Invoke(() =>
                 {
-                    if(Keyboard.FocusedElement == this)
+                    if(Keyboard.FocusedElement == Main )
                     {
                         active.Background = new SolidColorBrush( blinkState ? cursorBgColors.Item1 : cursorBgColors.Item2);
                         active.Foreground = new SolidColorBrush( blinkState ? cursorFgColors.Item1 : cursorFgColors.Item2);
@@ -326,9 +328,11 @@ namespace KeyTrainWPF
             {
                 Title = "Choose dictionary file(s)",
                 Multiselect = true,
-                InitialDirectory = @"D:\C#\keybrWPF\KeyTrain\bin\Debug\netcoreapp3.1\Resources"
+                InitialDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Resources"),
+                Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*"
             };
            
+            
             if(dialog.ShowDialog() == true){
                 if (dialog.FileNames.ToHashSet().SetEquals(generator_dictionaries)) {
                     Trace.WriteLine("Dictionaries stayed the same");
