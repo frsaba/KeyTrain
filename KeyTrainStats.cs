@@ -82,6 +82,7 @@ namespace KeyTrain
         {
             alwaysInclude ??= new HashSet<char>();
 
+
             DefaultDict<char, (Color, bool)> result = new DefaultDict<char, (Color, bool)>();
             double avgAllLetters = LPM_From_WPM(WPMLOG.DefaultIfEmpty(0).Average());
             foreach (char c in charTimes.Keys.Union(alwaysInclude))
@@ -90,12 +91,15 @@ namespace KeyTrain
 
                 double delta = avgThisLetter - avgAllLetters;
                 bool hadData = double.IsFinite(avgThisLetter);
-                for (int i = 0; i < RatingPalette.Count; i++)
+                if (hadData || alwaysInclude.Contains(c))
                 {
-                    if(delta <= RatingPalette[i].delta)
+                    for (int i = 0; i < RatingPalette.Count; i++)
                     {
-                        result[c] = (RatingPalette[i].color, hadData);
-                        break;
+                        if (delta <= RatingPalette[i].delta)
+                        {
+                            result[c] = (RatingPalette[i].color, hadData);
+                            break;
+                        }
                     }
                 }
 

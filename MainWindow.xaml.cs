@@ -16,6 +16,7 @@ using System.Dynamic;
 using System.Threading;
 using System.ComponentModel;
 using static KeyTrain.DarkStyles.MainWindow;
+using Microsoft.Win32;
 
 namespace KeyTrainWPF
 {
@@ -24,10 +25,11 @@ namespace KeyTrainWPF
     {
         static string Text;
         //static LessonGenerator generator = new PresetTextLesson("Lorem ipsum dolor sit amet, " +
-            //"consectetur adipiscing elit, sed do eiusmod tempor " +
-            //"incididunt ut labore et dolore magna aliqua. ");
+        //"consectetur adipiscing elit, sed do eiusmod tempor " +
+        //"incididunt ut labore et dolore magna aliqua. ");
 
-        static LessonGenerator generator = new RandomizedLesson();
+        static IEnumerable<string> generator_dictionaries = new string[] { "Resources/dictionaryHU.txt", "Resources/dictionaryEN.txt" };
+        static LessonGenerator generator = RandomizedLesson.FromDictionaryFiles(generator_dictionaries);
         static HashSet<char> selectedChars = new HashSet<char>();
         SortedSet<int> misses = new SortedSet<int>();
         static Stopwatch timer;
@@ -119,6 +121,7 @@ namespace KeyTrainWPF
         public MainWindow()
         {
             InitializeComponent();
+            Focusable = true;
             Text = generator.CurrentText;
             LetterRating.SetParent(letterRatings, this);
             cursorBlinker = new Timer((e) => {
@@ -152,7 +155,6 @@ namespace KeyTrainWPF
             }
         }
 
-        
         //TODO: manual overflow. builtin often linebreaks on inline borders which is distracting
         /// <summary>
         /// Formats the main textblock's inlines based on the current state. Mainly concerned with highlighting the errors in red
@@ -189,6 +191,7 @@ namespace KeyTrainWPF
                 if (i % 2 == 1) //Are we drawing an error?
                     r.Text = r.Text.Replace(" ", spaceReplacement);
             }
+
         }
 
         //TODO: ignore newline/control characters
@@ -240,6 +243,107 @@ namespace KeyTrainWPF
             UpdateMain();
 
         }
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            //Reset with Ctrl+R
+            if(Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.R)
+            {
+                Reset();
+            }
+
+            //Export with Ctrl+E 
+            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.E)
+            {
+                KeyTrainSerializer.Serialize(stats, profileLocation);
+            }
+        }
+
+        /// <summary>
+        /// Advances to the next text chunk
+        /// </summary>
+        void NextText()
+        {
+            stats.Enter(Text, times, misses, timer.Elapsed.TotalMinutes);
+            UpdateHUD();
+
+            Text = generator.NextText();
+            Reset();
+        }
+        void Reset(bool update = true)
+        {
+            typed.Text = ""; mistakes.Text = ""; active.Text = ""; remaining.Text = Text;
+            misses.Clear();
+            timer = new Stopwatch();
+            times = new TimeSpan[Text.Length];
+            Cursor.position = 0;
+            List<Inline> inlines = new List<Inline>();
+            inlines.AddRange(ConcatToList<Run>(typed, mistakes, active, remaining));
+
+            OverwriteMainIC(inlines);
+            Main.Focus(); //Clicking buttons focuses them which makes Main unresponsive, forever.
+            if (update) UpdateMain();
+        }
+
+        void UpdateHUD()
+        {
+            double oldWPMAvg = stats.WPMLOG.DefaultIfEmpty(0).Average();
+            double oldMissAvg = stats.MISSLOG.DefaultIfEmpty(0).Average();
+            double wpm = stats.LastWPM;
+            int misscount = stats.LastMissCount;
+            wpmcounter.Text = $"{wpm:0.00}";
+            misscounter.Text = $"{misscount:0}";
+            HUD_WPM.ToolTip = new ToolTip() { 
+                Content = $"Average: {stats.WPMLOG.DefaultIfEmpty(0).Average():0.##} WPM" };
+            HUD_misses.ToolTip = new ToolTip() {
+                Content = $"Overall error rate: {(stats.charMisses.Count > 0 ? stats.charMisses.Average(x => x.Value.errorRate) : 0):p}" };
+            ConditionalFormat(wpmgain, wpm - oldWPMAvg);
+            ConditionalFormat(missgain, misscount - oldMissAvg, inverted: true);
+            DrawLetterRatings();
+            //RatingsChanged();
+        }
+        void DrawLetterRatings()
+        {
+            letterRatings.Children.Clear(); //TODO: overwrite existing instead
+            DefaultDict<char,(Color color, bool active)> lrs = stats.GetLetterRatings(
+                    alwaysInclude: generator.alphabet.Union(LetterRating.toInclude).ToHashSet());
+            ratingsDrawn = lrs.Count;
+            var keys = lrs.Keys.
+                OrderBy(c => !lrs[c].active)
+                .ThenBy(c => !char.IsLetterOrDigit(c))
+                .ThenBy(c => c);
+
+            foreach (char k in keys)
+            {
+                new LetterRating(k, lrs[k].color, lrs[k].active);
+            }
+            RatingsChanged();
+        }
+
+
+        private void dictFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog
+            {
+                Title = "Choose dictionary file(s)",
+                Multiselect = true,
+                InitialDirectory = @"D:\C#\keybrWPF\KeyTrain\bin\Debug\netcoreapp3.1\Resources"
+            };
+           
+            if(dialog.ShowDialog() == true){
+                if (dialog.FileNames.ToHashSet().SetEquals(generator_dictionaries)) {
+                    Trace.WriteLine("Dictionaries stayed the same");
+                }
+                else
+                {
+                    generator_dictionaries = dialog.FileNames;
+                    generator = RandomizedLesson.FromDictionaryFiles(generator_dictionaries);
+                    Text = generator.NextText();
+                    Reset();
+                    UpdateHUD();
+                }
+            }
+            
+        }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e) 
         {
@@ -267,86 +371,24 @@ namespace KeyTrainWPF
                 ratingsDrawn);
         }
 
-        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            //Reset with Ctrl+R
-            if(Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.R)
-            {
-                Reset();
-            }
-
-            //Export with Ctrl+E 
-            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.E)
-            {
-                KeyTrainSerializer.Serialize(stats, profileLocation);
-            }
-        }
-
-        /// <summary>
-        /// Advances to the next text chunk
-        /// </summary>
-        void NextText()
-        {
-            stats.Enter(Text, times, misses, timer.Elapsed.TotalMinutes);
-            UpdateHUD();
-
-            Text = generator.NextText();
-            Reset();
-        }
-
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             KeyTrainSerializer.Serialize(stats, profileLocation);
+            cursorBlinker.Dispose();
         }
 
-        void UpdateHUD()
+        private void Window_Deactivated(object sender, EventArgs e)
         {
-            double oldWPMAvg = stats.WPMLOG.DefaultIfEmpty(0).Average();
-            double oldMissAvg = stats.MISSLOG.DefaultIfEmpty(0).Average();
-            double wpm = stats.LastWPM;
-            int misscount = stats.LastMissCount;
-            wpmcounter.Text = $"{wpm:0.00}";
-            misscounter.Text = $"{misscount:0}";
-            HUD_WPM.ToolTip = new ToolTip() { 
-                Content = $"Average: {stats.WPMLOG.DefaultIfEmpty(0).Average():0.##} WPM" };
-            HUD_misses.ToolTip = new ToolTip() {
-                Content = $"Overall error rate: {(stats.charMisses.Count > 0 ? stats.charMisses.Average(x => x.Value.errorRate) : 0):p}" };
-            ConditionalFormat(wpmgain, wpm - oldWPMAvg);
-            ConditionalFormat(missgain, misscount - oldMissAvg, inverted: true);
-            DrawLetterRatings();
-            //RatingsChanged();
+            HUD.Opacity = 0.75;
+            Main.Opacity = 0.25;
         }
 
-        void DrawLetterRatings()
+        private void Window_Activated(object sender, EventArgs e)
         {
-            letterRatings.Children.Clear(); //TODO: overwrite existing instead
-            DefaultDict<char,(Color color, bool active)> lrs = 
-                stats.GetLetterRatings(
-                    alwaysInclude: generator.alphabet.Union(LetterRating.toInclude).ToHashSet());
-            ratingsDrawn = lrs.Count;
-            foreach (char key in lrs.Keys.
-                OrderBy(c => !lrs[c].active)
-                .ThenBy(c => !char.IsLetterOrDigit(c))
-                .ThenBy(c => c))
-            {
-                new LetterRating(key, lrs[key].color, lrs[key].active);
-            }
-            RatingsChanged(Width);
+            HUD.Opacity = 1;
+            Main.Opacity = 1;
         }
 
-        void Reset(bool update = true)
-        {
-            typed.Text = ""; mistakes.Text = ""; active.Text = ""; remaining.Text = Text;
-            misses.Clear();
-            timer = new Stopwatch();
-            times = new TimeSpan[Text.Length];
-            Cursor.position = 0;
-            List<Inline> inlines = new List<Inline>();
-            inlines.AddRange(ConcatToList<Run>(typed, mistakes, active, remaining));
-
-            OverwriteMainIC(inlines);
-            if(update) UpdateMain();
-        }
 
         
     }
