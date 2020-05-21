@@ -56,9 +56,9 @@ namespace KeyTrain
 
             public class LetterRatingStyle
             {
-                public static int width {get; private set;}= 35;
+                public static int width {get; private set;}= 37;
                 public static int height {get; private set;} = 40;
-                public static int fontSize {get; private set;} = 24;
+                public static int fontSize {get; private set;} = 25;
                 protected static SolidColorBrush 
                     normalColor = new SolidColorBrush(Colors.Black),
                     inactiveColor = new SolidColorBrush(Colors.Gray),

@@ -308,9 +308,9 @@ namespace KeyTrainWPF
             wpmcounter.Text = $"{wpm:0.00}";
             misscounter.Text = $"{misscount:0}";
             HUD_WPM.ToolTip = new ToolTip() { 
-                Content = $"Average: {stats.WPMLOG.Average():0.##} WPM" };
+                Content = $"Average: {stats.WPMLOG.DefaultIfEmpty(0).Average():0.##} WPM" };
             HUD_misses.ToolTip = new ToolTip() {
-                Content = $"Overall error rate: {stats.charMisses.Average(x => x.Value.errorRate):p}" };
+                Content = $"Overall error rate: {(stats.charMisses.Count > 0 ? stats.charMisses.Average(x => x.Value.errorRate) : 0):p}" };
             ConditionalFormat(wpmgain, wpm - oldWPMAvg);
             ConditionalFormat(missgain, misscount - oldMissAvg, inverted: true);
             DrawLetterRatings();

@@ -135,8 +135,13 @@ namespace KeyTrain
                 Trace.WriteLine("No profile found");
                 return new KeyTrainStats();
             }
+            
 
             FileStream stream = File.OpenRead(path);
+            if(stream.Length == 0){
+                Trace.WriteLine("Empty profile");
+                return new KeyTrainStats();
+            }
             BinaryFormatter bf = new BinaryFormatter();
             KeyTrainStats kts = (KeyTrainStats)bf.Deserialize(stream);
             stream.Close();
