@@ -29,9 +29,12 @@ namespace KeyTrainWPF
         //"consectetur adipiscing elit, sed do eiusmod tempor " +
         //"incididunt ut labore et dolore magna aliqua. ");
 
-            //TODO: serialze dict file choice (general config file-class?)
-        static IEnumerable<string> generator_dictionaries = new string[] { "Resources/dictionaryEN.txt" };
-        static LessonGenerator generator = RandomizedLesson.FromDictionaryFiles(generator_dictionaries);
+
+        //TODO: serialize dict file choice (general config file-class?)
+
+        static ChainMap<string,dynamic> CFG = ConfigManager.Settings;
+
+        static LessonGenerator generator = new RandomizedLesson();
         static HashSet<char> selectedChars = new HashSet<char>();
         SortedSet<int> misses = new SortedSet<int>();
         static Stopwatch timer;
@@ -294,10 +297,17 @@ namespace KeyTrainWPF
             int misscount = stats.LastMissCount;
             wpmcounter.Text = $"{wpm:0.00}";
             misscounter.Text = $"{misscount:0}";
-            HUD_WPM.ToolTip = new ToolTip() { 
-                Content = $"Average: {stats.WPMLOG.DefaultIfEmpty(0).Average():0.##} WPM" };
-            HUD_misses.ToolTip = new ToolTip() {
-                Content = $"Overall error rate: {(stats.charMisses.Count > 0 ? stats.charMisses.Average(x => x.Value.errorRate) : 0):p}" };
+            var dict = new Dictionary<string,int>();
+            dict.ToDefaultDict();
+            HUD_WPM.ToolTip = new ToolTip()
+            {
+                Content = stats.WPMLOG.Count > 0 ? (
+                $"Average: {stats.WPMLOG.DefaultIfEmpty(0).Average():0.##} WPM\n" +
+                $"Fastest speed: {stats.WPMLOG.Max():0.##} WPM") : "No data"
+            };
+            HUD_misses.ToolTip = new ToolTip(){ 
+                Content = $"Overall error rate: {(stats.charMisses.Count > 0 ? stats.charMisses.Average(x => x.Value.errorRate) : 0):p}\n" +
+                $"Average misses per lesson: {(stats.MISSLOG.Count > 0 ? stats.MISSLOG.Average() : 0):0.##}" };
             ConditionalFormat(wpmgain, wpm - oldWPMAvg);
             ConditionalFormat(missgain, misscount - oldMissAvg, inverted: true);
             DrawLetterRatings();
@@ -334,17 +344,10 @@ namespace KeyTrainWPF
            
             
             if(dialog.ShowDialog() == true){
-                if (dialog.FileNames.ToHashSet().SetEquals(generator_dictionaries)) {
-                    Trace.WriteLine("Dictionaries stayed the same");
-                }
-                else
-                {
-                    generator_dictionaries = dialog.FileNames;
-                    generator = RandomizedLesson.FromDictionaryFiles(generator_dictionaries);
-                    Text = generator.NextText();
-                    Reset();
-                    UpdateHUD();
-                }
+                generator = RandomizedLesson.FromDictionaryFiles(dialog.FileNames);
+                Text = generator.NextText();
+                Reset();
+                UpdateHUD();
             }
             
         }

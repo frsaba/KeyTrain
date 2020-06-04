@@ -61,9 +61,9 @@ namespace KeyTrain
             foreach (char k in charTimes.Keys)
             {
                 charMisses[k].Add(counts[k].misses, counts[k].total);
-                Trace.WriteLine(
-                    $"{k} - AVGSPEED: {charTimes[k].average:0.00} " +
-                    $"MISSES: {string.Join(';', charMisses[k].values.Select(x => $"{x.missed}/{x.total}").ToList())} ");
+                //Trace.WriteLine(
+                //    $"{k} - AVGSPEED: {charTimes[k].average:0.00} " +
+                //    $"MISSES: {string.Join(';', charMisses[k].values.Select(x => $"{x.missed}/{x.total}").ToList())} ");
                     
                 //Trace.WriteLine($"{k} - AVGSPEED: {charTimes[k].average:0.00} values: {string.Join(';', charTimes[k].values)} ");
             }

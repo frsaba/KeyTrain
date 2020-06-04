@@ -11,12 +11,13 @@ using static Pythonic.ListHelpers;
 
 namespace KeyTrain
 {
+    
     /// <summary>
     /// Abstract class for generating keyboard lessons
     /// </summary>
     abstract class LessonGenerator
     {
-        public const int defaultLessonLength = 45;
+        protected static int defaultLessonLength => ConfigManager.Settings["lessonLength"];
         public abstract string CurrentText { get; }
         public abstract string NextText();
         public abstract HashSet<Char> alphabet { get; protected set; }
@@ -31,7 +32,7 @@ namespace KeyTrain
         public override string CurrentText => queuedTexts[currTextid % queuedTexts.Count].Trim();
         public override HashSet<Char> alphabet{ get; protected set;}
 
-        public PresetTextLesson(string text, int maxLength = defaultLessonLength)
+        public PresetTextLesson(string text, int maxLength = 0)
         {
             text = text.Trim();
 
@@ -88,7 +89,7 @@ namespace KeyTrain
         /// </summary>
         /// <param name="dirty"></param>
         /// <returns></returns>
-        private List<string> Sanitize(List<string> dirty)
+        private List<string> Sanitize(IEnumerable<string> dirty)
         {
             return dirty.Where(w => w.Length > 2).ToList();
         }
@@ -155,8 +156,10 @@ namespace KeyTrain
 
         /// <param name="dictonary">List of words the generator can use</param>
         /// <param name="maxlength">Exclusive maximum length of each generated text chunk</param>
-        public RandomizedLesson(List<string> dictonary, int maxlength = defaultLessonLength)
+        public RandomizedLesson(List<string> dictonary, int maxlength = 0)
         {
+            if (maxlength == 0) maxlength = defaultLessonLength;
+
             dict = Sanitize(dictonary);
             chunkLength = maxlength;
             random = new Random();
@@ -169,14 +172,15 @@ namespace KeyTrain
 
         /// <param name="dictionaryFile">Path to text file that contains all the words the generator can use (1 word/phrase per line)</param>
         /// <param name="maxlength">Exclusive maximum length of each generated text chunk</param>
-        public RandomizedLesson(string dictionaryFile = "Resources/dictionaryHU.txt", int maxlength = defaultLessonLength) :
+        public RandomizedLesson(string dictionaryFile = "Resources/dictionaryEN.txt", int maxlength = 0) :
             this(File.ReadAllLines(dictionaryFile).ToList(), maxlength) {}
 
         /// <param name="dictionaryFiles">List of text files that contain all the words the generator can use (1 word/phrase per line)</param>
         /// <param name="maxlength">Exclusive maximum length of each generated text chunk</param>
         /// 
-        public static RandomizedLesson FromDictionaryFiles(IEnumerable<string> dictionaryFiles, int maxlength = defaultLessonLength)
+        public static RandomizedLesson FromDictionaryFiles(IEnumerable<string> dictionaryFiles, int maxlength = 0)
         {
+            if (maxlength == 0) maxlength = defaultLessonLength;
             return new RandomizedLesson(dictionaryFiles.SelectMany(f => File.ReadAllLines(f)).ToList(), maxlength);
         }
 
