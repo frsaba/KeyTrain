@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Documents;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace KeyTrain
 {
@@ -77,6 +78,7 @@ namespace KeyTrain
                     l.FontWeight = FontWeights.DemiBold;
                     l.Background = new SolidColorBrush(bgcolor);
                     l.FontWeight = FontWeights.Normal;
+                    l.Cursor = Cursors.Hand;
 
                     l.BorderThickness = new Thickness(2);
 

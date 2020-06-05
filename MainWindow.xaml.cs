@@ -44,7 +44,7 @@ namespace KeyTrainWPF
         int ratingsDrawn = 0;
         static TimeSpan[] times;
 
-        new static class Cursor
+        static class Pointer
         {
             public static int position = 0;
             public static char letter => Text[position];
@@ -166,11 +166,11 @@ namespace KeyTrainWPF
         /// </summary>
         void UpdateMain()
         {
-            remaining.Text = Text.Substring(Cursor.position + 1);
-            active.Text = Cursor.letter.ToString();
+            remaining.Text = Text.Substring(Pointer.position + 1);
+            active.Text = Pointer.letter.ToString();
             var ic = Main.Inlines; 
 
-            int mcount = misses.Count == 0 || misses.Last() != Cursor.position ? 
+            int mcount = misses.Count == 0 || misses.Last() != Pointer.position ? 
                 misses.Count : misses.Count - 1;
 
             int typed_il_count = 2 * mcount + 1;
@@ -184,7 +184,7 @@ namespace KeyTrainWPF
                 OverwriteMainIC(il);
             }
 
-            var mborders = new List<int>() {0, Cursor.position};
+            var mborders = new List<int>() {0, Pointer.position};
             mborders.InsertRange(1, misses.Take(mcount).SelectMany(
                 x => new int[] { x, x + 1 } ));
 
@@ -225,23 +225,27 @@ namespace KeyTrainWPF
 
             //Debug.Content = $"Key: {c}, Correct: {Cursor.letter}";
 
+            //Hide cursor
+            Main.Cursor = Cursors.None;
+            lastMousePos = Mouse.GetPosition(Wrapper);
+
             //Correct letter
-            if (c == Cursor.letter && string.IsNullOrEmpty(mistakes.Text))
+            if (c == Pointer.letter && string.IsNullOrEmpty(mistakes.Text))
             {
                 typed.Text += c;
                 timer.Stop();
-                times[Cursor.position] = timer.Elapsed;
+                times[Pointer.position] = timer.Elapsed;
                 ResetCursorBlink();
-                Cursor.position++;
+                Pointer.position++;
             }
             else //Miss
             {
-                misses.Add(Cursor.position);      
+                misses.Add(Pointer.position);      
                 mistakes.Text += c;
             }
 
             timer.Start();
-            if (Cursor.position == Text.Length)
+            if (Pointer.position == Text.Length)
             {
                 NextText();
             }
@@ -280,7 +284,7 @@ namespace KeyTrainWPF
             misses.Clear();
             timer = new Stopwatch();
             times = new TimeSpan[Text.Length];
-            Cursor.position = 0;
+            Pointer.position = 0;
             List<Inline> inlines = new List<Inline>();
             inlines.AddRange(ConcatToList<Run>(typed, mistakes, active, remaining));
 
@@ -376,6 +380,18 @@ namespace KeyTrainWPF
             letterRatings.Columns = (int)Math.Min(
             (windowWidth - margins) / (LetterRating.width + spacing),
                 ratingsDrawn);
+        }
+
+        Point lastMousePos;
+        private void Window_MouseMove(object sender, MouseEventArgs e)
+        {
+            Point mousePos = e.GetPosition(Wrapper);
+
+            if((lastMousePos - mousePos).Length > 2)
+            {
+                //Unhide cursor
+                Main.Cursor = Cursors.Arrow;
+            }
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)

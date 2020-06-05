@@ -8,6 +8,7 @@
         Title="KeyTrain" Height="550"  Width="826" MinHeight="500" MinWidth="600"
         PreviewTextInput="Window_PreviewTextInput"
         PreviewKeyDown="Window_PreviewKeyDown"
+        MouseMove="Window_MouseMove"
         SizeChanged="Window_SizeChanged" Icon="/icon.png"
         Closing="Window_Closing"
         Deactivated="Window_Deactivated"
