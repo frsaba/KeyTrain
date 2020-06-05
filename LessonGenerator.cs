@@ -157,7 +157,7 @@ namespace KeyTrain
 
         /// <param name="dictonary">List of words the generator can use</param>
         /// <param name="maxLength">Exclusive maximum length of each generated text chunk</param>
-        public RandomizedLesson(List<string> dictonary, int maxLength = 0)
+        public RandomizedLesson(IEnumerable<string> dictonary, int maxLength = 0)
         {
             if (maxLength == 0) maxLength = defaultLessonLength;
 
@@ -183,6 +183,11 @@ namespace KeyTrain
         {
             if (maxlength == 0) maxlength = defaultLessonLength;
             return new RandomizedLesson(dictionaryFiles.SelectMany(f => File.ReadAllLines(f)).ToList(), maxlength);
+        }
+        public static RandomizedLesson FromDictionaryFiles(string dictionaryFile, int maxlength = 0)
+        {
+            if (maxlength == 0) maxlength = defaultLessonLength;
+            return new RandomizedLesson(File.ReadAllLines(dictionaryFile).ToList(), maxlength);
         }
 
     }

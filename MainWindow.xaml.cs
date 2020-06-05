@@ -34,12 +34,11 @@ namespace KeyTrainWPF
 
         static ChainMap<string,dynamic> CFG = ConfigManager.Settings;
 
-        static LessonGenerator generator = new RandomizedLesson();
+        static LessonGenerator generator;
         static HashSet<char> selectedChars = new HashSet<char>();
         SortedSet<int> misses = new SortedSet<int>();
         static Stopwatch timer;
         static KeyTrainStats stats = new KeyTrainStats();
-        static string profileLocation = "Profile/profile.kts";
 
         int ratingsDrawn = 0;
         static TimeSpan[] times;
@@ -126,7 +125,9 @@ namespace KeyTrainWPF
         public MainWindow()
         {
             InitializeComponent();
+            ConfigManager.ReadConfigFile();
             Focusable = true;
+            generator = RandomizedLesson.FromDictionaryFiles(CFG["dictionaryPath"]);
             Text = generator.CurrentText;
             LetterRating.SetParent(letterRatings, this);
             cursorBlinker = new Timer((e) => {
@@ -141,7 +142,8 @@ namespace KeyTrainWPF
                 });
                 blinkState = !blinkState;
             }, null, TimeSpan.Zero, blinkTime);
-            stats = KeyTrainSerializer.Deserialize(profileLocation);
+            
+            stats = KeyTrainSerializer.Deserialize(ConfigManager.profilePath);
             ToolTipService.SetInitialShowDelay(HUD_WPM, stdTooltipDelay);
             ToolTipService.SetInitialShowDelay(HUD_misses, stdTooltipDelay);
 
@@ -271,7 +273,8 @@ namespace KeyTrainWPF
             //Export with Ctrl+E 
             if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.E)
             {
-                KeyTrainSerializer.Serialize(stats, profileLocation);
+                KeyTrainSerializer.Serialize(stats, ConfigManager.profilePath);
+                ConfigManager.WriteConfigFile();
             }
         }
 
@@ -355,8 +358,10 @@ namespace KeyTrainWPF
             };
            
             
-            if(dialog.ShowDialog() == true){
-                generator = RandomizedLesson.FromDictionaryFiles(dialog.FileNames);
+            if(dialog.ShowDialog() == true)
+            {
+                ConfigManager.dictionaryPaths = dialog.FileNames;
+                generator = RandomizedLesson.FromDictionaryFiles(ConfigManager.dictionaryPaths);
                 Text = generator.NextText();
                 Reset();
                 UpdateHUD();
@@ -404,7 +409,7 @@ namespace KeyTrainWPF
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            KeyTrainSerializer.Serialize(stats, profileLocation);
+            KeyTrainSerializer.Serialize(stats, CFG["profilePath"]);
             cursorBlinker.Dispose();
         }
 

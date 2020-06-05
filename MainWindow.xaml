@@ -12,7 +12,7 @@
         SizeChanged="Window_SizeChanged" Icon="/icon.png"
         Closing="Window_Closing"
         Deactivated="Window_Deactivated"
-        Activated="Window_Activated">
+        Activated="Window_Activated" SizeToContent="Height">
 
     <Grid x:Name="Wrapper" Background="#1f1f1f" 
           TextElement.Foreground="Silver" 
@@ -44,8 +44,8 @@
             <UniformGrid Name="letterRatings" Margin="50,110,54,0" Rows="3" Columns="16" HorizontalAlignment="Center" VerticalAlignment="Top" >
             </UniformGrid>
         </Grid>
-        <TextBlock x:Name="Main" Focusable="True" Foreground="White" Padding="40,40,40,40" HorizontalAlignment="Center" TextWrapping="WrapWithOverflow"  VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" 
-                   TextAlignment="Left" Height="234" Margin="0,180,0,0" Grid.ColumnSpan="2"  
+        <TextBlock x:Name="Main" Focusable="True" Foreground="White" Padding="40,40,40,40" HorizontalAlignment="Stretch" TextWrapping="WrapWithOverflow"  VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" 
+                   TextAlignment="Left" Height="234" Margin="15,180,15,0" Grid.ColumnSpan="2"  
                    Text="dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore" MinWidth="200" LineHeight="45"/>
         <Button x:Name="dictFileButton" Content="Dict" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Cursor="Hand" FontSize="20" FontWeight="Bold" FontStyle="Normal" Padding="5,5,5,5" RenderTransformOrigin="1,1" Click="dictFileButton_Click"/>
     </Grid>
