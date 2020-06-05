@@ -39,7 +39,11 @@ namespace KeyTrain
             public static (Color, Color) cursorBgColors = (Colors.Silver, wrapperBackground);
             public static (Color, Color) cursorFgColors = (Colors.Black, Colors.White);
 
-            public const string spaceReplacement = "·"; //could be "␣" but it takes up 2 spaces which is a weird look)
+            public const string ZWSP = "\u200b";                //Zero width space
+            public const string spaceReplacement = "·" + ZWSP;  //could be "␣" but it takes up 2 spaces which is a weird look)
+                                                                //ZWSP is appended so Wrap can consider this a linebreak opportunity
+            public const string wordJoiner = "\u2060";
+            //public const string wordJoiner = "\u2060"+ "|" + "\u2060";//"\u202F";//"\uFEFF"; 
             public const int stdTooltipDelay = 750;
             public class SectionStyle
             {
@@ -110,12 +114,13 @@ namespace KeyTrain
             /// Creates a new Run with the given SectionStyle and text
             /// </summary>
             /// <returns></returns>
-            public static Run RunWithStyle(SectionStyle style = null, string text = "")
+            public static Run RunWithStyle(SectionStyle style = null, string text = "=")
             {
                 style ??= new SectionStyle();
                 Run r = new Run(text);
                 r.Foreground = new SolidColorBrush(style.fg);
                 r.Background = new SolidColorBrush(style.bg);
+                r.Text = text;
                 return r;
             }
 

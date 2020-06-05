@@ -13,7 +13,7 @@ namespace KeyTrain
     public static class ConfigManager
     {
         static Dictionary<string, dynamic> defaultSettings = new Dictionary<string, dynamic>(){
-            {"lessonLength", 100 },
+            {"lessonLength", 50 },
             {"profilePath", "Profile/profile.kts" }
 
         };

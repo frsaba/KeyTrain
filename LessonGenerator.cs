@@ -34,6 +34,7 @@ namespace KeyTrain
 
         public PresetTextLesson(string text, int maxLength = 0)
         {
+            if (maxLength == 0) maxLength = defaultLessonLength;
             text = text.Trim();
 
             alphabet = text.ToUpper().ToHashSet();
@@ -107,7 +108,7 @@ namespace KeyTrain
                 {
                     text = nextWord;
                 }
-                else if (text.Length + nextWord.Length < chunkLength)
+                else if (text.Length + nextWord.Length + 3 < chunkLength)
                 {
                     char pct = punctuation.ElementAtOrDefault(random.Next(punctuation.Count + 1)); //+1 causes invalid indexes so we still generate just spaces some of the time
                     string sep = " ";
@@ -155,13 +156,13 @@ namespace KeyTrain
         }
 
         /// <param name="dictonary">List of words the generator can use</param>
-        /// <param name="maxlength">Exclusive maximum length of each generated text chunk</param>
-        public RandomizedLesson(List<string> dictonary, int maxlength = 0)
+        /// <param name="maxLength">Exclusive maximum length of each generated text chunk</param>
+        public RandomizedLesson(List<string> dictonary, int maxLength = 0)
         {
-            if (maxlength == 0) maxlength = defaultLessonLength;
+            if (maxLength == 0) maxLength = defaultLessonLength;
 
             dict = Sanitize(dictonary);
-            chunkLength = maxlength;
+            chunkLength = maxLength;
             random = new Random();
             shuffled = dict.OrderBy(x=> random.Next()).ToList();
 

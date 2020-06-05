@@ -106,8 +106,8 @@ namespace KeyTrainWPF
             }
         }
 
-        static Run typed  = RunWithStyle(typedStyle),
-                mistakes  = RunWithStyle(mistakesStyle),
+        static Run typed  = RunWithStyle(typedStyle, text:wordJoiner),
+                mistakes  = RunWithStyle(mistakesStyle, text: wordJoiner),
                 active    = RunWithStyle(activeStyle),
                 remaining = RunWithStyle(remainingStyle);
 
@@ -167,7 +167,7 @@ namespace KeyTrainWPF
         void UpdateMain()
         {
             remaining.Text = Text.Substring(Pointer.position + 1);
-            active.Text = Pointer.letter.ToString();
+            active.Text = Pointer.letter.ToString();// +  wordJoiner;
             var ic = Main.Inlines; 
 
             int mcount = misses.Count == 0 || misses.Last() != Pointer.position ? 
@@ -178,7 +178,7 @@ namespace KeyTrainWPF
             while (ic.Count  < typed_il_count + 3)
             {
                 var il = ConcatToList<Inline>(
-                    RunWithStyle(typedStyle),
+                    RunWithStyle(typedStyle,text:wordJoiner),
                     RunWithStyle(errorStyle),
                     Main.Inlines.ToList());
                 OverwriteMainIC(il);
@@ -192,7 +192,16 @@ namespace KeyTrainWPF
             {
                 Run r = (Run)ic.ElementAt(i);
  
-                r.Text = Text.Substring(mborders[i], mborders[i+1] - mborders[i]);
+                string t = Text.Substring(mborders[i], mborders[i+1] - mborders[i]);
+                if (t.EndsWith(" ") || t.EndsWith(spaceReplacement))
+                {
+                    t += ZWSP;
+                }
+                else
+                {
+                    //t += wordJoiner;
+                }
+                r.Text = t;
                 if (i % 2 == 1) //Are we drawing an error?
                     r.Text = r.Text.Replace(" ", spaceReplacement);
             }
@@ -206,7 +215,7 @@ namespace KeyTrainWPF
             //Backspace
             if (e.Text == "\b" )
             {
-                if(string.IsNullOrEmpty(mistakes.Text) == false)
+                if(mistakes.Text.Length > wordJoiner.Length)
                 {
                     mistakes.Text = mistakes.Text.Remove(mistakes.Text.Length - 1);
                     UpdateMain();
@@ -229,10 +238,9 @@ namespace KeyTrainWPF
             Main.Cursor = Cursors.None;
             lastMousePos = Mouse.GetPosition(Wrapper);
 
-            //Correct letter
-            if (c == Pointer.letter && string.IsNullOrEmpty(mistakes.Text))
+            //Correct letter and no running mistakes
+            if (c == Pointer.letter && mistakes.Text.Length == wordJoiner.Length)
             {
-                typed.Text += c;
                 timer.Stop();
                 times[Pointer.position] = timer.Elapsed;
                 ResetCursorBlink();
@@ -280,7 +288,7 @@ namespace KeyTrainWPF
         }
         void Reset(bool update = true)
         {
-            typed.Text = ""; mistakes.Text = ""; active.Text = ""; remaining.Text = Text;
+            typed.Text = ""; mistakes.Text = wordJoiner; active.Text = ""; remaining.Text = Text;
             misses.Clear();
             timer = new Stopwatch();
             times = new TimeSpan[Text.Length];
@@ -404,6 +412,7 @@ namespace KeyTrainWPF
         {
             HUD.Opacity = 0.75;
             Main.Opacity = 0.25;
+            timer.Stop(); //let's be nice and not count the time when we're tabbed away
         }
 
         private void Window_Activated(object sender, EventArgs e)
