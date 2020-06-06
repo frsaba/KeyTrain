@@ -105,7 +105,8 @@ namespace KeyTrainWPF
             }
         }
 
-        static Run typed  = RunWithStyle(typedStyle, text:wordJoiner),
+        
+        static Run typed  = RunWithStyle(typedStyle),
                 mistakes  = RunWithStyle(mistakesStyle, text: wordJoiner),
                 active    = RunWithStyle(activeStyle),
                 remaining = RunWithStyle(remainingStyle);
@@ -162,7 +163,6 @@ namespace KeyTrainWPF
             }
         }
 
-        //TODO: manual overflow. builtin often linebreaks on inline borders which is distracting
         /// <summary>
         /// Formats the main textblock's inlines based on the current state. Mainly concerned with highlighting the errors in red
         /// </summary>
@@ -177,10 +177,11 @@ namespace KeyTrainWPF
 
             int typed_il_count = 2 * mcount + 1;
 
+
             while (ic.Count  < typed_il_count + 3)
             {
                 var il = ConcatToList<Inline>(
-                    RunWithStyle(typedStyle,text:wordJoiner),
+                    RunWithStyle(typedStyle),
                     RunWithStyle(errorStyle),
                     Main.Inlines.ToList());
                 OverwriteMainIC(il);
@@ -195,13 +196,13 @@ namespace KeyTrainWPF
                 Run r = (Run)ic.ElementAt(i);
  
                 string t = Text.Substring(mborders[i], mborders[i+1] - mborders[i]);
-                if (t.EndsWith(" ") || t.EndsWith(spaceReplacement))
+                if (t.EndsWith(" ") || t.EndsWith(spaceReplacement) )
                 {
                     t += ZWSP;
                 }
                 else
                 {
-                    //t += wordJoiner;
+                    t += wordJoiner;
                 }
                 r.Text = t;
                 if (i % 2 == 1) //Are we drawing an error?
@@ -230,7 +231,6 @@ namespace KeyTrainWPF
             try { 
                 c = e.Text[0];
                 if (e.Text.First() == '\\') { return; }
-                
             }
             catch { return; }
 
@@ -360,7 +360,10 @@ namespace KeyTrainWPF
             
             if(dialog.ShowDialog() == true)
             {
-                ConfigManager.dictionaryPaths = dialog.FileNames;
+                ConfigManager.dictionaryPaths = dialog.FileNames.Select(p => new string[] 
+                    {p, Path.GetRelativePath(Directory.GetCurrentDirectory(), p)}   //Compare absolute and relative paths
+                    .OrderBy(p => p.Count(c => c == '\\')).First()).ToList();       //Keep the simpler one
+
                 generator = RandomizedLesson.FromDictionaryFiles(ConfigManager.dictionaryPaths);
                 Text = generator.NextText();
                 Reset();
@@ -377,10 +380,11 @@ namespace KeyTrainWPF
             }
             if (e.HeightChanged)
             {
-                Main.Margin = new Thickness(0,
-                    (e.NewSize.Height - HUD.Height - Main.Height) / 4 + HUD.Height, 0, 0);
+                Main.Margin = new Thickness(15,
+                    (e.NewSize.Height - HUD.Height - Main.ActualHeight) / 4 + HUD.Height, 15, 0);
             }
         }
+
         private void RatingsChanged(double windowWidth = 0, double spacing = 2)
         {
             if (windowWidth == 0)
@@ -405,6 +409,29 @@ namespace KeyTrainWPF
                 //Unhide cursor
                 Main.Cursor = Cursors.Arrow;
             }
+        }
+
+        /// <summary>
+        /// Sets the Main textblock's horizontal alignment for minimal jitter
+        /// Single line -> center
+        /// Multiple lines -> left
+        /// </summary>
+        private void SetMainAlignment(object sender, SizeChangedEventArgs e)
+        {
+            if (e.HeightChanged)
+            {
+                double singleLineHeight = Main.Padding.Top + Main.Padding.Bottom + Main.LineHeight;
+
+                if (Main.ActualHeight > singleLineHeight)
+                {
+                    Main.HorizontalAlignment = HorizontalAlignment.Left;
+                }
+                else
+                {
+                    Main.HorizontalAlignment = HorizontalAlignment.Center;
+                }
+            }
+            
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)

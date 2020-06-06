@@ -43,7 +43,8 @@ namespace KeyTrain
             public const string spaceReplacement = "·" + ZWSP;  //could be "␣" but it takes up 2 spaces which is a weird look)
                                                                 //ZWSP is appended so Wrap can consider this a linebreak opportunity
             public const string wordJoiner = "\u2060";
-            //public const string wordJoiner = "\u2060"+ "|" + "\u2060";//"\u202F";//"\uFEFF"; 
+            //public const string wordJoiner = "|";
+            //public const string wordJoiner = //"\u2060"+ "|" + "\u2060";//;//"\uFEFF"; 
             public const int stdTooltipDelay = 750;
             public class SectionStyle
             {
