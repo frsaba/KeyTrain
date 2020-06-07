@@ -168,7 +168,8 @@ namespace KeyTrainWPF
         /// </summary>
         void UpdateMain()
         {
-            remaining.Text = Text.Substring(Pointer.position + 1);
+            remaining.Text = Text.Substring(Pointer.position + 1).Replace(" ", $" {ZWSP}"); //ZWSP is not zero width, according to WPF.
+            //If we add it afterwards, it takes up additional space which messes up line breaks
             active.Text = Pointer.letter.ToString();// +  wordJoiner;
             var ic = Main.Inlines; 
 
@@ -195,8 +196,8 @@ namespace KeyTrainWPF
             {
                 Run r = (Run)ic.ElementAt(i);
  
-                string t = Text.Substring(mborders[i], mborders[i+1] - mborders[i]);
-                if (t.EndsWith(" ") || t.EndsWith(spaceReplacement) )
+                string t = Text.Substring(mborders[i], mborders[i+1] - mborders[i]).Replace(" ", $" {ZWSP}");
+                if (t.EndsWith(spaceReplacement))//(t.EndsWith(" ") || t.EndsWith(spaceReplacement) )
                 {
                     t += ZWSP;
                 }
