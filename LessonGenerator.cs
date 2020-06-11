@@ -114,7 +114,7 @@ namespace KeyTrain
                     string sep = " ";
                     if (pct != '\0' && pct != text.Last())
                     {
-                        sep = pct + " ";
+                        sep = pct == '-' ? pct.ToString() : pct + " ";
                     }
                         
                        // = pct != '\0' || pct != text.Last() ? pct + " " : " ";

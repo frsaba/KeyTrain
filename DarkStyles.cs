@@ -40,7 +40,7 @@ namespace KeyTrain
             public static (Color, Color) cursorFgColors = (Colors.Black, Colors.White);
 
             public const string ZWSP = "\u200b";                //Zero width space
-            public const string spaceReplacement = "·" + ZWSP;  //could be "␣" but it takes up 2 spaces which is a weird look)
+            public const string spaceReplacement = "·";// + ZWSP;  //could be "␣" but it takes up 2 spaces which is a weird look)
                                                                 //ZWSP is appended so Wrap can consider this a linebreak opportunity
             public const string wordJoiner = "\u2060";
             //public const string wordJoiner = "|";

@@ -25,6 +25,7 @@ namespace KeyTrainWPF
     public partial class MainWindow : Window
     {
         static string Text;
+        static string displayText (string t) => t.Replace(" ", $"{ZWSP} ");
         //static LessonGenerator generator = new PresetTextLesson("Lorem ipsum dolor sit amet, " +
         //"consectetur adipiscing elit, sed do eiusmod tempor " +
         //"incididunt ut labore et dolore magna aliqua. ");
@@ -47,7 +48,7 @@ namespace KeyTrainWPF
         {
             public static int position = 0;
             public static char letter => Text[position];
-            //public static char drawnLetter => Text[position]; 
+            public static string displayLetter => displayText(letter.ToString()); 
         }
         
         class LetterRating : LetterRatingStyle
@@ -55,7 +56,7 @@ namespace KeyTrainWPF
            
             public static UniformGrid grid;
             public static MainWindow window;
-            public static string toInclude = " .,;?!";
+            public static string toInclude = " .,;?!-";
             Label l;
             char letter = '-';
             bool hasData = true;
@@ -168,9 +169,9 @@ namespace KeyTrainWPF
         /// </summary>
         void UpdateMain()
         {
-            remaining.Text = Text.Substring(Pointer.position + 1).Replace(" ", $" {ZWSP}"); //ZWSP is not zero width, according to WPF.
+            remaining.Text = displayText(Text.Substring(Pointer.position + 1)); //ZWSP is not zero width, according to WPF.
             //If we add it afterwards, it takes up additional space which messes up line breaks
-            active.Text = Pointer.letter.ToString();// +  wordJoiner;
+            active.Text = Pointer.displayLetter.ToString();// +  wordJoiner;
             var ic = Main.Inlines; 
 
             int mcount = misses.Count == 0 || misses.Last() != Pointer.position ? 
@@ -196,10 +197,10 @@ namespace KeyTrainWPF
             {
                 Run r = (Run)ic.ElementAt(i);
  
-                string t = Text.Substring(mborders[i], mborders[i+1] - mborders[i]).Replace(" ", $" {ZWSP}");
-                if (t.EndsWith(spaceReplacement))//(t.EndsWith(" ") || t.EndsWith(spaceReplacement) )
+                string t = displayText( Text.Substring(mborders[i], mborders[i+1] - mborders[i]));
+                if (t.EndsWith(" ") || t.EndsWith(spaceReplacement) )
                 {
-                    t += ZWSP;
+                    //t += ZWSP;
                 }
                 else
                 {
@@ -282,7 +283,7 @@ namespace KeyTrainWPF
         /// <summary>
         /// Advances to the next text chunk
         /// </summary>
-        void NextText()
+        public void NextText()
         {
             stats.Enter(Text, times, misses, timer.Elapsed.TotalMinutes);
             UpdateHUD();
@@ -433,6 +434,12 @@ namespace KeyTrainWPF
                 }
             }
             
+        }
+
+        private void SettingsButtton_Click(object sender, RoutedEventArgs e)
+        {
+            SettingsWindow w = new SettingsWindow();
+            w.Show();
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
