@@ -7,49 +7,12 @@
         mc:Ignorable="d"
         Title="KeyTrain" Height="550"  Width="826" MinHeight="500" MinWidth="600"
         Background="#1f1f1f"
-        PreviewTextInput="Window_PreviewTextInput"
-        PreviewKeyDown="Window_PreviewKeyDown"
-        MouseMove="Window_MouseMove"
-        SizeChanged="Window_SizeChanged" Icon="/icon.png"
-        Closing="Window_Closing"
-        Deactivated="Window_Deactivated"
-        Activated="Window_Activated">
+        Closing="Window_Closing">
 
-    <Grid x:Name="Wrapper"  
-          TextElement.Foreground="Silver" 
-          TextElement.FontSize  ="33" 
-          TextElement.FontFamily="Consolas"
-          TextElement.FontWeight="Bold">
-        <Grid x:Name="HUD" Background="Transparent" VerticalAlignment="Top" Height="245" TextElement.FontFamily="Monaco" >
-            <Button Content="Se" Click="SettingsButtton_Click" HorizontalAlignment="Right" Margin="0,11,10,0" VerticalAlignment="Top"/>
-
-            <Grid x:Name="HUD_WPM" Margin="110,0,0,123" ToolTip="WPM:" RenderTransformOrigin="0,0" HorizontalAlignment="Left">
-                <TextBlock HorizontalAlignment="Left" Margin="5,15,0,0"  TextWrapping="NoWrap" VerticalAlignment="Top" Height="57" RenderTransformOrigin="0,0" Width="286">
-                    <Run x:Name="wpmcounter" Text="0.00" TextElement.FontSize="44"/>
-                    <Run Text="words per minute" TextElement.FontSize="15"/>
-                </TextBlock>
-                <TextBlock  HorizontalAlignment="Left" Margin="5,72,0,0"  TextWrapping="NoWrap" VerticalAlignment="Top" Height="60" RenderTransformOrigin="0,0">
-                    <Run Text="Gain:" TextElement.FontSize="13"/>
-                    <Run x:Name="wpmgain" Text="0.00"  TextElement.FontSize="20"/><Run Text=" "/>
-                </TextBlock>
-            </Grid>
-            <Grid x:Name="HUD_misses" Margin="0,0,105,135" ToolTip="Error rate:" RenderTransformOrigin="1,0" HorizontalAlignment="Right">
-                <TextBlock  HorizontalAlignment="Right" Margin="0,15,5,0"  TextWrapping="Wrap" VerticalAlignment="Top" Height="54" Width="139" RenderTransformOrigin="1,0" TextAlignment="Right">
-                    <Run x:Name="misscounter" Text="0" TextElement.FontSize="44"/>
-                    <Run Text="misses" TextElement.FontSize="15"/>
-                </TextBlock>
-                <TextBlock HorizontalAlignment="Right" Margin="0,72,0,0"  TextWrapping="Wrap" VerticalAlignment="Top" Height="60" RenderTransformOrigin="1,0" TextAlignment="Right" Width="144">
-                    <Run Text="Gain:" TextElement.FontSize="13"/><Run Text=" "/>
-                    <Run x:Name="missgain" Text="0" TextElement.FontSize="20"/>
-                </TextBlock>
-            </Grid>
-
-            <UniformGrid Name="letterRatings" Margin="50,110,54,0" Rows="3" Columns="16" HorizontalAlignment="Center" VerticalAlignment="Top" >
-            </UniformGrid>
-        </Grid>
-        <TextBlock x:Name="Main" Focusable="True" Foreground="White" Padding="40" HorizontalAlignment="Stretch" TextWrapping="WrapWithOverflow"  VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" 
-                   TextAlignment="Left" Margin="15,180,15,0" Grid.ColumnSpan="2" 
-                   Text="dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore" MinWidth="200" LineHeight="45" SizeChanged="SetMainAlignment"/>
-        <Button x:Name="dictFileButton" Content="Dict" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Cursor="Hand" FontSize="20" FontWeight="Bold" FontStyle="Normal" Padding="5,5,5,5" RenderTransformOrigin="1,1" Click="dictFileButton_Click"/>
+    <Grid x:Name="Wrapper">
+        <Button x:Name="SettingsButton" Content="Se" FontSize="25" Click="SettingsButton_Click" HorizontalAlignment="Right" Margin="0,11,10,0" VerticalAlignment="Top" Panel.ZIndex="10"/>
+        <Frame x:Name="Frame" NavigationUIVisibility="Hidden" Panel.ZIndex="5"/>
     </Grid>
+    
+    
 </Window>
