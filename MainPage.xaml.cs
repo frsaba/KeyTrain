@@ -309,7 +309,9 @@ namespace KeyTrain
         public void UpdateHUD()
         {
             double oldWPMAvg = stats.WPMLOG.DefaultIfEmpty(0).Average();
-            double oldMissAvg = stats.MISSLOG.DefaultIfEmpty(0).Average();
+            double errorRate() => stats.charMisses.Count > 0 ? stats.charMisses.DefaultIfEmpty().Average(x => x.Value.errorRate) : 0;
+            double errorsPerLength() => errorRate() * ConfigManager.lessonLength;
+            //double oldMissAvg = stats.MISSLOG.DefaultIfEmpty(0).Average();
             double wpm = stats.LastWPM;
             int misscount = stats.LastMissCount;
             wpmcounter.Text = $"{wpm:0.00}";
@@ -324,11 +326,13 @@ namespace KeyTrain
             };
             HUD_misses.ToolTip = new ToolTip()
             {
-                Content = $"Overall error rate: {(stats.charMisses.Count > 0 ? stats.charMisses.Average(x => x.Value.errorRate) : 0):p}\n" +
-                $"Average misses per lesson: {(stats.MISSLOG.Count > 0 ? stats.charMisses.Average(x => x.Value.errorRate) * ConfigManager.lessonLength : 0):0.##}"
+                Content = stats.charMisses.Count > 0 ? 
+                ( $"Overall error rate: {errorRate():p}\n" +
+                $"Average misses per lesson length: {errorsPerLength():0.##}") 
+                : "No data"
             };
             ConditionalFormat(wpmgain, wpm - oldWPMAvg);
-            ConditionalFormat(missgain, misscount - oldMissAvg, inverted: true);
+            ConditionalFormat(missgain, misscount - errorsPerLength(), inverted: true);
             DrawLetterRatings();
             //RatingsChanged();
         }

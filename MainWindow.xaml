@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KeyTrainWPF"
         mc:Ignorable="d"
-        Title="KeyTrain" Height="550"  Width="826" MinHeight="500" MinWidth="600"
+        Title="KeyTrain" Height="550"  Width="825" MinHeight="500" MinWidth="600"
         Background="#1f1f1f"
         Closing="Window_Closing">
 
