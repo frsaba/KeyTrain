@@ -15,6 +15,7 @@ namespace KeyTrain
     {
         public static string profilePath => Settings["profilePath"];
         public static dynamic dictionaryPaths { get => Settings["dictionaryPath"]; set => Settings["dictionaryPath"] = value; }
+        public static dynamic lessonLength { get => Settings["lessonLength"]; set => Settings["lessonLength"] = value; }
 
         static Dictionary<string, dynamic> defaultSettings = new Dictionary<string, dynamic>(){
             {"lessonLength", 100 },
@@ -23,7 +24,7 @@ namespace KeyTrain
         };
         static Dictionary<string, dynamic> userSettings = new Dictionary<string, dynamic>();
         static Dictionary<string, dynamic> styleSheet = new Dictionary<string, dynamic>();
-        public static ChainMap<string, dynamic> Settings { get; private set; } = 
+        public static ChainMap<string, dynamic> Settings { get; set; } = 
             ChainMap.FromDicts(userSettings, styleSheet, defaultSettings); 
 
         
@@ -95,11 +96,11 @@ namespace KeyTrain
                 if(v is IList)
                 {
                     List<object> en = (v as IEnumerable<object>).Cast<object>().ToList();
-                    sw.Write($"{item.Key}: {string.Join(", ", en.Select(x => DynamicToString(x)))}" );
+                    sw.WriteLine($"{item.Key}: {string.Join(", ", en.Select(x => DynamicToString(x)))}" );
                 }
                 else
                 {
-                    sw.Write($"{item.Key}: {DynamicToString(v)}" );
+                    sw.WriteLine($"{item.Key}: {DynamicToString(v)}" );
                 }
                
                 //Trace.WriteLine($"{item.Key}: {result}");

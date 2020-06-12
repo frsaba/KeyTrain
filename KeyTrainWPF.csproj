@@ -10,6 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="appbar.3d.x.png" />
+    <None Remove="appbar.close.png" />
+    <None Remove="appbar.cog.png" />
+    <None Remove="appbar.folder.ellipsis.png" />
+    <None Remove="appbar.folder.open.png" />
+    <None Remove="appbar.page.check.png" />
     <None Remove="icon.png" />
   </ItemGroup>
 
@@ -25,6 +31,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="appbar.3d.x.png" />
+    <Resource Include="appbar.close.png" />
+    <Resource Include="appbar.cog.png" />
+    <Resource Include="appbar.folder.ellipsis.png" />
+    <Resource Include="appbar.folder.open.png" />
+    <Resource Include="appbar.page.check.png" />
     <Resource Include="icon.png" />
   </ItemGroup>
 

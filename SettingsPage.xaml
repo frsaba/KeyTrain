@@ -6,9 +6,52 @@
       xmlns:local="clr-namespace:KeyTrain"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="SettingsPage">
+      Title="SettingsPage"
+      Loaded="Page_Loaded">
 
-    <Grid>
-        <TextBlock Text="Settings"></TextBlock>
+    <Grid  TextElement.Foreground="Silver" TextElement.FontSize="15" TextElement.FontFamily="Monaco">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.Resources>
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="Margin" Value="25,20,10,10"/>
+            </Style>
+            <Style TargetType="{x:Type Button}">
+                <Setter Property="Margin" Value="70,20,10,10"/>
+                <Style.Triggers>
+                    <Trigger Property="Button.IsMouseOver" Value="True">
+                        <Setter Property="Button.Background" Value="Red" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+        </Grid.Resources>
+
+        <StackPanel Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+
+            <TextBlock  Text="KeyTrain Settings"  FontSize="30" FontWeight="Bold"/>
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="50"  >
+                <TextBlock  Text="Dictionary files"  FontSize="20" FontWeight="Bold" Margin="40,0,18,0" VerticalAlignment="Center"/>
+                <Button Padding ="5" Click="dictFileButton_Click" HorizontalAlignment="Left" VerticalAlignment="Center" Background="{x:Null}"  Width="40" Height="35" Margin="220,0,0,0">
+                    <Image Source="/appbar.folder.ellipsis.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50" ></Image>
+                </Button>
+            </Grid>
+            <Grid >
+                <TextBlock  Text="Lesson length"  FontSize="20" FontWeight="Bold" Margin="40,3,10,27"/>
+                <TextBox Text="{Binding ElementName=lengthslider,Path=Value,Mode=TwoWay}" HorizontalAlignment="Left" Margin="344,32,0,0" VerticalAlignment="Top"/>
+                <Slider x:Name="lengthslider" HorizontalAlignment="Left" VerticalAlignment="Top" Width="250" Margin="66,33,0,0" Minimum="20" Maximum="250" SmallChange="1" Value="45" IsSnapToTickEnabled="True" TickFrequency="5" />
+            </Grid>
+        </StackPanel>
+        <StackPanel Grid.Column="1">
+            <Button x:Name="CloseButton" FontSize="25" Click="Close_Click" HorizontalAlignment="Right" Margin="0,11,10,0" VerticalAlignment="Top"  Width="40" Height="40" Background="{x:Null}">
+                <Image Source="/appbar.close.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50"></Image>
+            </Button>
+            <Button x:Name="ApplyButton" FontSize="25" Click="Apply_Click" HorizontalAlignment="Right" Margin="0,11,10,0" VerticalAlignment="Top"  Width="40" Height="40" Background="{x:Null}">
+                <Image Source="/appbar.page.check.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50"></Image>
+            </Button>
+        </StackPanel>
     </Grid>
 </Page>

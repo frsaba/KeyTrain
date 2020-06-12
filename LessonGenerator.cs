@@ -15,9 +15,9 @@ namespace KeyTrain
     /// <summary>
     /// Abstract class for generating keyboard lessons
     /// </summary>
-    abstract class LessonGenerator
+    public abstract class LessonGenerator
     {
-        protected static int defaultLessonLength => ConfigManager.Settings["lessonLength"];
+        protected static int defaultLessonLength => ConfigManager.lessonLength;
         public abstract string CurrentText { get; }
         public abstract string NextText();
         public abstract HashSet<Char> alphabet { get; protected set; }

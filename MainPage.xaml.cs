@@ -18,6 +18,7 @@ using System.ComponentModel;
 using static KeyTrain.DarkStyles.MainPage;
 using Microsoft.Win32;
 using System.IO;
+using KeyTrainWPF;
 
 namespace KeyTrain
 {
@@ -26,12 +27,12 @@ namespace KeyTrain
     /// </summary>
     public partial class MainPage : Page
     {
-        static string Text;
+        public static string Text;
         static string displayText(string t) => t.Replace(" ", $"{ZWSP} ");
 
         static ChainMap<string, dynamic> CFG = ConfigManager.Settings;
 
-        static LessonGenerator generator;
+        public static LessonGenerator Generator;
         static HashSet<char> selectedChars = new HashSet<char>();
         SortedSet<int> misses = new SortedSet<int>();
         static Stopwatch timer;
@@ -73,10 +74,10 @@ namespace KeyTrain
                 l.MouseUp += (obj, mouseEvent) => {
                     _ = isSelected ? selectedChars.Remove(letter) : selectedChars.Add(letter);
 
-                    if (generator.GetType() == typeof(RandomizedLesson))
+                    if (Generator.GetType() == typeof(RandomizedLesson))
                     {
-                        ((RandomizedLesson)generator).Emphasize(selectedChars);
-                        Text = generator.NextText();
+                        ((RandomizedLesson)Generator).Emphasize(selectedChars);
+                        Text = Generator.NextText();
                         page.Reset();
                     }
                 };
@@ -127,8 +128,8 @@ namespace KeyTrain
             InitializeComponent();
             ConfigManager.ReadConfigFile();
             Focusable = true;
-            generator = RandomizedLesson.FromDictionaryFiles(CFG["dictionaryPath"]);
-            Text = generator.CurrentText;
+            Generator = RandomizedLesson.FromDictionaryFiles(CFG["dictionaryPath"]);
+            Text = Generator.CurrentText;
             LetterRating.SetParent(letterRatings, this);
             cursorBlinker = new Timer((e) => {
                 Dispatcher.Invoke(() =>
@@ -220,6 +221,7 @@ namespace KeyTrain
                     mistakes.Text = mistakes.Text.Remove(mistakes.Text.Length - 1);
                     UpdateMain();
                 }
+                e.Handled = true;
                 return;
             }
 
@@ -266,6 +268,7 @@ namespace KeyTrain
             if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.R)
             {
                 Reset();
+                e.Handled = true;
             }
 
             //Export with Ctrl+E 
@@ -273,6 +276,7 @@ namespace KeyTrain
             {
                 KeyTrainSerializer.Serialize(stats, ConfigManager.profilePath);
                 ConfigManager.WriteConfigFile();
+                e.Handled = true;
             }
         }
 
@@ -284,10 +288,10 @@ namespace KeyTrain
             stats.Enter(Text, times, misses, timer.Elapsed.TotalMinutes);
             UpdateHUD();
 
-            Text = generator.NextText();
+            Text = Generator.NextText();
             Reset();
         }
-        void Reset(bool update = true)
+        public void Reset(bool update = true)
         {
             typed.Text = ""; mistakes.Text = wordJoiner; active.Text = ""; remaining.Text = Text;
             misses.Clear();
@@ -302,7 +306,7 @@ namespace KeyTrain
             if (update) UpdateMain();
         }
 
-        void UpdateHUD()
+        public void UpdateHUD()
         {
             double oldWPMAvg = stats.WPMLOG.DefaultIfEmpty(0).Average();
             double oldMissAvg = stats.MISSLOG.DefaultIfEmpty(0).Average();
@@ -321,7 +325,7 @@ namespace KeyTrain
             HUD_misses.ToolTip = new ToolTip()
             {
                 Content = $"Overall error rate: {(stats.charMisses.Count > 0 ? stats.charMisses.Average(x => x.Value.errorRate) : 0):p}\n" +
-                $"Average misses per lesson: {(stats.MISSLOG.Count > 0 ? stats.MISSLOG.Average() : 0):0.##}"
+                $"Average misses per lesson: {(stats.MISSLOG.Count > 0 ? stats.charMisses.Average(x => x.Value.errorRate) * ConfigManager.lessonLength : 0):0.##}"
             };
             ConditionalFormat(wpmgain, wpm - oldWPMAvg);
             ConditionalFormat(missgain, misscount - oldMissAvg, inverted: true);
@@ -332,7 +336,7 @@ namespace KeyTrain
         {
             letterRatings.Children.Clear(); //TODO: overwrite existing instead
             DefaultDict<char, (Color color, bool active)> lrs = stats.GetLetterRatings(
-                    alwaysInclude: generator.alphabet.Union(LetterRating.toInclude).ToHashSet());
+                    alwaysInclude: Generator.alphabet.Union(LetterRating.toInclude).ToHashSet());
             ratingsDrawn = lrs.Count;
             var keys = lrs.Keys.
                 OrderBy(c => !lrs[c].active)
@@ -346,31 +350,6 @@ namespace KeyTrain
             RatingsChanged();
         }
 
-
-        private void dictFileButton_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog dialog = new OpenFileDialog
-            {
-                Title = "Choose dictionary file(s)",
-                Multiselect = true,
-                InitialDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Resources"),
-                Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*"
-            };
-
-
-            if (dialog.ShowDialog() == true)
-            {
-                ConfigManager.dictionaryPaths = dialog.FileNames.Select(p => new string[]
-                    {p, Path.GetRelativePath(Directory.GetCurrentDirectory(), p)}   //Compare absolute and relative paths
-                    .OrderBy(p => p.Count(c => c == '\\')).First()).ToList();       //Keep the simpler one
-
-                generator = RandomizedLesson.FromDictionaryFiles(ConfigManager.dictionaryPaths);
-                Text = generator.NextText();
-                Reset();
-                UpdateHUD();
-            }
-
-        }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -390,8 +369,14 @@ namespace KeyTrain
             if (windowWidth == 0)
             {
                 Window w = Window.GetWindow(this);
-                //windowWidth = 500;
-                windowWidth = Math.Max(w.Width, w.ActualWidth);
+                if(w == null)
+                {
+                    windowWidth = 100; //dummy value so things don't freak out when main is not the active page
+                }
+                else
+                {
+                    windowWidth = Math.Max(w.Width, w.ActualWidth);
+                }
             }
 
             double margins = letterRatings.Margin.Left + letterRatings.Margin.Right;
@@ -438,8 +423,13 @@ namespace KeyTrain
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             //Trace.WriteLine("Loaded MainPage");
-            Reset();
+            //Reset();
             UpdateHUD();
+        }
+
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            ((MainWindow)Window.GetWindow(this)).LoadSettingsPage();
         }
 
         private void Page_LostFocus(object sender, RoutedEventArgs e)

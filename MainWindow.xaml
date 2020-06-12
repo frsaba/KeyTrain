@@ -10,9 +10,11 @@
         Closing="Window_Closing">
 
     <Grid x:Name="Wrapper">
-        <Button x:Name="SettingsButton" Content="Se" FontSize="25" Click="SettingsButton_Click" HorizontalAlignment="Right" Margin="0,11,10,0" VerticalAlignment="Top" Panel.ZIndex="10"/>
+        <!--<Button x:Name="SettingsButton" FontSize="25" Click="SettingsButton_Click" HorizontalAlignment="Right" Margin="0,11,10,0" VerticalAlignment="Top" Panel.ZIndex="10" Width="35" Height="35" Background="{x:Null}">
+            <Image Source="/appbar.cog.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="45" Height="45"></Image>
+        </Button>-->
         <Frame x:Name="Frame" NavigationUIVisibility="Hidden" Panel.ZIndex="5"/>
     </Grid>
-    
-    
+
+
 </Window>

@@ -24,8 +24,8 @@ namespace KeyTrainWPF
    
     public partial class MainWindow : Window
     {
-        MainPage mainPage = new MainPage();
-        SettingsPage settingsPage = new SettingsPage();
+        public MainPage mainPage { get; private set; } = new MainPage();
+        public SettingsPage settingsPage { get; private set; } = new SettingsPage();
 
 
         public MainWindow()
@@ -33,7 +33,8 @@ namespace KeyTrainWPF
             InitializeComponent();
             ConfigManager.ReadConfigFile();
             Focusable = true;
-            Frame.Content = mainPage;
+            NavigationCommands.BrowseBack.InputGestures.Clear();
+            LoadMainPage(reset: true);
             
         }
 
@@ -42,17 +43,29 @@ namespace KeyTrainWPF
             mainPage.Window_Closing(sender, e);
         }
 
-
-        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        public void LoadMainPage(bool reset = false)
         {
-            if(Frame.Content == mainPage)
+            Frame.Content = mainPage;
+            if (reset)
             {
-                Frame.Content = settingsPage;
-            }
-            else
-            {
-                Frame.Content = mainPage;
+                mainPage.Reset();
             }
         }
+        public void LoadSettingsPage()
+        {
+            Frame.Content = settingsPage;
+        }
+
+        //private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if(Frame.Content == mainPage)
+        //    {
+        //        Frame.Content = settingsPage;
+        //    }
+        //    else
+        //    {
+        //        Frame.Content = mainPage;
+        //    }
+        //}
     }
 }
