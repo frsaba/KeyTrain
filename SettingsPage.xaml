@@ -7,7 +7,7 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="SettingsPage"
-      Loaded="Page_Loaded">
+      Loaded="Page_Loaded" ScrollViewer.VerticalScrollBarVisibility="Auto">
 
     <Grid  TextElement.Foreground="Silver" TextElement.FontSize="15" TextElement.FontFamily="Monaco">
 
@@ -33,25 +33,34 @@
         <StackPanel Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top">
 
             <TextBlock  Text="KeyTrain Settings"  FontSize="30" FontWeight="Bold"/>
-            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="50"  >
-                <TextBlock  Text="Dictionary files"  FontSize="20" FontWeight="Bold" Margin="40,0,18,0" VerticalAlignment="Center"/>
-                <Button Padding ="5" Click="dictFileButton_Click" HorizontalAlignment="Left" VerticalAlignment="Center" Background="{x:Null}"  Width="40" Height="35" Margin="220,0,0,0">
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="40" >
+                <TextBlock  Text="Dictionary files"   ToolTip="Text file(s) containing the words/phrases the generator can use, one phrase per line" FontSize="20"  Margin="40,0,18,0" VerticalAlignment="Center"/>
+                <Button Padding ="0,0,0,0" Click="dictFileButton_Click" HorizontalAlignment="Right" VerticalAlignment="Center" Background="{x:Null}"  Width="35" Height="35" Margin="0,0,20,0" ToolTip="Choose from file explorer">
                     <Image Source="/appbar.folder.ellipsis.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50" ></Image>
                 </Button>
             </Grid>
-            <Grid >
-                <TextBlock  Text="Lesson length"  FontSize="20" FontWeight="Bold" Margin="40,3,10,27"/>
-                <TextBox Text="{Binding ElementName=lengthslider,Path=Value,Mode=TwoWay}" HorizontalAlignment="Left" Margin="344,32,0,0" VerticalAlignment="Top"/>
-                <Slider x:Name="lengthslider" HorizontalAlignment="Left" VerticalAlignment="Top" Width="250" Margin="66,33,0,0" Minimum="20" Maximum="250" SmallChange="1" Value="45" IsSnapToTickEnabled="True" TickFrequency="5" />
+            <Grid Height="55" ToolTip="Maximum length of each generated text chunk in characters">
+                <TextBlock  Text="Lesson length"  FontSize="20" Margin="40,3,10,27"/>
+                <TextBox Text="{Binding ElementName=lengthslider,Path=Value,Mode=TwoWay}"  Width="35" Height="25" HorizontalAlignment="Right" Margin="0,0,20,0" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                <Slider x:Name="lengthslider"  Value="{Binding Path=settings_copy[lessonLength], Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"  Margin="65,0,65,4" Minimum="20" Maximum="250" SmallChange="1" IsSnapToTickEnabled="True" TickFrequency="5" />
             </Grid>
         </StackPanel>
-        <StackPanel Grid.Column="1">
-            <Button x:Name="CloseButton" FontSize="25" Click="Close_Click" HorizontalAlignment="Right" Margin="0,11,10,0" VerticalAlignment="Top"  Width="40" Height="40" Background="{x:Null}">
-                <Image Source="/appbar.close.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50"></Image>
-            </Button>
-            <Button x:Name="ApplyButton" FontSize="25" Click="Apply_Click" HorizontalAlignment="Right" Margin="0,11,10,0" VerticalAlignment="Top"  Width="40" Height="40" Background="{x:Null}">
-                <Image Source="/appbar.page.check.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50"></Image>
-            </Button>
+        <StackPanel Grid.Column="1" Margin="0,0,0,-2">
+            <Grid>
+                <Button x:Name="CloseButton" ToolTip="Discard changes  &amp; close" Click="Close_Click" HorizontalAlignment="Right" Margin="0,15,10,0" VerticalAlignment="Top"  Width="40" Height="40" Background="{x:Null}" >
+                    <Image Source="/appbar.close.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50"></Image>
+                </Button>
+                
+                <Button x:Name="ApplyButton"  ToolTip="Apply changes &amp; close" Grid.Column="1" FontSize="25" Click="Apply_Click" HorizontalAlignment="Right" Margin="0,15,70,20" VerticalAlignment="Center"  Width="120" Height="40" Background="{x:Null}" Padding="5,5,5,5">
+                    <Grid Width="100">
+                        <Image Source="/appbar.page.check.png" HorizontalAlignment="Left" VerticalAlignment="Center" Width="50" Height="50" Margin="-6,0,0,0"></Image>
+                        <TextBlock Text="Apply" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="Silver" Margin="40,0,0,0" FontSize="22"/>
+                    </Grid>
+                </Button>
+                <Button x:Name="RevertButton" ToolTip="Reset to previous" Click="Page_Loaded" HorizontalAlignment="Right" Margin="0,15,210,0" VerticalAlignment="Top"  Width="40" Height="40" Background="{x:Null}" >
+                    <Image Source="/appbar.reset.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50"></Image>
+                </Button>
+            </Grid>
         </StackPanel>
     </Grid>
 </Page>

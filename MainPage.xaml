@@ -21,7 +21,7 @@
           TextElement.FontFamily="Consolas"
           TextElement.FontWeight="Bold">
         <Grid x:Name="HUD" Background="Transparent" VerticalAlignment="Top" Height="245" TextElement.FontFamily="Monaco" >
-            <Button x:Name="SettingsButton" FontSize="25" Click="SettingsButton_Click" HorizontalAlignment="Right" Margin="0,11,10,0" VerticalAlignment="Top" Panel.ZIndex="10" Width="40" Height="40" Background="{x:Null}">
+            <Button x:Name="SettingsButton" FontSize="25" Click="SettingsButton_Click" HorizontalAlignment="Right" Margin="0,15,10,0" VerticalAlignment="Top" Panel.ZIndex="10" Width="40" Height="40" Background="{x:Null}" ToolTip="Open settings">
                 <Image Source="/appbar.cog.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50"></Image>
             </Button>
             <Grid x:Name="HUD_WPM" Margin="110,0,0,123" ToolTip="WPM:" RenderTransformOrigin="0,0" HorizontalAlignment="Left">

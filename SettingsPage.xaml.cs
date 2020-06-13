@@ -15,7 +15,7 @@ namespace KeyTrain
     /// </summary>
     public partial class SettingsPage : Page
     {
-        public static ChainMap<string, dynamic> settings_copy;
+        public static ChainMap<string, dynamic> settings_copy { get; set; }
 
         public SettingsPage()
         {
@@ -68,8 +68,8 @@ namespace KeyTrain
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            settings_copy = ChainMap.FromList(ConfigManager.Settings.dicts);
-            lengthslider.Value = settings_copy["lessonLength"];
+            settings_copy = ConfigManager.Settings.Clone();
+            lengthslider.Value = settings_copy["lessonLength"]; //TODO: figure out binding for this stuff
         }
     }
 }
