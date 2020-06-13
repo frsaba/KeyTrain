@@ -19,6 +19,7 @@ using static KeyTrain.DarkStyles.MainPage;
 using Microsoft.Win32;
 using System.IO;
 using KeyTrainWPF;
+using System.Reflection;
 
 namespace KeyTrain
 {
@@ -147,7 +148,7 @@ namespace KeyTrain
             stats = KeyTrainSerializer.Deserialize(ConfigManager.profilePath);
             ToolTipService.SetInitialShowDelay(HUD_WPM, stdTooltipDelay);
             ToolTipService.SetInitialShowDelay(HUD_misses, stdTooltipDelay);
-
+            UpdateHUD();
         }
 
         // InlineCollection cannot be instantiated directly so we cannot just .prepend and set it. This is how we replace Main.Inlines with a new List<Inlines>
@@ -267,7 +268,13 @@ namespace KeyTrain
             //Reset with Ctrl+R
             if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.R)
             {
-                Reset();
+                RestartButton_Click(sender, e);
+                e.Handled = true;
+            }
+            //Reroll with Ctrl+N
+            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.N)
+            {
+                RerollButton_Click(sender, e);
                 e.Handled = true;
             }
 
@@ -359,12 +366,7 @@ namespace KeyTrain
         {
             if (e.WidthChanged)
             {
-                RatingsChanged(windowWidth: e.NewSize.Width);
-            }
-            if (e.HeightChanged)
-            {
-                Main.Margin = new Thickness(15,
-                    (e.NewSize.Height - HUD.Height - Main.ActualHeight) / 4 + HUD.Height, 15, 0);
+                RatingsChanged(windowWidth: e.NewSize.Width); 
             }
         }
 
@@ -382,11 +384,14 @@ namespace KeyTrain
                     windowWidth = Math.Max(w.Width, w.ActualWidth);
                 }
             }
-
+            
             double margins = letterRatings.Margin.Left + letterRatings.Margin.Right;
-            letterRatings.Columns = (int)Math.Min(
-            (windowWidth - margins) / (LetterRating.width + spacing),
-                ratingsDrawn);
+            double availableWidth = windowWidth - margins;
+            letterRatings.Columns = (int)Math.Ceiling(Math.Min(
+                availableWidth / (LetterRating.width + spacing), ratingsDrawn));
+            var realestatemargin = MainRealEstate.Margin;
+            realestatemargin.Top = letterRatings.ActualHeight + 110;
+            MainRealEstate.Margin = realestatemargin;
         }
 
         Point lastMousePos;
@@ -434,6 +439,17 @@ namespace KeyTrain
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
             ((MainWindow)Window.GetWindow(this)).LoadSettingsPage();
+        }
+
+        private void RerollButton_Click(object sender, RoutedEventArgs e)
+        {
+            Text = Generator.NextText();
+            Reset();
+        }
+
+        private void RestartButton_Click(object sender, RoutedEventArgs e)
+        {
+            Reset();
         }
 
         private void Page_LostFocus(object sender, RoutedEventArgs e)

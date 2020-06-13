@@ -128,8 +128,7 @@ namespace KeyTrain
 
         }
 
-
-        public partial class MainWindow : Window
+        /*public partial class MainWindow : Window
         {
             public static Color wrapperBackground { get; private set; } = (Color)ColorConverter.ConvertFromString("#1f1f1f");
             public static List<(Color color, double delta)> gainPalette { get; private set; } =
@@ -239,7 +238,7 @@ namespace KeyTrain
 
 
         }
-
+        */
         
     }
 

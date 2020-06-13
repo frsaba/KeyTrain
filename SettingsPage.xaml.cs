@@ -58,7 +58,7 @@ namespace KeyTrain
         {
             settings_copy["lessonLength"] = (int)lengthslider.Value;
             ConfigManager.Settings = settings_copy;
-
+            
             MainPage.Generator = RandomizedLesson.FromDictionaryFiles(ConfigManager.dictionaryPaths);
             MainPage.Text = MainPage.Generator.NextText();
 

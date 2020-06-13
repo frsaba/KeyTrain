@@ -17,6 +17,7 @@
     <None Remove="appbar.folder.open.png" />
     <None Remove="appbar.page.check.png" />
     <None Remove="appbar.reset.png" />
+    <None Remove="appbar.shuffle.png" />
     <None Remove="icon.png" />
   </ItemGroup>
 
@@ -39,6 +40,7 @@
     <Resource Include="appbar.folder.open.png" />
     <Resource Include="appbar.page.check.png" />
     <Resource Include="appbar.reset.png" />
+    <Resource Include="appbar.shuffle.png" />
     <Resource Include="icon.png" />
   </ItemGroup>
 

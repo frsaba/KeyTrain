@@ -15,7 +15,7 @@ using System.Windows.Controls.Primitives;
 using System.Dynamic;
 using System.Threading;
 using System.ComponentModel;
-using static KeyTrain.DarkStyles.MainWindow;
+//using static KeyTrain.DarkStyles.MainWindow;
 using Microsoft.Win32;
 using System.IO;
 

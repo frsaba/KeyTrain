@@ -89,7 +89,7 @@ namespace KeyTrain
         {
             StreamWriter sw = new StreamWriter(path);
 
-            foreach (var item in userSettings)
+            foreach (var item in Settings.dicts.First())
             {
                 var v = item.Value;
                 
