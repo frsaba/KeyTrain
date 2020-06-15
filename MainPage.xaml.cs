@@ -370,7 +370,7 @@ namespace KeyTrain
             }
         }
 
-        private void RatingsChanged(double windowWidth = 0, double spacing = 2)
+        public void RatingsChanged(double windowWidth = 0, double spacing = 2)
         {
             if (windowWidth == 0)
             {
@@ -381,7 +381,7 @@ namespace KeyTrain
                 }
                 else
                 {
-                    windowWidth = Math.Max(w.Width, w.ActualWidth);
+                    windowWidth = w.Width;//Math.Max(w.Width, w.ActualWidth);
                 }
             }
             

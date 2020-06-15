@@ -9,7 +9,7 @@
       Title="SettingsPage"
       Loaded="Page_Loaded" ScrollViewer.VerticalScrollBarVisibility="Auto">
 
-    <Grid  TextElement.Foreground="Silver" TextElement.FontSize="15" TextElement.FontFamily="Monaco">
+    <Grid  TextElement.Foreground="Silver" TextElement.FontSize="15" TextElement.FontFamily="Monaco" ClipToBounds="True">
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -23,7 +23,10 @@
                 <Setter Property="Margin" Value="70,20,10,10"/>
                 <Style.Triggers>
                     <Trigger Property="Button.IsMouseOver" Value="True">
-                        <Setter Property="Button.Background" Value="Red" />
+                        <Setter Property="Button.Background" Value="Gray" />
+                    </Trigger>
+                    <Trigger Property="Button.IsMouseOver" Value="False">
+                        <Setter Property="Button.Background" Value="Transparent" />
                     </Trigger>
                 </Style.Triggers>
             </Style>
@@ -32,10 +35,10 @@
 
         <StackPanel Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top">
 
-            <TextBlock  Text="KeyTrain Settings"  FontSize="30" FontWeight="Bold"/>
+            <TextBlock  Text="KeyTrain Settings"  FontSize="30" FontWeight="Bold" MinWidth="250"/>
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="40" >
                 <TextBlock  Text="Dictionary files"   ToolTip="Text file(s) containing the words/phrases the generator can use, one phrase per line" FontSize="20"  Margin="40,0,18,0" VerticalAlignment="Center"/>
-                <Button Padding ="0,0,0,0" Click="dictFileButton_Click" HorizontalAlignment="Right" VerticalAlignment="Center" Background="{x:Null}"  Width="35" Height="35" Margin="0,0,20,0" ToolTip="Choose from file explorer">
+                <Button Padding ="0,0,0,0" Click="dictFileButton_Click" HorizontalAlignment="Right" VerticalAlignment="Center"  Width="35" Height="35" Margin="0,0,20,0" ToolTip="Choose from file explorer">
                     <Image Source="/appbar.folder.ellipsis.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50" ></Image>
                 </Button>
             </Grid>
@@ -47,17 +50,17 @@
         </StackPanel>
         <StackPanel Grid.Column="1" Margin="0,0,0,-2">
             <Grid>
-                <Button x:Name="CloseButton" ToolTip="Discard changes  &amp; close" Click="Close_Click" HorizontalAlignment="Right" Margin="0,15,10,0" VerticalAlignment="Top"  Width="40" Height="40" Background="{x:Null}" >
+                <Button x:Name="CloseButton" ToolTip="Discard changes  &amp; close" Click="Close_Click" HorizontalAlignment="Right" Margin="0,15,10,0" VerticalAlignment="Top"  Width="40" Height="40" >
                     <Image Source="/appbar.close.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50"></Image>
                 </Button>
                 
-                <Button x:Name="ApplyButton"  ToolTip="Apply changes &amp; close" Grid.Column="1" FontSize="25" Click="Apply_Click" HorizontalAlignment="Right" Margin="0,15,70,20" VerticalAlignment="Center"  Width="120" Height="40" Background="{x:Null}" Padding="5,5,5,5">
+                <Button x:Name="ApplyButton"  ToolTip="Apply changes &amp; close" Grid.Column="1" FontSize="25" Click="Apply_Click" HorizontalAlignment="Right" Margin="0,15,70,20" VerticalAlignment="Center"  Width="120" Height="40" Padding="5,5,5,5">
                     <Grid Width="100">
                         <Image Source="/appbar.page.check.png" HorizontalAlignment="Left" VerticalAlignment="Center" Width="50" Height="50" Margin="-6,0,0,0"></Image>
                         <TextBlock Text="Apply" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="Silver" Margin="40,0,0,0" FontSize="22"/>
                     </Grid>
                 </Button>
-                <Button x:Name="RevertButton" ToolTip="Reset to previous" Click="Page_Loaded" HorizontalAlignment="Right" Margin="0,15,210,0" VerticalAlignment="Top"  Width="40" Height="40" Background="{x:Null}" >
+                <Button x:Name="RevertButton" ToolTip="Reset to previous" Click="Page_Loaded" HorizontalAlignment="Right" Margin="0,15,210,0" VerticalAlignment="Top"  Width="40" Height="40" >
                     <Image Source="/appbar.reset.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50"></Image>
                 </Button>
             </Grid>

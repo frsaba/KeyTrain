@@ -56,6 +56,11 @@ namespace KeyTrainWPF
             Frame.Content = settingsPage;
         }
 
+        private void Window_StateChanged(object sender, EventArgs e)
+        {
+            mainPage.RatingsChanged();
+        }
+
         //private void SettingsButton_Click(object sender, RoutedEventArgs e)
         //{
         //    if(Frame.Content == mainPage)
