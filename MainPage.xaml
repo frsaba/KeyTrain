@@ -20,8 +20,8 @@
           TextElement.FontSize  ="33" 
           TextElement.FontFamily="Consolas"
           TextElement.FontWeight="Bold">
-        <Grid x:Name="HUD" Background="Transparent" VerticalAlignment="Top" Height="Auto" TextElement.FontFamily="Monaco" Panel.ZIndex="10" >
-            <Button x:Name="SettingsButton" FontSize="25" Click="SettingsButton_Click" HorizontalAlignment="Right" Margin="0,15,10,0" VerticalAlignment="Top" Panel.ZIndex="10" Width="40" Height="40" ToolTip="Open settings">
+        <Grid x:Name="HUD" Background="Transparent" VerticalAlignment="Top" Height="Auto">
+            <Button x:Name="SettingsButton" Click="SettingsButton_Click" HorizontalAlignment="Right" Margin="0,15,10,0" VerticalAlignment="Top" ToolTip="Open settings">
                 <Image Source="/appbar.cog.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50"></Image>
             </Button>
             <Grid x:Name="HUD_WPM" Margin="110,0,0,123" ToolTip="WPM:" RenderTransformOrigin="0,0" HorizontalAlignment="Left">
@@ -58,11 +58,11 @@
                 </TextBlock.FocusVisualStyle>
             </TextBlock>
         </Grid>
-        <Button x:Name="RerollButton" FontSize="25" Click="RerollButton_Click" HorizontalAlignment="Right" Margin="0,0,60,15" VerticalAlignment="Bottom"  Width="40" Height="40" ToolTip="Reroll text (Ctrl+N)">
-            <Image Source="/appbar.shuffle.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50"></Image>
+        <Button x:Name="RerollButton" Click="RerollButton_Click" HorizontalAlignment="Right" Margin="0,0,60,15" VerticalAlignment="Bottom" ToolTip="Reroll text (Ctrl+N)">
+            <Image Source="/appbar.shuffle.png"/>
         </Button>
-        <Button x:Name="RestartButton" FontSize="25" Click="RestartButton_Click" HorizontalAlignment="Right" Margin="0,0,10,15" VerticalAlignment="Bottom"  Width="40" Height="40" ToolTip="Restart (Ctrl+R)">
-            <Image Source="/appbar.reset.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50"></Image>
+        <Button x:Name="RestartButton" Click="RestartButton_Click" HorizontalAlignment="Right" Margin="0,0,10,15" VerticalAlignment="Bottom"  ToolTip="Restart (Ctrl+R)">
+            <Image Source="/appbar.reset.png"/>
         </Button>
     </Grid>
 
