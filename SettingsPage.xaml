@@ -19,18 +19,6 @@
             <Style TargetType="{x:Type TextBlock}">
                 <Setter Property="Margin" Value="25,20,10,10"/>
             </Style>
-            <Style TargetType="{x:Type Button}">
-                <Setter Property="Margin" Value="70,20,10,10"/>
-                <Style.Triggers>
-                    <Trigger Property="Button.IsMouseOver" Value="True">
-                        <Setter Property="Button.Background" Value="Gray" />
-                    </Trigger>
-                    <Trigger Property="Button.IsMouseOver" Value="False">
-                        <Setter Property="Button.Background" Value="Transparent" />
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
         </Grid.Resources>
 
         <StackPanel Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top">

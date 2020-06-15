@@ -390,7 +390,7 @@ namespace KeyTrain
             letterRatings.Columns = (int)Math.Ceiling(Math.Min(
                 availableWidth / (LetterRating.width + spacing), ratingsDrawn));
             var realestatemargin = MainRealEstate.Margin;
-            realestatemargin.Top = letterRatings.ActualHeight + 110;
+            realestatemargin.Top = letterRatings.ActualHeight + 110; //HUD height auto doesn't give the proper value, nor does actualheight so we're using this estimation
             MainRealEstate.Margin = realestatemargin;
         }
 

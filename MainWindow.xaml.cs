@@ -58,19 +58,8 @@ namespace KeyTrainWPF
 
         private void Window_StateChanged(object sender, EventArgs e)
         {
+            //Making sure both mainRealEstate's margins and letterRatings' columns behave properly on maximize
             mainPage.RatingsChanged();
         }
-
-        //private void SettingsButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if(Frame.Content == mainPage)
-        //    {
-        //        Frame.Content = settingsPage;
-        //    }
-        //    else
-        //    {
-        //        Frame.Content = mainPage;
-        //    }
-        //}
     }
 }
