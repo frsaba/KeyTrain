@@ -20,7 +20,7 @@
           TextElement.FontSize  ="33" 
           TextElement.FontFamily="Consolas"
           TextElement.FontWeight="Bold">
-        <Grid x:Name="HUD" Background="Transparent" VerticalAlignment="Top" Height="245" TextElement.FontFamily="Monaco" Panel.ZIndex="10">
+        <Grid x:Name="HUD" Background="Transparent" VerticalAlignment="Top" Height="Auto" TextElement.FontFamily="Monaco" Panel.ZIndex="10" >
             <Button x:Name="SettingsButton" FontSize="25" Click="SettingsButton_Click" HorizontalAlignment="Right" Margin="0,15,10,0" VerticalAlignment="Top" Panel.ZIndex="10" Width="40" Height="40" Background="{x:Null}" ToolTip="Open settings">
                 <Image Source="/appbar.cog.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50"></Image>
             </Button>
@@ -45,13 +45,18 @@
                 </TextBlock>
             </Grid>
 
-            <UniformGrid Name="letterRatings" Margin="50,110,54,0" Rows="0" Columns="16" HorizontalAlignment="Center" VerticalAlignment="Top" >
+            <UniformGrid Name="letterRatings" Margin="50,110,54,0" Rows="0" Columns="0" HorizontalAlignment="Center" VerticalAlignment="Top" >
             </UniformGrid>
         </Grid>
         <Grid x:Name="MainRealEstate" Margin="30,100,30,65">
             <TextBlock x:Name="Main" Focusable="True" Foreground="White" HorizontalAlignment="Center" TextWrapping="WrapWithOverflow"  VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5" 
                        TextAlignment="Left" Grid.ColumnSpan="2" 
-                       Text="dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore" MinWidth="200" LineHeight="45" SizeChanged="SetMainAlignment"/>
+                       Text="dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore" MinWidth="200" LineHeight="45" SizeChanged="SetMainAlignment">
+                <TextBlock.FocusVisualStyle>
+                    <!--Default shows dotted border around the text so we specify this empty-->
+                    <Style/> 
+                </TextBlock.FocusVisualStyle>
+            </TextBlock>
         </Grid>
         <Button x:Name="RerollButton" FontSize="25" Click="RerollButton_Click" HorizontalAlignment="Right" Margin="0,0,60,15" VerticalAlignment="Bottom"  Width="40" Height="40" Background="{x:Null}" ToolTip="Reroll text (Ctrl+N)">
             <Image Source="/appbar.shuffle.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50"></Image>

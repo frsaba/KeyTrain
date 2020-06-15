@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KeyTrainWPF"
         mc:Ignorable="d"
-        Title="KeyTrain" Height="550"  Width="825" MinHeight="500" MinWidth="600"
+        Title="KeyTrain" Height="550"  Width="825" MinHeight="400" MinWidth="550" 
         Background="#1f1f1f"
         Closing="Window_Closing">
 
@@ -13,7 +13,7 @@
         <!--<Button x:Name="SettingsButton" FontSize="25" Click="SettingsButton_Click" HorizontalAlignment="Right" Margin="0,11,10,0" VerticalAlignment="Top" Panel.ZIndex="10" Width="35" Height="35" Background="{x:Null}">
             <Image Source="/appbar.cog.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="45" Height="45"></Image>
         </Button>-->
-        <Frame x:Name="Frame" NavigationUIVisibility="Hidden" Panel.ZIndex="5"/>
+        <Frame x:Name="Frame" NavigationUIVisibility="Hidden" Focusable="False" />
     </Grid>
 
 

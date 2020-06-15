@@ -288,7 +288,7 @@ namespace KeyTrain
         }
 
         /// <summary>
-        /// Advances to the next text chunk
+        /// Advances to the next text chunk and logs the data to KeyTrainStats
         /// </summary>
         public void NextText()
         {
@@ -463,6 +463,7 @@ namespace KeyTrain
         {
             HUD.Opacity = 1;
             Main.Opacity = 1;
+            UpdateMain();
         }
 
         public void Window_Closing(object sender, CancelEventArgs e)
