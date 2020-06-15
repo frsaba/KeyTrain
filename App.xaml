@@ -25,7 +25,11 @@
                 <Trigger Property="Button.IsMouseOver" Value="True">
                     <Setter Property="Button.Background" Value="#FF5F7DA0" />
                 </Trigger>
+                <Trigger Property="IsPressed" Value="true">
+                    <Setter Property="Background" Value="AliceBlue"/>
+                </Trigger>
             </Style.Triggers>
+           
         </Style>
         <Style TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonWithImage}"/> <!-- No key -> default setting  -->
         <Style TargetType="{x:Type Button}" x:Key="ButtonWithImageAndText" BasedOn="{StaticResource ButtonWithImage}">
