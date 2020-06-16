@@ -34,11 +34,18 @@ namespace KeyTrain
             InitializeComponent();
         }
 
-        public int lessonLength
+        public int LessonLength
         {
             get => settings_copy["lessonLength"]; 
             set { settings_copy["lessonLength"] = value; OnPropertyChanged(); }
         }
+        public int CapitalsLevel
+        {
+            get => settings_copy["capitalsLevel"];
+            set { settings_copy["capitalsLevel"] = value; OnPropertyChanged(); OnPropertyChanged("capitalDescription"); }
+        }
+        public readonly string[] capitalChoices = new string[] { "Force lowercase", "Keep existing","50% chance first letter", "First letter every word", "ALL CAPS" };
+        public string capitalDescription => capitalChoices[CapitalsLevel];
 
 
         MainWindow window => (MainWindow)Window.GetWindow(this);
@@ -87,11 +94,10 @@ namespace KeyTrain
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             settings_copy = ConfigManager.Settings.Clone();
-            foreach (string key in settings_copy.Keys)
+            foreach (string key in settings_copy.Keys.Append("capitalDescription"))
             {
                 OnPropertyChanged(key);
             }
-            //lengthslider.Value = settings_copy["lessonLength"]; //TODO: figure out binding for this stuff
         }
     }
 }

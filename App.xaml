@@ -8,6 +8,13 @@
         <Style TargetType="TextBlock">
             <Setter Property="FontFamily" Value="Monaco"/>
         </Style>
+        <Style TargetType="Slider">
+            <Setter Property="TickPlacement" Value="BottomRight"/>
+            <Setter Property="SmallChange" Value="1"/>
+            <Setter Property="IsSnapToTickEnabled" Value="True"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+        </Style>
         <Style TargetType="{x:Type Button}" x:Key="ButtonWithImage">
             <Setter Property="Width" Value="40"/>
             <Setter Property="Height" Value="40"/>

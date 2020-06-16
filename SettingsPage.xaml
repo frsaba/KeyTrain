@@ -31,18 +31,19 @@
                     <Image Source="/appbar.folder.ellipsis.png"/>
                 </Button>
             </Grid>
-            <Grid Height="60" ToolTip="Maximum length of each generated text chunk in characters">
-                <TextBlock  Text="Lesson length"  FontSize="20" Margin="40,3,10,27"/>
-                <TextBox x:Name="lengthBox" Text="{Binding Path=(local:SettingsPage.lessonLength), UpdateSourceTrigger=PropertyChanged}"  Width="35" Height="25" HorizontalAlignment="Right" Margin="0,0,20,0" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <Slider x:Name="lengthslider"  Value="{Binding Path=(local:SettingsPage.lessonLength)}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"  Margin="65,0,65,4" Minimum="20" Maximum="250" SmallChange="1" IsSnapToTickEnabled="True" TickFrequency="5" />
+            <Grid Height="70" ToolTip="Maximum length of each generated text chunk in characters">
+                <TextBlock  Text="Lesson length"  FontSize="20" Margin="40,5,10,25"/>
+                <TextBox x:Name="lengthBox" Text="{Binding Path=(local:SettingsPage.LessonLength), UpdateSourceTrigger=PropertyChanged}"  Width="35" Height="25" HorizontalAlignment="Right" Margin="0,0,20,0" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <Slider x:Name="lengthslider"  Value="{Binding Path=(local:SettingsPage.LessonLength)}" Minimum="20" Maximum="250" TickFrequency="5"  Margin="65,0,65,4"/>
                 
             </Grid>
-            <Grid Height="60">
-                <TextBlock Text="{Binding Path=(local:ConfigManager.lessonLength), Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-                <!--<TextBlock Text="{Binding Path=(local:ConfigManager.lessonLength), Mode=TwoWay}"/>-->
+            <Grid Height="70">
+                <TextBlock  Text="Capital letters"  FontSize="20" Margin="40,5,10,25"/>
+                <TextBlock Text="{Binding Path=(local:SettingsPage.capitalDescription), UpdateSourceTrigger=PropertyChanged}" Width="150" Height="25" HorizontalAlignment="Right" Margin="0,0,20,0" VerticalAlignment="Bottom" TextAlignment="Right" />
+                <Slider x:Name="capitalslider"  Value="{Binding Path=(local:SettingsPage.CapitalsLevel)}" Minimum="0" Maximum="4"  Margin="65,0,197,4" TickFrequency="1" />
             </Grid>
         </StackPanel>
-        <StackPanel Grid.Column="1" Margin="0,0,0,-2">
+        <StackPanel Grid.Column="1">
             <Grid>
                 <Button x:Name="CloseButton" ToolTip="Discard changes  &amp; close" Click="Close_Click" HorizontalAlignment="Right" Margin="0,15,10,0" VerticalAlignment="Top"  Width="40" Height="40" >
                     <Image Source="/appbar.close.png"></Image>
