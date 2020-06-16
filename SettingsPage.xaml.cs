@@ -37,7 +37,7 @@ namespace KeyTrain
         public int lessonLength
         {
             get => settings_copy["lessonLength"]; 
-            set { OnPropertyChanged(); settings_copy["lessonLength"] = value; }
+            set { settings_copy["lessonLength"] = value; OnPropertyChanged(); }
         }
 
 
