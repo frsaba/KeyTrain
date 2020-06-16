@@ -6,20 +6,15 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Diagnostics;
-using KeyTrain;
 using Pythonic;
 using static Pythonic.ListHelpers;
 using static KeyTrain.KeyTrainStatsConversion;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Dynamic;
 using System.Threading;
 using System.ComponentModel;
 using static KeyTrain.DarkStyles.MainPage;
-using Microsoft.Win32;
-using System.IO;
 using KeyTrainWPF;
-using System.Reflection;
 
 namespace KeyTrain
 {
@@ -364,34 +359,38 @@ namespace KeyTrain
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
+            Trace.WriteLine(Main.ActualHeight);
             if (e.WidthChanged)
             {
                 RatingsChanged(windowWidth: e.NewSize.Width); 
+            }
+            Window w = Window.GetWindow(this);
+            if (w != null)
+            {
+                w.MinHeight = letterRatings.ActualHeight + Main.ActualHeight + 220; //220 to account for HUD height and margins carved space
             }
         }
 
         public void RatingsChanged(double windowWidth = 0, double spacing = 2)
         {
-            if (windowWidth == 0)
+            Window w = Window.GetWindow(this);
+            if(w != null)
             {
-                Window w = Window.GetWindow(this);
-                if(w == null)
+
+                if (windowWidth == 0)
                 {
-                    windowWidth = 100; //dummy value so things don't freak out when main is not the active page
+                     windowWidth = w.Width;//Math.Max(w.Width, w.ActualWidth);
                 }
-                else
-                {
-                    windowWidth = w.Width;//Math.Max(w.Width, w.ActualWidth);
-                }
+                double margins = letterRatings.Margin.Left + letterRatings.Margin.Right;
+                double availableWidth = windowWidth - margins;
+                letterRatings.Columns = (int)Math.Ceiling(Math.Min(
+                    availableWidth / (LetterRating.width + spacing), ratingsDrawn));
+                var realestatemargin = MainRealEstate.Margin;
+                realestatemargin.Top = letterRatings.ActualHeight + 110; //HUD height auto doesn't give the proper value, nor does actualheight so we're using this estimation
+                MainRealEstate.Margin = realestatemargin;
+                
             }
             
-            double margins = letterRatings.Margin.Left + letterRatings.Margin.Right;
-            double availableWidth = windowWidth - margins;
-            letterRatings.Columns = (int)Math.Ceiling(Math.Min(
-                availableWidth / (LetterRating.width + spacing), ratingsDrawn));
-            var realestatemargin = MainRealEstate.Margin;
-            realestatemargin.Top = letterRatings.ActualHeight + 110; //HUD height auto doesn't give the proper value, nor does actualheight so we're using this estimation
-            MainRealEstate.Margin = realestatemargin;
         }
 
         Point lastMousePos;

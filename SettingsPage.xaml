@@ -40,7 +40,7 @@
             <Grid Height="70">
                 <TextBlock  Text="Capital letters"  FontSize="20" Margin="40,5,10,25"/>
                 <TextBlock Text="{Binding Path=(local:SettingsPage.capitalDescription), UpdateSourceTrigger=PropertyChanged}" Width="150" Height="25" HorizontalAlignment="Right" Margin="0,0,20,0" VerticalAlignment="Bottom" TextAlignment="Right" />
-                <Slider x:Name="capitalslider"  Value="{Binding Path=(local:SettingsPage.CapitalsLevel)}" Minimum="0" Maximum="4"  Margin="65,0,197,4" TickFrequency="1" />
+                <Slider x:Name="capitalslider"  Value="{Binding Path=(local:SettingsPage.CapitalsLevel)}" Minimum="0" Maximum="4"  Margin="65,0,175,4" TickFrequency="1" />
             </Grid>
         </StackPanel>
         <StackPanel Grid.Column="1">
