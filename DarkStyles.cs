@@ -65,6 +65,7 @@ namespace KeyTrain
                 public static int width { get; private set; } = 37;
                 public static int height { get; private set; } = 40;
                 public static int fontSize { get; private set; } = 25;
+                public static FontFamily fontFamily { get; private set; } = new FontFamily("Consolas");
                 protected static SolidColorBrush
                     normalColor = new SolidColorBrush(Colors.Black),
                     inactiveColor = new SolidColorBrush(Colors.Gray),

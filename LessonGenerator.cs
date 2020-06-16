@@ -84,6 +84,7 @@ namespace KeyTrain
         private List<char> punctuation = new List<char>();
         Random random;
         const int minSampleSize = 10;
+        int capitals => ConfigManager.Settings["capitalsLevel"];
 
         /// <summary>
         /// Cleans dictionary of unwanted elements eg. control characters, too short or too long words
@@ -104,6 +105,24 @@ namespace KeyTrain
             while (true)
             {
                 string nextWord =  shuffled[++place % shuffled.Count];
+                switch (capitals) //0: force lower, 1: keep existing, 2: 50% first letter  3: first letter, 4: all caps
+                {
+                    default:
+                        break;
+                    case 0:
+                        nextWord = nextWord.ToLower();
+                        break;
+                    case 2:
+                        if(random.NextDouble() > 0.5)
+                            nextWord = nextWord.Substring(0, 1).ToUpper() + nextWord.Substring(1);
+                        break;
+                    case 3:
+                        nextWord = nextWord.Substring(0, 1).ToUpper() + nextWord.Substring(1);
+                        break;
+                    case 4:
+                        nextWord = nextWord.ToUpper();
+                        break;
+                }
                 if(text == "")
                 {
                     text = nextWord;
@@ -117,7 +136,6 @@ namespace KeyTrain
                         sep = pct == '-' ? pct.ToString() : pct + " ";
                     }
                         
-                       // = pct != '\0' || pct != text.Last() ? pct + " " : " ";
                     text = string.Join(sep, text, nextWord);
                 }
                 else
@@ -127,6 +145,7 @@ namespace KeyTrain
 
             }
             text = text.Trim();
+            
             return text;
         }
         /// <summary>

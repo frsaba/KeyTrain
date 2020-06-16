@@ -15,12 +15,13 @@ namespace KeyTrain
     {
         public static string profilePath => Settings["profilePath"];
         public static dynamic dictionaryPaths { get => Settings["dictionaryPath"]; set => Settings["dictionaryPath"] = value; }
-        public static dynamic lessonLength { get => Settings["lessonLength"]; set => Settings["lessonLength"] = value; }
+        public static int  lessonLength { get => Settings["lessonLength"]; set => Settings["lessonLength"] = value; }
 
         static Dictionary<string, dynamic> defaultSettings = new Dictionary<string, dynamic>(){
             {"lessonLength", 100 },
             {"profilePath", "Profile/profile.kts" },
-            {"dictionaryPath", "Resources/dictionaryEN.txt" }
+            {"dictionaryPath", "Resources/dictionaryEN.txt" },
+            {"capitalsLevel", 2 } //0: force lower, 1: keep existing, 2: half-half 3: first letter, 4: all caps
         };
         static Dictionary<string, dynamic> userSettings = new Dictionary<string, dynamic>();
         static Dictionary<string, dynamic> styleSheet = new Dictionary<string, dynamic>();

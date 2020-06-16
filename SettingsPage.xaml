@@ -33,8 +33,13 @@
             </Grid>
             <Grid Height="60" ToolTip="Maximum length of each generated text chunk in characters">
                 <TextBlock  Text="Lesson length"  FontSize="20" Margin="40,3,10,27"/>
-                <TextBox Text="{Binding ElementName=lengthslider,Path=Value,Mode=TwoWay}"  Width="35" Height="25" HorizontalAlignment="Right" Margin="0,0,20,0" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                <Slider x:Name="lengthslider"  Value="{Binding Path=settings_copy[lessonLength], Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"  Margin="65,0,65,4" Minimum="20" Maximum="250" SmallChange="1" IsSnapToTickEnabled="True" TickFrequency="5" />
+                <TextBox x:Name="lengthBox" Text="{Binding Path=(local:SettingsPage.lessonLength), Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Width="35" Height="25" HorizontalAlignment="Right" Margin="0,0,20,0" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <Slider x:Name="lengthslider"  Value="{Binding Path=(local:SettingsPage.lessonLength), Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"  Margin="65,0,65,4" Minimum="20" Maximum="250" SmallChange="1" IsSnapToTickEnabled="True" TickFrequency="5" />
+                
+            </Grid>
+            <Grid Height="60">
+                <TextBlock Text="{Binding Path=(local:ConfigManager.lessonLength), Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <!--<TextBlock Text="{Binding Path=(local:ConfigManager.lessonLength), Mode=TwoWay}"/>-->
             </Grid>
         </StackPanel>
         <StackPanel Grid.Column="1" Margin="0,0,0,-2">
