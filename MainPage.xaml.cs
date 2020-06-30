@@ -57,6 +57,7 @@ SortedSet<int> misses = new SortedSet<int>();
             bool isSelected => selectedChars.Contains(letter);
 
             SolidColorBrush borderColor { get => isSelected ? highlightBorder : (hasData ? normalColor : inactiveColor); }
+            
             public LetterRating(char letter, Color bgcolor, bool hasData = true)
             {
                 this.letter = letter;
@@ -474,6 +475,7 @@ SortedSet<int> misses = new SortedSet<int>();
         public void Window_Closing(object sender, CancelEventArgs e)
         {
             KeyTrainSerializer.Serialize(stats, CFG["profilePath"]);
+            ConfigManager.WriteConfigFile();
             cursorBlinker.Dispose();
         }
     }

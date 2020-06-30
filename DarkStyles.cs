@@ -60,6 +60,7 @@ namespace KeyTrain
                 }
             }
 
+            //TODO: make this into a xaml template instead
             public class LetterRatingStyle
             {
                 public static int width { get; private set; } = 37;
@@ -78,12 +79,15 @@ namespace KeyTrain
                     l.Width = width;
                     l.Height = height;
 
+                    l.HorizontalAlignment = HorizontalAlignment.Center;
+                    l.VerticalAlignment = VerticalAlignment.Center;
                     l.HorizontalContentAlignment = HorizontalAlignment.Center;
                     l.VerticalContentAlignment = VerticalAlignment.Center;
                     l.FontSize = fontSize;
                     l.FontWeight = FontWeights.DemiBold;
                     l.Background = new SolidColorBrush(bgcolor);
                     l.FontWeight = FontWeights.Normal;
+                    l.Padding = new Thickness(0,3,0,0);
                     l.Cursor = Cursors.Hand;
 
                     l.BorderThickness = new Thickness(2);
