@@ -444,6 +444,10 @@ SortedSet<int> misses = new SortedSet<int>();
         {
             ((MainWindow)Window.GetWindow(this)).LoadSettingsPage();
         }
+        private void StatsButton_Click(object sender, RoutedEventArgs e)
+        {
+            ((MainWindow)Window.GetWindow(this)).LoadStatsPage();
+        }
 
         private void RerollButton_Click(object sender, RoutedEventArgs e)
         {

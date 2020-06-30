@@ -28,13 +28,13 @@
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="45" >
                 <TextBlock  Text="Dictionary files"   ToolTip="Text file(s) containing the words/phrases the generator can use, one phrase per line" FontSize="20"  Margin="40,0,18,0" VerticalAlignment="Center"/>
                 <Button Click="dictFileButton_Click" HorizontalAlignment="Right" VerticalAlignment="Center"  Width="35" Height="35" Margin="0,0,20,0" ToolTip="Choose from file explorer">
-                    <Image Source="/appbar.folder.ellipsis.png"/>
+                    <Image Source="icons/appbar.folder.ellipsis.png"/>
                 </Button>
             </Grid>
             <Grid Height="70" ToolTip="Maximum length of each generated text chunk in characters">
                 <TextBlock  Text="Lesson length"  FontSize="20" Margin="40,5,10,25"/>
                 <TextBox x:Name="lengthBox" Text="{Binding Path=(local:SettingsPage.LessonLength), UpdateSourceTrigger=PropertyChanged}"  Width="35" Height="25" HorizontalAlignment="Right" Margin="0,0,20,0" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <Slider x:Name="lengthslider"  Value="{Binding Path=(local:SettingsPage.LessonLength)}" Minimum="20" Maximum="300" TickFrequency="10"  Margin="65,0,65,4"/>
+                <Slider x:Name="lengthslider"  Value="{Binding Path=(local:SettingsPage.LessonLength)}" Minimum="20" Maximum="300" TickFrequency="10" Margin="65,0,65,4"/>
                 
             </Grid>
             <Grid Height="70">
@@ -46,17 +46,17 @@
         <StackPanel Grid.Column="1">
             <Grid>
                 <Button x:Name="CloseButton" ToolTip="Discard changes  &amp; close" Click="Close_Click" HorizontalAlignment="Right" Margin="0,15,10,0" VerticalAlignment="Top"  Width="40" Height="40" >
-                    <Image Source="/appbar.close.png"></Image>
+                    <Image Source="icons/appbar.close.png"></Image>
                 </Button>
 
                 <Button x:Name="ApplyButton" Style="{StaticResource ButtonWithImageAndText}" ToolTip="Apply changes &amp; close" Grid.Column="1" FontSize="25" Click="Apply_Click" HorizontalAlignment="Right" Margin="0,15,70,20" VerticalAlignment="Center"  Width="120" Height="40" Padding="5,5,5,5">
                     <Grid>
-                        <Image Source="/appbar.page.check.png" Width="50" Margin="4,0,66,0"></Image>
+                        <Image Source="icons/appbar.page.check.png" Width="50" Margin="4,0,66,0"></Image>
                         <TextBlock Text="Apply" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="22" Margin="50,0,0,0"/>
                     </Grid>
                 </Button>
                 <Button x:Name="RevertButton" ToolTip="Reset to previous" Click="Page_Loaded" HorizontalAlignment="Right" Margin="0,15,210,0" VerticalAlignment="Top"  Width="40" Height="40" >
-                    <Image Source="/appbar.reset.png"/>
+                    <Image Source="icons/appbar.reset.png"/>
                 </Button>
             </Grid>
         </StackPanel>

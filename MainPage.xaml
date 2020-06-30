@@ -23,6 +23,9 @@
             <Button x:Name="SettingsButton" Click="SettingsButton_Click" HorizontalAlignment="Right" Margin="0,15,10,0" VerticalAlignment="Top" ToolTip="Open settings">
                 <Image Source="icons/appbar.cog.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50"></Image>
             </Button>
+            <Button x:Name="StatsButton" Click="StatsButton_Click" HorizontalAlignment="Right" Margin="0,65,10,0" VerticalAlignment="Top" ToolTip="Open settings">
+                <Image Source="icons/appbar.graph.line.up.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50"></Image>
+            </Button>
             <Grid x:Name="HUD_WPM" Margin="110,0,0,123" ToolTip="WPM:" RenderTransformOrigin="0,0" HorizontalAlignment="Left">
                 <TextBlock HorizontalAlignment="Left" Margin="5,15,0,0"  TextWrapping="NoWrap" VerticalAlignment="Top" Height="57" RenderTransformOrigin="0,0" Width="286">
                     <Run x:Name="wpmcounter" Text="0.00" TextElement.FontSize="44"/>
@@ -58,10 +61,10 @@
             </TextBlock>
         </Grid>
         <Button x:Name="RerollButton" Click="RerollButton_Click" HorizontalAlignment="Right" Margin="0,0,60,15" VerticalAlignment="Bottom" ToolTip="Reroll text (Ctrl+N)">
-            <Image Source="/appbar.shuffle.png"/>
+            <Image Source="icons/appbar.shuffle.png"/>
         </Button>
         <Button x:Name="RestartButton" Click="RestartButton_Click" HorizontalAlignment="Right" Margin="0,0,10,15" VerticalAlignment="Bottom"  ToolTip="Restart (Ctrl+R)">
-            <Image Source="/appbar.reset.png"/>
+            <Image Source="icons/appbar.reset.png"/>
         </Button>
     </Grid>
 

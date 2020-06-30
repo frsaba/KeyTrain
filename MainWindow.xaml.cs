@@ -62,6 +62,11 @@ namespace KeyTrainWPF
             Frame.Content = settingsPage;
         }
 
+        public void LoadStatsPage()
+        {
+            Frame.Content = settingsPage;
+        }
+
         private void Window_StateChanged(object sender, EventArgs e)
         {
             //Making sure both mainRealEstate's margins and letterRatings' columns behave properly on maximize
