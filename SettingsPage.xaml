@@ -34,7 +34,7 @@
             <Grid Height="70" ToolTip="Maximum length of each generated text chunk in characters">
                 <TextBlock  Text="Lesson length"  FontSize="20" Margin="40,5,10,25"/>
                 <TextBox x:Name="lengthBox" Text="{Binding Path=(local:SettingsPage.LessonLength), UpdateSourceTrigger=PropertyChanged}"  Width="35" Height="25" HorizontalAlignment="Right" Margin="0,0,20,0" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <Slider x:Name="lengthslider"  Value="{Binding Path=(local:SettingsPage.LessonLength)}" Minimum="20" Maximum="300" MouseWheel="lengthslider_MouseWheel" TickFrequency="10" Margin="65,0,65,4"/>
+                <Slider x:Name="lengthslider"  Value="{Binding Path=(local:SettingsPage.LessonLength)}" Minimum="20" Maximum="300" TickFrequency="10" Margin="65,0,65,4"/>
                 
             </Grid>
             <Grid Height="70">
