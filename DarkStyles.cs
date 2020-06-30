@@ -35,7 +35,7 @@ namespace KeyTrain
                  activeStyle = new SectionStyle(fgColor: Colors.Black, bgColor: Colors.Silver),
                  remainingStyle = new SectionStyle();
 
-            public static TimeSpan blinkTime = TimeSpan.FromMilliseconds(600);
+            public static TimeSpan blinkTime = TimeSpan.FromMilliseconds(550);
             public static (Color, Color) cursorBgColors = (Colors.Silver, wrapperBackground);
             public static (Color, Color) cursorFgColors = (Colors.Black, Colors.White);
 

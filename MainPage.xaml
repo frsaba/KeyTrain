@@ -36,7 +36,7 @@
             <Grid x:Name="HUD_misses" Margin="0,0,105,135" ToolTip="Error rate:" RenderTransformOrigin="1,0" HorizontalAlignment="Right">
                 <TextBlock  HorizontalAlignment="Right" Margin="0,15,5,0"  TextWrapping="Wrap" VerticalAlignment="Top" Height="54" Width="139" RenderTransformOrigin="1,0" TextAlignment="Right">
                     <Run x:Name="misscounter" Text="0" TextElement.FontSize="44"/>
-                    <Run Text="misses" TextElement.FontSize="15"/>
+                    <Run x:Name="misscounter_annotation" Text="misses" TextElement.FontSize="15"/>
                 </TextBlock>
                 <TextBlock HorizontalAlignment="Right" Margin="0,72,0,0"  TextWrapping="Wrap" VerticalAlignment="Top" Height="60" RenderTransformOrigin="1,0" TextAlignment="Right" Width="144">
                     <Run Text="Gain:" TextElement.FontSize="13"/><Run Text=" "/>
@@ -50,7 +50,7 @@
         <Grid x:Name="MainRealEstate" Margin="30,100,30,60">
             <TextBlock x:Name="Main" FontFamily="Consolas" Focusable="True" Foreground="White" HorizontalAlignment="Center" TextWrapping="WrapWithOverflow"  VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5" 
                        TextAlignment="Left" Grid.ColumnSpan="2" 
-                       Text="dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore" MinWidth="200" LineHeight="42" SizeChanged="SetMainAlignment">
+                       Text="dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore" MinWidth="200" LineHeight="42" SizeChanged="Main_SizeChanged">
                 <TextBlock.FocusVisualStyle>
                     <!--Default shows dotted border around the text so we specify this empty-->
                     <Style/> 

@@ -21,7 +21,8 @@ namespace KeyTrain
             {"lessonLength", 100 },
             {"profilePath", "Profile/profile.kts" },
             {"dictionaryPath", "Resources/dictionaryEN.txt" },
-            {"capitalsLevel", 2 } //0: force lower, 1: keep existing, 2: half-half 3: first letter, 4: all caps
+            {"capitalsLevel", 2 },
+            {"emphasizedLetters", "" }//0: force lower, 1: keep existing, 2: half-half 3: first letter, 4: all caps
         };
         static Dictionary<string, dynamic> userSettings = new Dictionary<string, dynamic>();
         static Dictionary<string, dynamic> styleSheet = new Dictionary<string, dynamic>();
@@ -42,14 +43,16 @@ namespace KeyTrain
             .Where(l => (!string.IsNullOrWhiteSpace(l)) || l.StartsWith("//") ))
             {
                 try{
-                    var split = line.Split(":",2);
+                    var split = line.Split(":", 2);
                     string key = split[0].Trim();
                     string value = split[1].Trim();
 
-                    MatchCollection matches = Regex.Matches(value, @"(?<=('\b))(?:(?=(\\?))\2.)*?(?=\1)"); //Wrapped in '' -> string
-                    if (matches.Count > 0) 
+                    //value = value.Replace(@"\,", @"");
+
+                    MatchCollection matches = Regex.Matches(value, @"(?<=('))(?:(?=(\\?))\2.)*?(?=\1)"); //Wrapped in '' -> string
+                    if (matches.Count > 0)
                     {
-                        if(matches.Count == 1) //single string
+                        if (matches.Count == 1) //single string
                         {
                             Trace.WriteLine($"{key} set single - {matches[0].Groups[0].Value}");
                             Settings[key] = matches[0].Groups[0].Value;
@@ -58,10 +61,10 @@ namespace KeyTrain
                         {
                             Settings[key] = matches.Select(m => m.Groups[0].Value).ToList();
                         }
-                    
-                    
+
+
                     }
-                    else if(int.TryParse(value, out int result))
+                    else if (int.TryParse(value, out int result))
                     {
                         Settings[key] = result;
                     }
@@ -71,7 +74,7 @@ namespace KeyTrain
                         {
                             Settings[key] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(value));
                         }
-                        catch(FormatException)
+                        catch (FormatException)
                         {
                             Trace.WriteLine($"Unrecognized key '{key}' in ConfigManager; it will be ignored.");
                         }

@@ -20,7 +20,7 @@ namespace KeyTrain
         protected static int defaultLessonLength => ConfigManager.lessonLength;
         public abstract string CurrentText { get; }
         public abstract string NextText();
-        public abstract HashSet<Char> alphabet { get; protected set; }
+        public abstract HashSet<char> alphabet { get; protected set; }
     }
     /// <summary>
     /// Keyboard lessons with predefined text, split into chunks
@@ -159,7 +159,7 @@ namespace KeyTrain
         /// Emphasizing whitespace means the generator will favor shorter words
         /// </summary>
         /// <param name="emphasized">Set of words to emphasize</param>
-        public void Emphasize(HashSet<char> emphasized, int minSampleSize = minSampleSize)
+        public void Emphasize(string emphasized, int minSampleSize = minSampleSize)
         {
             var normal = emphasized.Where(c => char.IsLetterOrDigit(c));
             var options = ConcatToList<IEnumerable<string>>(

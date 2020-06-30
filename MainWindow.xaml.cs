@@ -46,10 +46,16 @@ namespace KeyTrainWPF
         public void LoadMainPage(bool reset = false)
         {
             Frame.Content = mainPage;
+            if (MainPage.Generator.GetType() == typeof(RandomizedLesson))
+            {
+                ((RandomizedLesson)MainPage.Generator).Emphasize(MainPage.selectedChars);
+                MainPage.Text = MainPage.Generator.NextText();
+            }
             if (reset)
             {
                 mainPage.Reset();
             }
+            mainPage.RatingsChanged();
         }
         public void LoadSettingsPage()
         {

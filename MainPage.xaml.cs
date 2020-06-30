@@ -29,8 +29,9 @@ namespace KeyTrain
         static ChainMap<string, dynamic> CFG = ConfigManager.Settings;
 
         public static LessonGenerator Generator;
-        static HashSet<char> selectedChars = new HashSet<char>();
-        SortedSet<int> misses = new SortedSet<int>();
+        public static string selectedChars { get => CFG["emphasizedLetters"]; set => CFG["emphasizedLetters"] = value; }
+        
+SortedSet<int> misses = new SortedSet<int>();
         static Stopwatch timer;
         static KeyTrainStats stats = new KeyTrainStats();
 
@@ -68,7 +69,8 @@ namespace KeyTrain
                 l.MouseEnter += (obj, mouseEvent) => { l.BorderBrush = highlightBorder; l.BorderThickness = new Thickness(3); };
                 l.MouseLeave += (obj, mouseEvent) => { l.BorderBrush = borderColor; l.BorderThickness = new Thickness(2); };
                 l.MouseUp += (obj, mouseEvent) => {
-                    _ = isSelected ? selectedChars.Remove(letter) : selectedChars.Add(letter);
+                    selectedChars = isSelected ? selectedChars.Replace(letter.ToString(), "") : selectedChars + letter;
+                    
 
                     if (Generator.GetType() == typeof(RandomizedLesson))
                     {
@@ -318,8 +320,9 @@ namespace KeyTrain
             int misscount = stats.LastMissCount;
             wpmcounter.Text = $"{wpm:0.00}";
             misscounter.Text = $"{misscount:0}";
-            var dict = new Dictionary<string, int>();
-            dict.ToDefaultDict();
+            misscounter_annotation.Text = misscount == 1 ? "    miss" : "misses"; //spaces to keep the number in the the same place. \t made the text disappear, don't know why
+            //var dict = new Dictionary<string, int>();
+            //dict.ToDefaultDict();
             HUD_WPM.ToolTip = new ToolTip()
             {
                 Content = stats.WPMLOG.Count > 0 ? (
@@ -347,7 +350,7 @@ namespace KeyTrain
             var keys = lrs.Keys.
                 OrderBy(c => !lrs[c].active)
                 .ThenBy(c => !char.IsLetterOrDigit(c))
-                .ThenBy(c => c);
+                .ThenBy(c => stats.charTimes[c].average);
 
             foreach (char k in keys)
             {
@@ -358,17 +361,9 @@ namespace KeyTrain
 
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            Trace.WriteLine(Main.ActualHeight);
-            if (e.WidthChanged)
-            {
-                RatingsChanged(windowWidth: e.NewSize.Width); 
-            }
-            Window w = Window.GetWindow(this);
-            if (w != null)
-            {
-                w.MinHeight = letterRatings.ActualHeight + Main.ActualHeight + 220; //220 to account for HUD height and margins carved space
-            }
+    {
+            RatingsChanged(windowWidth: e.NewSize.Width); 
+            e.Handled = true;
         }
 
         public void RatingsChanged(double windowWidth = 0, double spacing = 2)
@@ -379,19 +374,27 @@ namespace KeyTrain
 
                 if (windowWidth == 0)
                 {
-                     windowWidth = w.Width;//Math.Max(w.Width, w.ActualWidth);
+                    windowWidth = w.WindowState == WindowState.Maximized ? w.ActualWidth : w.Width;
                 }
                 double margins = letterRatings.Margin.Left + letterRatings.Margin.Right;
                 double availableWidth = windowWidth - margins;
                 letterRatings.Columns = (int)Math.Ceiling(Math.Min(
                     availableWidth / (LetterRating.width + spacing), ratingsDrawn));
-                var realestatemargin = MainRealEstate.Margin;
-                realestatemargin.Top = letterRatings.ActualHeight + 110; //HUD height auto doesn't give the proper value, nor does actualheight so we're using this estimation
-                MainRealEstate.Margin = realestatemargin;
-                
+                SetMainRealEstate();
             }
             
         }
+
+        private void SetMainRealEstate()
+        {
+            Window w = Window.GetWindow(this);
+            var realestatemargin = MainRealEstate.Margin;
+            realestatemargin.Top = letterRatings.ActualHeight + 110; //HUD height auto doesn't give the proper value, nor does actualheight so we're using this estimation
+            MainRealEstate.Margin = realestatemargin;
+            w.MinHeight = letterRatings.ActualHeight + Main.ActualHeight + 220; //220 to account for HUD height and margins carved space
+        }
+
+
 
         Point lastMousePos;
         private void Window_MouseMove(object sender, MouseEventArgs e)
@@ -410,7 +413,7 @@ namespace KeyTrain
         /// Single line -> center
         /// Multiple lines -> left
         /// </summary>
-        private void SetMainAlignment(object sender, SizeChangedEventArgs e)
+        private void Main_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (e.HeightChanged)
             {
@@ -425,6 +428,7 @@ namespace KeyTrain
                     Main.HorizontalAlignment = HorizontalAlignment.Center;
                 }
             }
+            SetMainRealEstate();
 
         }
 
@@ -449,6 +453,7 @@ namespace KeyTrain
         private void RestartButton_Click(object sender, RoutedEventArgs e)
         {
             Reset();
+            ResetCursorBlink();
         }
 
         private void Page_LostFocus(object sender, RoutedEventArgs e)
@@ -463,6 +468,7 @@ namespace KeyTrain
             HUD.Opacity = 1;
             Main.Opacity = 1;
             UpdateMain();
+            ResetCursorBlink();
         }
 
         public void Window_Closing(object sender, CancelEventArgs e)
