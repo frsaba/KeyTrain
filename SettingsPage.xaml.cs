@@ -99,5 +99,10 @@ namespace KeyTrain
                 OnPropertyChanged(key);
             }
         }
+
+        private void lengthslider_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            lengthslider.Value += Math.Sign(e.Delta) * 10;
+        }
     }
 }
