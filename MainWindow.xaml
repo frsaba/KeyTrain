@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         Title="KeyTrain" Height="550"  Width="825" MinHeight="460" MinWidth="575" 
         Background="#1f1f1f"
+        Loaded="Window_Loaded"
         StateChanged="Window_StateChanged"
         Closing="Window_Closing">
 

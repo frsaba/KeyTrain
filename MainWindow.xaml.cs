@@ -26,7 +26,16 @@ namespace KeyTrainWPF
     {
         public MainPage mainPage { get; private set; } = new MainPage();
         public SettingsPage settingsPage { get; private set; } = new SettingsPage();
+        ChainMap<string,dynamic> CFG => ConfigManager.Settings;
 
+        Dictionary<string, object> windowPlacementBindings => new Dictionary<string, object>
+            {
+                {"windowWidth" , Width},
+                {"windowHeight", Height},
+                {"windowState" , WindowState.ToString()},
+                {"windowLeft" ,  Left},
+                {"windowTop",    Top}
+            };
 
         public MainWindow()
         {
@@ -35,11 +44,17 @@ namespace KeyTrainWPF
             Focusable = true;
             NavigationCommands.BrowseBack.InputGestures.Clear();
             LoadMainPage(reset: true);
-            
+
         }
+
+
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
+            foreach (var pair in windowPlacementBindings)
+            {
+                CFG[pair.Key] = pair.Value;
+            }
             mainPage.Window_Closing(sender, e);
         }
 
@@ -71,6 +86,21 @@ namespace KeyTrainWPF
         {
             //Making sure both mainRealEstate's margins and letterRatings' columns behave properly on maximize
             mainPage.RatingsChanged();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (windowPlacementBindings.Keys.All(k => CFG.Keys.Contains(k)))
+            {
+                Left = CFG["windowLeft"];
+                Top = CFG["windowTop"];
+                WindowState = Enum.Parse(typeof(WindowState), CFG["windowState"]);
+                if (CFG["windowState"] == "Normal")
+                {
+                    Width = CFG["windowWidth"];
+                    Height = CFG["windowHeight"];
+                }
+            }
         }
     }
 }
