@@ -17,7 +17,7 @@ namespace KeyTrain
     /// Class for legging and querying keyboard training statistics
     /// </summary>
     [Serializable]
-    class KeyTrainStats
+    public class KeyTrainStats
     {
 
         public DefaultDict<char, TimeData> charTimes { get; private set; } = new DefaultDict<char, TimeData>() ;
@@ -153,7 +153,7 @@ namespace KeyTrain
         }
     }
     [Serializable]
-    class TimeData
+    public class TimeData
     {
         public List<double> values { get; private set; }
         public double average { get; private set; }
@@ -185,7 +185,7 @@ namespace KeyTrain
 
     //Counts are logged separately for each text in order to facilitate by-time visualization
     [Serializable]
-    class MissData
+    public class MissData
     {
         public List<(int missed, int total)> values { get; private set; }
         public int totalMissed => values.Select(x => x.missed).Sum();

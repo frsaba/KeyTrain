@@ -83,7 +83,10 @@ namespace KeyTrain
         private int chunkLength;
         private List<char> punctuation = new List<char>();
         Random random;
-        const int minSampleSize = 10;
+        public static int seed = 0; //different on startup
+        public static int offset = 0; //keep from skipping back and forth abusing the shuffle button
+        Random NextRandom() => new Random(seed + MainPage.stats.WPMLOG.Count + offset); //
+        const int minSampleSize = 10; //minimum amount of words deemed enough to pick from and seem random
         int capitals => ConfigManager.Settings["capitalsLevel"];
 
         /// <summary>
@@ -171,6 +174,8 @@ namespace KeyTrain
             {
                 options = options.OrderBy(w => w.Length).Take(Math.Max(options.Count / 100, 150)).ToList();
             }
+            random = NextRandom();
+            place = 0;
             shuffled = options.OrderBy(x => random.Next()).ToList();
         }
 
@@ -182,7 +187,8 @@ namespace KeyTrain
 
             dict = Sanitize(dictonary);
             chunkLength = maxLength;
-            random = new Random();
+            random = NextRandom();
+            place = 0;
             shuffled = dict.OrderBy(x=> random.Next()).ToList();
 
             //all characters which appear at least 50 times in the dictionary

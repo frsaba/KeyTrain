@@ -48,7 +48,7 @@ namespace KeyTrain
         public string capitalDescription => capitalChoices[CapitalsLevel];
 
 
-        MainWindow window => (MainWindow)Window.GetWindow(this);
+        MainWindow window;
 
         private void dictFileButton_Click(object sender, RoutedEventArgs e)
         {
@@ -86,13 +86,14 @@ namespace KeyTrain
             MainPage.Generator = RandomizedLesson.FromDictionaryFiles(ConfigManager.dictionaryPaths);
             MainPage.Text = MainPage.Generator.NextText();
 
-            Trace.WriteLine(ConfigManager.lessonLength);
+            //Trace.WriteLine(ConfigManager.lessonLength);
             ConfigManager.WriteConfigFile();
-            window.LoadMainPage(reset: true);
+            window.LoadMainPage(reset: true, reEmphasize: true);
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            window = (MainWindow)Window.GetWindow(this);
             settings_copy = ConfigManager.Settings.Clone();
             foreach (string key in settings_copy.Keys.Append("capitalDescription"))
             {

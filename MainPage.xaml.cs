@@ -31,9 +31,9 @@ namespace KeyTrain
         public static LessonGenerator Generator;
         public static string selectedChars { get => CFG["emphasizedLetters"]; set => CFG["emphasizedLetters"] = value; }
         
-SortedSet<int> misses = new SortedSet<int>();
+    SortedSet<int> misses = new SortedSet<int>();
         static Stopwatch timer;
-        static KeyTrainStats stats = new KeyTrainStats();
+        public static KeyTrainStats stats = new KeyTrainStats();
 
         int ratingsDrawn = 0;
         static TimeSpan[] times;
@@ -127,6 +127,7 @@ SortedSet<int> misses = new SortedSet<int>();
             InitializeComponent();
             ConfigManager.ReadConfigFile();
             Focusable = true;
+            RandomizedLesson.seed = new Random().Next();
             Generator = RandomizedLesson.FromDictionaryFiles(CFG["dictionaryPath"]);
             Text = Generator.CurrentText;
             LetterRating.SetParent(letterRatings, this);
@@ -452,6 +453,7 @@ SortedSet<int> misses = new SortedSet<int>();
         private void RerollButton_Click(object sender, RoutedEventArgs e)
         {
             Text = Generator.NextText();
+            RandomizedLesson.offset++;
             Reset();
         }
 
