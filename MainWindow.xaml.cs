@@ -58,10 +58,11 @@ namespace KeyTrainWPF
             mainPage.Window_Closing(sender, e);
         }
 
-        public void LoadMainPage(bool reset = false)
+        public void LoadMainPage(bool reset = false, bool reEmphasize = true)
         {
             Frame.Content = mainPage;
-            if (MainPage.Generator.GetType() == typeof(RandomizedLesson))
+            
+            if (reEmphasize && MainPage.Generator.GetType() == typeof(RandomizedLesson))
             {
                 ((RandomizedLesson)MainPage.Generator).Emphasize(MainPage.selectedChars);
                 MainPage.Text = MainPage.Generator.NextText();
@@ -88,7 +89,7 @@ namespace KeyTrainWPF
             mainPage.RatingsChanged();
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private void Window_SourceInitialized(object sender, EventArgs e)
         {
             if (windowPlacementBindings.Keys.All(k => CFG.Keys.Contains(k)))
             {
@@ -101,6 +102,7 @@ namespace KeyTrainWPF
                     Height = CFG["windowHeight"];
                 }
             }
+
         }
     }
 }
