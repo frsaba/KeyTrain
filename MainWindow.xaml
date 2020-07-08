@@ -5,37 +5,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KeyTrainWPF"
         mc:Ignorable="d"
-        Title="KeyTrain" Height="550"  Width="750" MinHeight="500" MinWidth="600"
-        PreviewTextInput="Window_PreviewTextInput"
-        PreviewKeyDown="Window_PreviewKeyDown"
-        SizeChanged="Window_SizeChanged" Icon="/icon.png">
+        Title="KeyTrain" Height="550"  Width="825" MinHeight="460" MinWidth="575" 
+        Background="#1f1f1f"
+        SourceInitialized="Window_SourceInitialized"
+        StateChanged="Window_StateChanged"
+        Closing="Window_Closing">
 
-    <Grid x:Name="Wrapper" Background="#1f1f1f" 
-          TextElement.Foreground="Silver" 
-          TextElement.FontSize  ="33" 
-          TextElement.FontFamily="Monaco"
-          TextElement.FontWeight="Bold">
-        <Grid x:Name="HUD" Background="#1f1f1f" VerticalAlignment="Top" Height="245" >
-            <TextBlock HorizontalAlignment="Left" Margin="115,15,0,0"  TextWrapping="Wrap" VerticalAlignment="Top" Height="60" RenderTransformOrigin="0,0">
-                <Run x:Name="wpmcounter" Text="0.00" TextElement.FontSize="44"/>
-                <Run Text="words per minute" TextElement.FontSize="15"/>
-            </TextBlock>
-            <TextBlock  HorizontalAlignment="Right" Margin="0,15,115,0"  TextWrapping="Wrap" VerticalAlignment="Top" Height="54" Width="190" RenderTransformOrigin="1,0" TextAlignment="Right">
-                <Run x:Name="misscounter" Text="0" TextElement.FontSize="44"/>
-                <Run Text="misses" TextElement.FontSize="15"/>
-            </TextBlock>
-            <TextBlock  HorizontalAlignment="Left" Margin="115,72,0,0"  TextWrapping="Wrap" VerticalAlignment="Top" Height="60" RenderTransformOrigin="0,0">
-                <Run Text="Gain:" TextElement.FontSize="13"/>
-                <Run x:Name="wpmgain" Text="0.00"  TextElement.FontSize="20"/><Run Text=" "/>
-            </TextBlock>
-            <TextBlock HorizontalAlignment="Right" Margin="0,72,106,0"  TextWrapping="Wrap" VerticalAlignment="Top" Height="60" RenderTransformOrigin="1,0" TextAlignment="Right" Width="165">
-                <Run Text="Gain:" TextElement.FontSize="13"/><Run Text=" "/>
-                <Run x:Name="missgain" Text="0" TextElement.FontSize="20"/></TextBlock>
-            <UniformGrid Name="letterRatings" Margin="50,110,54,0" Rows="3" Columns="16" HorizontalAlignment="Center" VerticalAlignment="Top" >
-            </UniformGrid>
-        </Grid>
-        <TextBlock x:Name="Main" Foreground="White" Padding="40,40,40,40" HorizontalAlignment="Center" TextWrapping="WrapWithOverflow"  VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" 
-                   TextAlignment="Left" Height="234" Margin="0,180,0,0" Grid.ColumnSpan="2"  
-                   Text="dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore" MinWidth="200" LineHeight="45"/>
+    <Grid x:Name="Wrapper">
+        
+        <!--<Button x:Name="SettingsButton" FontSize="25" Click="SettingsButton_Click" HorizontalAlignment="Right" Margin="0,11,10,0" VerticalAlignment="Top" Panel.ZIndex="10" Width="35" Height="35" Background="{x:Null}">
+            <Image Source="/appbar.cog.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="45" Height="45"></Image>
+        </Button>-->
+        <Frame x:Name="Frame" NavigationUIVisibility="Hidden" Focusable="False" >
+            
+        </Frame>
     </Grid>
+
+
 </Window>

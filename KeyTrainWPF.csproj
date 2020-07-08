@@ -10,7 +10,26 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="icon.png" />
+    <None Remove="icons\appbar.close.png" />
+    <None Remove="icons\appbar.cog.png" />
+    <None Remove="icons\appbar.folder.ellipsis.png" />
+    <None Remove="icons\appbar.graph.line.up.png" />
+    <None Remove="icons\appbar.page.check.png" />
+    <None Remove="icons\appbar.reset.png" />
+    <None Remove="icons\appbar.shuffle.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="icons\appbar.close.png" />
+    <Resource Include="icons\appbar.graph.line.up.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="icons\appbar.cog.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>
@@ -19,7 +38,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="icon.png" />
+    <Reference Include="PythonicHelpers">
+      <HintPath>..\..\PythonicHelpers\bin\Release\netcoreapp3.1\PythonicHelpers.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="icons\appbar.page.check.png" />
+    <Resource Include="icons\appbar.reset.png" />
+    <Resource Include="icons\appbar.shuffle.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="icons\appbar.folder.ellipsis.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

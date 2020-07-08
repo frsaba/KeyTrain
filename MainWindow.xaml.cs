@@ -15,318 +15,94 @@ using System.Windows.Controls.Primitives;
 using System.Dynamic;
 using System.Threading;
 using System.ComponentModel;
-using static KeyTrain.DarkStyles.MainWindow;
+//using static KeyTrain.DarkStyles.MainWindow;
+using Microsoft.Win32;
+using System.IO;
 
 namespace KeyTrainWPF
 {
    
     public partial class MainWindow : Window
     {
-        static string Text;
-        //static LessonGenerator generator = new PresetTextLesson("Lorem ipsum dolor sit amet, " +
-            //"consectetur adipiscing elit, sed do eiusmod tempor " +
-            //"incididunt ut labore et dolore magna aliqua. ");
+        public MainPage mainPage { get; private set; } = new MainPage();
+        public SettingsPage settingsPage { get; private set; } = new SettingsPage();
+        ChainMap<string,dynamic> CFG => ConfigManager.Settings;
 
-        static LessonGenerator generator = new RandomizedLesson();
-        static HashSet<char> selectedChars = new HashSet<char>();
-        SortedSet<int> misses = new SortedSet<int>();
-        static Stopwatch timer;
-        
-        int ratingsDrawn = 0;
-        static TimeSpan[] times;
-
-        new static class Cursor
-        {
-            public static int position = 0;
-            public static char letter => Text[position];
-            //public static char drawnLetter => Text[position]; 
-        }
-        
-        class LetterRating : LetterRatingStyle
-        {
-           
-            public static UniformGrid grid;
-            public static MainWindow window;
-            public static string toInclude = " .,;?!";
-            Label l;
-            char letter = '-';
-            bool hasData = true;
-            bool isSelected => selectedChars.Contains(letter);
-
-            SolidColorBrush borderColor { get => isSelected ? highlightBorder : (hasData ? normalColor : inactiveColor); }
-            public LetterRating(char letter, Color bgcolor, bool hasData = true)
+        Dictionary<string, object> windowPlacementBindings => new Dictionary<string, object>
             {
-                this.letter = letter;
-                this.hasData = hasData;
-                l = LabelWithStyle(bgcolor, hasData);
-                l.Content = letter.ToString();
-
-                l.Foreground = hasData ? normalColor : inactiveColor;
-                l.BorderBrush = borderColor;
-                l.MouseEnter += (obj, mouseEvent) => { l.BorderBrush = highlightBorder; l.BorderThickness = new Thickness(2); };
-                l.MouseLeave += (obj, mouseEvent) => { l.BorderBrush = borderColor; l.BorderThickness =  new Thickness(1); };
-                l.MouseUp +=    (obj, mouseEvent) => {
-                    _ = isSelected ? selectedChars.Remove(letter) : selectedChars.Add(letter);
-
-                    if(generator.GetType() == typeof(RandomizedLesson)) {
-                        ((RandomizedLesson)generator).Emphasize(selectedChars);
-                        Text = generator.NextText();
-                        window.Reset();
-                    }
-                };
-                ToolTip t = new ToolTip();
-                var ct = KeyTrainStats.charTimes[letter];
-                var ms = KeyTrainStats.charMisses[letter];
-
-                t.Content = hasData ?   
-                    $"Avg. speed: {WPM_From_ms(ct.average):0.00} WPM\n" +
-                    $"Last speed: {WPM_From_ms(ct.values.Last()):0.00} WPM\n" +
-                    $"Error rate: {ms.errorRate * 100:0.##}%" 
-                    :"No data";
-                t.FontFamily = new FontFamily("Courier");
-
-                l.ToolTip = t;
-                ToolTipService.SetInitialShowDelay(l,750);
-                
-                grid.Children.Add(l);
-            }
-            public static void SetParent(UniformGrid grid, MainWindow window)
-            {
-                LetterRating.grid = grid;
-                LetterRating.window = window;
-            }
-        }
-
-        static Run typed  = RunWithStyle(typedStyle),
-                mistakes  = RunWithStyle(mistakesStyle),
-                active    = RunWithStyle(activeStyle),
-                remaining = RunWithStyle(remainingStyle);
-
-
-        //TODO: move cursor blinking, at least move it outside the MainWindow constructor
-        
-        Timer cursorBlinker;
-        bool blinkState = true;
-        void ResetCursorBlink()
-        {
-            blinkState = true;
-            cursorBlinker.Change(TimeSpan.Zero, blinkTime);
-        }
-        
+                {"windowWidth" , Width},
+                {"windowHeight", Height},
+                {"windowState" , WindowState.ToString()},
+                {"windowLeft" ,  Left},
+                {"windowTop",    Top}
+            };
 
         public MainWindow()
         {
             InitializeComponent();
-            Text = generator.CurrentText;
-            LetterRating.SetParent(letterRatings, this);
-            cursorBlinker = new Timer((e) => {
-                Dispatcher.Invoke(() =>
-                {
-                    if(Keyboard.FocusedElement == this)
-                    {
-                        active.Background = new SolidColorBrush( blinkState ? cursorBgColors.Item1 : cursorBgColors.Item2);
-                        active.Foreground = new SolidColorBrush( blinkState ? cursorFgColors.Item1 : cursorFgColors.Item2);
-                    }
-                    
-                });
-                blinkState = !blinkState;
-            }, null, TimeSpan.Zero, blinkTime); 
+            ConfigManager.ReadConfigFile();
+            Focusable = true;
+            NavigationCommands.BrowseBack.InputGestures.Clear();
+            LoadMainPage(reset: true);
+
+        }
+
+
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            foreach (var pair in windowPlacementBindings)
+            {
+                CFG[pair.Key] = pair.Value;
+            }
+            mainPage.Window_Closing(sender, e);
+        }
+
+        public void LoadMainPage(bool reset = false, bool reEmphasize = true)
+        {
+            Frame.Content = mainPage;
             
-            Reset();
-            UpdateHUD();
+            if (reEmphasize && MainPage.Generator.GetType() == typeof(RandomizedLesson))
+            {
+                ((RandomizedLesson)MainPage.Generator).Emphasize(MainPage.selectedChars);
+                MainPage.Text = MainPage.Generator.NextText();
+            }
+            if (reset)
+            {
+                mainPage.Reset();
+            }
+            mainPage.RatingsChanged();
+        }
+        public void LoadSettingsPage()
+        {
+            Frame.Content = settingsPage;
         }
 
-        // InlineCollection cannot be instantiated directly so we cannot just .prepend and set it. This is how we replace Main.Inlines with a new List<Inlines>
-        void OverwriteMainIC(List<Inline> inlines)
+        public void LoadStatsPage()
         {
-            Main.Inlines.Clear();
-            foreach (var il in inlines)
-            {
-                Main.Inlines.Add(il);
-            }
+            Frame.Content = settingsPage;
         }
 
-        
-        //TODO: manual overflow. builtin often linebreaks on inline borders which is distracting
-        /// <summary>
-        /// Formats the main textblock's inlines based on the current state. Mainly concerned with highlighting the errors in red
-        /// </summary>
-        void UpdateMain()
+        private void Window_StateChanged(object sender, EventArgs e)
         {
-            remaining.Text = Text.Substring(Cursor.position + 1);
-            active.Text = Cursor.letter.ToString();
-            var ic = Main.Inlines; 
-
-            int mcount = misses.Count == 0 || misses.Last() != Cursor.position ? 
-                misses.Count : misses.Count - 1;
-
-            int typed_il_count = 2 * mcount + 1;
-
-            while (ic.Count  < typed_il_count + 3)
-            {
-                var il = ConcatToList<Inline>(
-                    RunWithStyle(typedStyle),
-                    RunWithStyle(errorStyle),
-                    Main.Inlines.ToList());
-                OverwriteMainIC(il);
-            }
-
-            var mborders = new List<int>() {0, Cursor.position};
-            mborders.InsertRange(1, misses.Take(mcount).SelectMany(
-                x => new int[] { x, x + 1 } ));
-
-            for (int i = 0; i < ic.Count - 3; i++)
-            {
-                Run r = (Run)ic.ElementAt(i);
- 
-                r.Text = Text.Substring(mborders[i], mborders[i+1] - mborders[i]);
-                if (i % 2 == 1) //Are we drawing an error?
-                    r.Text = r.Text.Replace(" ", spaceReplacement);
-            }
+            //Making sure both mainRealEstate's margins and letterRatings' columns behave properly on maximize
+            mainPage.RatingsChanged();
         }
 
-        //TODO: ignore newline/control characters
-        private void Window_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        private void Window_SourceInitialized(object sender, EventArgs e)
         {
-
-            //Backspace
-            if (e.Text == "\b" )
+            if (windowPlacementBindings.Keys.All(k => CFG.Keys.Contains(k)))
             {
-                if(string.IsNullOrEmpty(mistakes.Text) == false)
+                Left = CFG["windowLeft"];
+                Top = CFG["windowTop"];
+                WindowState = Enum.Parse(typeof(WindowState), CFG["windowState"]);
+                if (CFG["windowState"] == "Normal")
                 {
-                    mistakes.Text = mistakes.Text.Remove(mistakes.Text.Length - 1);
-                    UpdateMain();
+                    Width = CFG["windowWidth"];
+                    Height = CFG["windowHeight"];
                 }
-                return;
             }
-
-            Trace.WriteLine(e.Text);
-            char c;
-            try { 
-                c = e.Text[0];
-                if (e.Text.First() == '\\') { return; }
-                
-            }
-            catch { return; }
-
-            //Debug.Content = $"Key: {c}, Correct: {Cursor.letter}";
-
-            //Correct letter
-            if (c == Cursor.letter && string.IsNullOrEmpty(mistakes.Text))
-            {
-                typed.Text += c;
-                timer.Stop();
-                times[Cursor.position] = timer.Elapsed;
-                ResetCursorBlink();
-                Cursor.position++;
-            }
-            else //Miss
-            {
-                misses.Add(Cursor.position);      
-                mistakes.Text += c;
-            }
-
-            timer.Start();
-            if (Cursor.position == Text.Length)
-            {
-                NextText();
-            }
-            UpdateMain();
 
         }
-
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e) 
-        {
-            if (e.WidthChanged)
-            {
-                RatingsChanged(windowWidth:e.NewSize.Width);
-            }
-            if (e.HeightChanged)
-            {
-                Main.Margin = new Thickness(0,
-                    (e.NewSize.Height - HUD.Height - Main.Height) / 4 + HUD.Height, 0, 0);
-            }
-        }
-        private void RatingsChanged(double windowWidth = 0, double spacing = 2)
-        {
-            if (windowWidth == 0)
-            {
-                MainWindow w = LetterRating.window;
-                windowWidth = Math.Max(w.Width, w.ActualWidth);
-            }
-
-            double margins = letterRatings.Margin.Left + letterRatings.Margin.Right;
-            letterRatings.Columns = (int)Math.Min(
-            (windowWidth - margins) / (LetterRating.width + spacing),
-                ratingsDrawn);
-        }
-
-        //Reset with Ctrl+R
-        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if(Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.R)
-            {
-                Reset();
-            }
-        }
-
-        /// <summary>
-        /// Advances to the next text chunk
-        /// </summary>
-        void NextText()
-        {
-            KeyTrainStats.Enter(Text, times, misses, timer.Elapsed.TotalMinutes);
-            UpdateHUD();
-
-            Text = generator.NextText();
-            Reset();
-        }
-        
-        void UpdateHUD()
-        {
-            double oldWPMAvg = KeyTrainStats.WPMLOG.DefaultIfEmpty(0).Average();
-            double oldMissAvg = KeyTrainStats.MISSLOG.DefaultIfEmpty(0).Average();
-            double wpm = KeyTrainStats.LastWPM;
-            int misscount = KeyTrainStats.LastMissCount;
-            wpmcounter.Text = $"{wpm:0.00}";
-            misscounter.Text = $"{misscount:0}";
-            ConditionalFormat(wpmgain, wpm - oldWPMAvg);
-            ConditionalFormat(missgain, misscount - oldMissAvg, inverted: true);
-            DrawLetterRatings();
-            RatingsChanged();
-        }
-
-        void DrawLetterRatings()
-        {
-            letterRatings.Children.Clear(); //TODO: overwrite existing instead
-            DefaultDict<char,(Color color, bool active)> lrs = 
-                KeyTrainStats.GetLetterRatings(
-                    alwaysInclude: generator.alphabet.Union(LetterRating.toInclude).ToHashSet());
-            ratingsDrawn = lrs.Count;
-            foreach (char key in lrs.Keys.
-                OrderBy(c => !lrs[c].active)
-                .ThenBy(c => !char.IsLetterOrDigit(c))
-                .ThenBy(c => c))
-            {
-                new LetterRating(key, lrs[key].color, lrs[key].active);
-            }
-            RatingsChanged(Width);
-        }
-
-        void Reset(bool update = true)
-        {
-            typed.Text = ""; mistakes.Text = ""; active.Text = ""; remaining.Text = Text;
-            misses.Clear();
-            timer = new Stopwatch();
-            times = new TimeSpan[Text.Length];
-            Cursor.position = 0;
-            List<Inline> inlines = new List<Inline>();
-            inlines.AddRange(ConcatToList<Run>(typed, mistakes, active, remaining));
-
-            OverwriteMainIC(inlines);
-            if(update) UpdateMain();
-        }
-
-        
     }
 }

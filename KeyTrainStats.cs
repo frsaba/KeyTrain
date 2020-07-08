@@ -8,24 +8,26 @@ using System.Windows.Markup;
 using static Pythonic.ListHelpers;
 using static KeyTrain.KeyTrainStatsConversion;
 using System.Windows.Media;
-using System.Security.Policy;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
 
 namespace KeyTrain
 {   
     /// <summary>
     /// Class for legging and querying keyboard training statistics
     /// </summary>
-    static class KeyTrainStats
+    [Serializable]
+    public class KeyTrainStats
     {
 
-        public static DefaultDict<char, TimeData> charTimes { get; private set; } = new DefaultDict<char, TimeData>() ;
-        public static DefaultDict<char, MissData> charMisses { get; private set; } = new DefaultDict<char, MissData>();
+        public DefaultDict<char, TimeData> charTimes { get; private set; } = new DefaultDict<char, TimeData>() ;
+        public DefaultDict<char, MissData> charMisses { get; private set; } = new DefaultDict<char, MissData>();
         
-        public static List<double> WPMLOG { get; private set; } =  new List<double>();
-        public static double LastWPM => WPMLOG.DefaultIfEmpty(0).Last();
+        public List<double> WPMLOG { get; private set; } =  new List<double>();
+        public double LastWPM => WPMLOG.DefaultIfEmpty(0).Last();
 
-        public static List<int> MISSLOG { get; private set; } = new List<int>();
-        public static int LastMissCount => MISSLOG.LastOrDefault();
+        public List<int> MISSLOG { get; private set; } = new List<int>();
+        public int LastMissCount => MISSLOG.LastOrDefault();
 
         public static List<(Color color, double delta)> RatingPalette { get; private set; } = new List<(Color, double)>
         {
@@ -46,10 +48,10 @@ namespace KeyTrain
         /// <param name="times">The timestamps of each keypress</param>
         /// <param name="misses">Index of characters which very missed</param>
         /// <param name="totalMinutes">Time the lesson took in minutes. Calculated from times if left empty </param>
-        public static void Enter(string text, TimeSpan[] times, SortedSet<int> misses, double? totalMinutes = null)
+        public void Enter(string text, TimeSpan[] times, SortedSet<int> misses, double? totalMinutes = null)
         {
             DefaultDict<char, (int misses, int total)> counts = new DefaultDict<char, (int, int)>();
-
+            
             for (int i= 0; i < text.Length; i++)
             {
                 char c = char.ToUpper(text[i]);
@@ -59,9 +61,9 @@ namespace KeyTrain
             foreach (char k in charTimes.Keys)
             {
                 charMisses[k].Add(counts[k].misses, counts[k].total);
-                Trace.WriteLine(
-                    $"{k} - AVGSPEED: {charTimes[k].average:0.00} " +
-                    $"MISSES: {string.Join(';', charMisses[k].values.Select(x => $"{x.missed}/{x.total}").ToList())} ");
+                //Trace.WriteLine(
+                //    $"{k} - AVGSPEED: {charTimes[k].average:0.00} " +
+                //    $"MISSES: {string.Join(';', charMisses[k].values.Select(x => $"{x.missed}/{x.total}").ToList())} ");
                     
                 //Trace.WriteLine($"{k} - AVGSPEED: {charTimes[k].average:0.00} values: {string.Join(';', charTimes[k].values)} ");
             }
@@ -76,9 +78,10 @@ namespace KeyTrain
         /// </summary>
         /// <param name="alwaysInclude">Include these characters even if there's no data about them.</param>
         /// <returns>For each letter: Tuple of rating (color) and whether there was data available (hadData bool) </returns>
-        public static DefaultDict<char, (Color color, bool hadData)> GetLetterRatings(HashSet<char> alwaysInclude = null)
+        public DefaultDict<char, (Color color, bool hadData)> GetLetterRatings(HashSet<char> alwaysInclude = null)
         {
             alwaysInclude ??= new HashSet<char>();
+
 
             DefaultDict<char, (Color, bool)> result = new DefaultDict<char, (Color, bool)>();
             double avgAllLetters = LPM_From_WPM(WPMLOG.DefaultIfEmpty(0).Average());
@@ -88,12 +91,15 @@ namespace KeyTrain
 
                 double delta = avgThisLetter - avgAllLetters;
                 bool hadData = double.IsFinite(avgThisLetter);
-                for (int i = 0; i < RatingPalette.Count; i++)
+                if (hadData || alwaysInclude.Contains(c))
                 {
-                    if(delta <= RatingPalette[i].delta)
+                    for (int i = 0; i < RatingPalette.Count; i++)
                     {
-                        result[c] = (RatingPalette[i].color, hadData);
-                        break;
+                        if (delta <= RatingPalette[i].delta)
+                        {
+                            result[c] = (RatingPalette[i].color, hadData);
+                            break;
+                        }
                     }
                 }
 
@@ -102,6 +108,7 @@ namespace KeyTrain
             return result;
         }
 
+        public int updateTest = 213;
         
     }
 
@@ -114,8 +121,39 @@ namespace KeyTrain
         public static double WPM(int length, double minutes) => LPM(length, minutes) / 5;
     }
 
-    
-    class TimeData
+
+    static class KeyTrainSerializer
+    {
+        public static void Serialize(KeyTrainStats obj, string path)
+        {
+            if (File.Exists(path)) File.Delete(path);
+            FileStream stream = File.Create(path);
+            BinaryFormatter bf = new BinaryFormatter();
+            bf.Serialize(stream, obj);
+            stream.Close();
+        }
+
+        public static KeyTrainStats Deserialize(string path)
+        {
+            if (File.Exists(path) == false) { 
+                Trace.WriteLine("No profile found");
+                return new KeyTrainStats();
+            }
+            
+
+            FileStream stream = File.OpenRead(path);
+            if(stream.Length == 0){
+                Trace.WriteLine("Empty profile");
+                return new KeyTrainStats();
+            }
+            BinaryFormatter bf = new BinaryFormatter();
+            KeyTrainStats kts = (KeyTrainStats)bf.Deserialize(stream);
+            stream.Close();
+            return kts;
+        }
+    }
+    [Serializable]
+    public class TimeData
     {
         public List<double> values { get; private set; }
         public double average { get; private set; }
@@ -146,7 +184,8 @@ namespace KeyTrain
     }
 
     //Counts are logged separately for each text in order to facilitate by-time visualization
-    class MissData
+    [Serializable]
+    public class MissData
     {
         public List<(int missed, int total)> values { get; private set; }
         public int totalMissed => values.Select(x => x.missed).Sum();
