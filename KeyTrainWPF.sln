@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30002.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KeyTrainWPF", "KeyTrainWPF.csproj", "{AFD58287-82A8-4886-86E6-308512E14E59}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KeyTrain", "KeyTrain.csproj", "{AFD58287-82A8-4886-86E6-308512E14E59}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

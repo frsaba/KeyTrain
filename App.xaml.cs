@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace KeyTrainWPF
+namespace KeyTrain
 {
     /// <summary>
     /// Interaction logic for App.xaml

@@ -19,13 +19,14 @@ using System.ComponentModel;
 using Microsoft.Win32;
 using System.IO;
 
-namespace KeyTrainWPF
+namespace KeyTrain
 {
    
     public partial class MainWindow : Window
     {
         public MainPage mainPage { get; private set; } = new MainPage();
         public SettingsPage settingsPage { get; private set; } = new SettingsPage();
+        public StatsPage statsPage { get; private set; } = null;
         ChainMap<string,dynamic> CFG => ConfigManager.Settings;
 
         Dictionary<string, object> windowPlacementBindings => new Dictionary<string, object>
@@ -80,7 +81,8 @@ namespace KeyTrainWPF
 
         public void LoadStatsPage()
         {
-            Frame.Content = settingsPage;
+            statsPage ??= new StatsPage();
+            Frame.Content = statsPage;
         }
 
         private void Window_StateChanged(object sender, EventArgs e)

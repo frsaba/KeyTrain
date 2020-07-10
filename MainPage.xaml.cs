@@ -14,7 +14,7 @@ using System.Windows.Controls.Primitives;
 using System.Threading;
 using System.ComponentModel;
 using static KeyTrain.DarkStyles.MainPage;
-using KeyTrainWPF;
+using KeyTrain;
 
 namespace KeyTrain
 {
@@ -31,7 +31,7 @@ namespace KeyTrain
         public static LessonGenerator Generator;
         public static string selectedChars { get => CFG["emphasizedLetters"]; set => CFG["emphasizedLetters"] = value; }
         
-    SortedSet<int> misses = new SortedSet<int>();
+        SortedSet<int> misses = new SortedSet<int>();
         static Stopwatch timer;
         public static KeyTrainStats stats = new KeyTrainStats();
 

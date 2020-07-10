@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Linq;
 using System.IO;
-using KeyTrainWPF;
+using KeyTrain;
 using static Pythonic.ListHelpers;
 using System.Diagnostics;
 using System.ComponentModel;
