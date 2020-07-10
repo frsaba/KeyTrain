@@ -25,16 +25,16 @@
         </Button>
         <ScrollViewer Margin="10,65,10,10">
             <Grid>
-                <oxy:Plot x:Name="wpmplot" Margin="30" Background="Transparent" TextColor="White" PlotAreaBorderColor="White" SelectionColor="Red" LegendTextColor="White" PlotMargins="10,10,10,10">
+                <oxy:Plot x:Name="wpmplot" Margin="30,40,30,55" Background="Transparent" TextColor="White" PlotAreaBorderColor="White" SelectionColor="Red" LegendTextColor="White" PlotMargins="10,10,10,10">
                     <oxy:Plot.Series>
-                        <oxy:LineSeries x:Name="wpmline"  Color="#FF35BB9C" StrokeThickness="3" LineJoin="Round"/>
+                        <oxy:ScatterSeries x:Name="wpmline" MarkerFill="#FF35BB9C" MarkerType="Circle" MarkerSize="2"/>
                     </oxy:Plot.Series>
                     <oxy:Plot.Axes>
                         <oxy:LinearAxis Position="Bottom" AbsoluteMinimum="-200" Minimum="0" Maximum="2500" />
                         <oxy:LinearAxis Position="Left" AbsoluteMinimum="0" AbsoluteMaximum="200" Minimum="30" Maximum="120" />
                     </oxy:Plot.Axes>
                 </oxy:Plot>
-                <Slider Width="300" Value="1" ValueChanged="Slider_ValueChanged" Minimum="1" Maximum="800" TickFrequency="1" Margin="50,10,10,10" HorizontalAlignment="Left" IsSnapToTickEnabled="False"/>  
+                <Slider x:Name="wpmSmoothSlider" Width="300" Value="1" ValueChanged="Slider_ValueChanged" Minimum="1" Maximum="800" TickFrequency="1" Margin="50,10,10,10" HorizontalAlignment="Left" IsSnapToTickEnabled="False"/>  
                 
             </Grid>
         </ScrollViewer>
