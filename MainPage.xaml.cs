@@ -36,7 +36,7 @@ namespace KeyTrain
         public static KeyTrainStats stats = new KeyTrainStats();
 
         int ratingsDrawn = 0;
-        static TimeSpan[] times;
+        static List<TimeSpan> times;
 
         static class Pointer
         {
@@ -244,6 +244,10 @@ namespace KeyTrain
             if (c == Pointer.letter && mistakes.Text.Length == wordJoiner.Length)
             {
                 timer.Stop();
+                while(Pointer.position >= times.Count)
+                {
+                    times.Add(TimeSpan.Zero);
+                }
                 times[Pointer.position] = timer.Elapsed;
                 ResetCursorBlink();
                 Pointer.position++;
@@ -302,7 +306,7 @@ namespace KeyTrain
             typed.Text = ""; mistakes.Text = wordJoiner; active.Text = ""; remaining.Text = Text;
             misses.Clear();
             timer = new Stopwatch();
-            times = new TimeSpan[Text.Length];
+            times = new List<TimeSpan>();
             Pointer.position = 0;
             List<Inline> inlines = new List<Inline>();
             inlines.AddRange(ConcatToList<Run>(typed, mistakes, active, remaining));

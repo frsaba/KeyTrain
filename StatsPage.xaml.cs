@@ -34,12 +34,16 @@ namespace KeyTrain
         {
             window = (MainWindow)Window.GetWindow(this);
             wpmplot.Title = "WPM";
-            var yaxis = wpmplot.Axes.ElementAt(1);
-            yaxis.Minimum = wpmlog.Min();
-            yaxis.Maximum = wpmlog.Max();
-            yaxis.Title = "WPM";
-            var xaxis = wpmplot.Axes.ElementAt(0);
-            xaxis.Title = "Sample";
+            if(wpmlog.Count > 0)
+            {
+                var yaxis = wpmplot.Axes.ElementAt(1);
+                yaxis.Minimum = wpmlog.Min();
+                yaxis.Maximum = wpmlog.Max();
+                yaxis.Title = "WPM";
+                var xaxis = wpmplot.Axes.ElementAt(0);
+                xaxis.Title = "Sample";
+
+            }
         }
 
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

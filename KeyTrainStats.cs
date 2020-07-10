@@ -48,7 +48,7 @@ namespace KeyTrain
         /// <param name="times">The timestamps of each keypress</param>
         /// <param name="misses">Index of characters which very missed</param>
         /// <param name="totalMinutes">Time the lesson took in minutes. Calculated from times if left empty </param>
-        public void Enter(string text, TimeSpan[] times, SortedSet<int> misses, double? totalMinutes = null)
+        public void Enter(string text, IList<TimeSpan> times, SortedSet<int> misses, double? totalMinutes = null)
         {
             DefaultDict<char, (int misses, int total)> counts = new DefaultDict<char, (int, int)>();
             
