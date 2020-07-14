@@ -56,7 +56,7 @@ namespace KeyTrain
             var points = new List<ScatterPoint>();
             int start = smoothness;
             int end = wpmlog.Count - smoothness;
-            int step = (int)Math.Ceiling(wpmlog.Count / 1000.0);
+            int step = Math.Min(smoothness + 1, (int)Math.Ceiling(wpmlog.Count / 1000.0));
             double avg = wpmlog.Average();
             for (int i = start; i < end; i+=step)
             {
