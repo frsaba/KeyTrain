@@ -21,6 +21,7 @@ namespace KeyTrain
         public abstract string CurrentText { get; }
         public abstract string NextText();
         public abstract HashSet<char> alphabet { get; protected set; }
+        public DefaultDict<char, int> characterFrequencyCount { get; protected set; }
     }
     /// <summary>
     /// Keyboard lessons with predefined text, split into chunks
@@ -193,6 +194,13 @@ namespace KeyTrain
 
             //all characters which appear at least 50 times in the dictionary
             alphabet = dict.SelectMany(x => x.ToUpper()).GroupBy(x => x).Where(x => x.Count() > 50).SelectMany(x => x).ToHashSet();
+
+            characterFrequencyCount = new DefaultDict<char, int>();
+            foreach (char c in dictonary.SelectMany(w => w.ToUpper().ToCharArray()))
+            {
+                characterFrequencyCount[c] += 1;
+            }
+
             NextText();
         }
 

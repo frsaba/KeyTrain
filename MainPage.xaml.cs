@@ -356,7 +356,7 @@ namespace KeyTrain
             var keys = lrs.Keys.
                 OrderBy(c => !lrs[c].active)
                 .ThenBy(c => !char.IsLetterOrDigit(c))
-                .ThenBy(c => stats.charTimes[c].average);
+                .ThenByDescending(c => Generator.characterFrequencyCount[c]);
 
             foreach (char k in keys)
             {
