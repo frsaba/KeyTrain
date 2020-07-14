@@ -25,17 +25,17 @@
         </Button>
         <ScrollViewer Margin="10,65,10,10">
             <Grid>
-                <oxy:Plot x:Name="wpmplot" Margin="30,40,30,55" Background="Transparent" TextColor="White" PlotAreaBorderColor="White" SelectionColor="Red" LegendTextColor="White" PlotMargins="10,10,10,10">
+                <oxy:Plot x:Name="wpmplot" Margin="30,40,30,55" Background="Transparent" TextColor="White" PlotAreaBorderColor="White" SelectionColor="Red" LegendTextColor="White" PlotMargins="15,15,15,15" LegendItemAlignment="Center" IsManipulationEnabled="False">
                     <oxy:Plot.Series>
-                        <oxy:ScatterSeries x:Name="wpmline" MarkerFill="#FF35BB9C" MarkerType="Circle" MarkerSize="2"/>
+                        <oxy:ScatterSeries x:Name="wpmline" MarkerFill="#FF35BB9C" MarkerSize="3" MarkerType="Circle"/>
                     </oxy:Plot.Series>
                     <oxy:Plot.Axes>
                         <oxy:LinearAxis Position="Bottom" AbsoluteMinimum="-200" Minimum="0" Maximum="2500" />
-                        <oxy:LinearAxis Position="Left" AbsoluteMinimum="0" AbsoluteMaximum="200" Minimum="30" Maximum="120" />
+                        <oxy:LinearAxis Position="Left" AbsoluteMinimum="0" AbsoluteMaximum="200" Minimum="30" Maximum="120" MajorGridlineColor="#40FFFFFF" MajorGridlineStyle="Dash" MajorStep="5" MinorGridlineColor="#20FDFBFB" MinorGridlineStyle="None" MinorStep="1" />
                     </oxy:Plot.Axes>
                 </oxy:Plot>
-                <Slider x:Name="wpmSmoothSlider" Width="300" Value="1" ValueChanged="Slider_ValueChanged" Minimum="1" Maximum="800" TickFrequency="1" Margin="50,10,10,10" HorizontalAlignment="Left" IsSnapToTickEnabled="False"/>  
-                
+                <Slider x:Name="wpmSmoothSlider" Width="300" Value="20" ValueChanged="Slider_ValueChanged" Minimum="0" Maximum="800" TickFrequency="1" Margin="50,10,10,10" HorizontalAlignment="Left" IsSnapToTickEnabled="False"/>
+
             </Grid>
         </ScrollViewer>
     </Grid>

@@ -196,7 +196,7 @@ namespace KeyTrain
                 string t = displayText(Text.Substring(mborders[i], mborders[i + 1] - mborders[i]));
                 if (t.EndsWith(" ") || t.EndsWith(spaceReplacement))
                 {
-                    //t += ZWSP;
+                    t += ZWSP;
                 }
                 else
                 {

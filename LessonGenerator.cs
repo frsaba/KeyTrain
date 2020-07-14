@@ -168,7 +168,7 @@ namespace KeyTrain
             var options = ConcatToList<IEnumerable<string>>(
                 dict.Where(word => normal.All(e => word.ToUpper().Contains(e))),
                 dict.Where(word => normal.Any(e => word.ToUpper().Contains(e))),
-                dict ).First(d => d.Count() > minSampleSize).ToList();
+                dict ).OrderBy(d => d.Count()).First(d => d.Count() > minSampleSize).ToList();
             punctuation = emphasized.Where(c => char.IsPunctuation(c)).ToList();
             if(emphasized.Any(c => char.IsWhiteSpace(c)))
             {

@@ -46,7 +46,6 @@ namespace KeyTrain
                 yaxis.Maximum = wpmlog.Max();
 
             }
-
             wpmplot.InvalidatePlot(false);
         }
 
@@ -55,23 +54,29 @@ namespace KeyTrain
 
             var smoothness = (int)e.NewValue;
             var points = new List<ScatterPoint>();
-            for (int i = smoothness; i < wpmlog.Count - smoothness; i++)
+            int start = smoothness;
+            int end = wpmlog.Count - smoothness;
+            int step = (int)Math.Ceiling(wpmlog.Count / 1000.0);
+            double avg = wpmlog.Average();
+            for (int i = start; i < end; i+=step)
             {
-                points.Add(new ScatterPoint(i,Math.Round( wpmlog.Skip(i).Take(smoothness).Average(), 2)));
+                var x = Math.Round(((double)i - smoothness) / (end - start) * wpmlog.Count);
+                points.Add(new ScatterPoint(
+                    x: x,
+                    y: Math.Round(wpmlog.Skip(i - smoothness).Take(smoothness + 1).Average(), 2),
+                    size:1 + MainPage.stats.MISSLOG[(int)x] / 1.4) );
             }
             
             wpmline.ItemsSource = points;
-            wpmplot.InvalidatePlot(false);
+            var xaxis = wpmplot.Axes.ElementAt(0);
+            var yaxis = wpmplot.Axes.ElementAt(1);
+            xaxis.Minimum = points.Min(p => p.X) - 10;
+            xaxis.Maximum = points.Max(p => p.X) + 10;
+            xaxis.AbsoluteMinimum = -points.Count / 2;
+            yaxis.Minimum = points.Min(p => p.Y) - 1;
+            yaxis.Maximum = points.Max(p => p.Y) + 1;
+            wpmplot.InvalidatePlot(true);
         }
 
-        void Refresh()
-        {
-            var smoothness = (int)wpmSmoothSlider.Value;
-            var points = new List<DataPoint>();
-            for (int i = smoothness; i < wpmlog.Count - smoothness; i++)
-            {
-                points.Add(new DataPoint(i, Math.Round(wpmlog.Skip(i).Take(smoothness).Average(), 2)));
-            }
-        }
     }
 }
