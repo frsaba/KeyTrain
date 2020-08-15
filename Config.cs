@@ -7,6 +7,7 @@ using static Pythonic.ListHelpers;
 using System.Windows.Media;
 using System.Diagnostics;
 using System.Collections;
+using System.Runtime.InteropServices;
 
 namespace KeyTrain
 {
@@ -47,21 +48,22 @@ namespace KeyTrain
                     string key = split[0].Trim();
                     string value = split[1].Trim();
 
-                    //value = value.Replace(@"\,", @"");
-
-                    MatchCollection matches = Regex.Matches(value, @"(?<=('))(?:(?=(\\?))\2.)*?(?=\1)"); //Wrapped in '' -> string
-                    if (matches.Count > 0)
+                    if(value.StartsWith("'")) // string value
                     {
-                        if (matches.Count == 1) //single string
-                        {
-                            Trace.WriteLine($"{key} set single - {matches[0].Groups[0].Value}");
-                            Settings[key] = matches[0].Groups[0].Value;
-                        }
-                        else //multiple values -> make a list of them
-                        {
-                            Settings[key] = matches.Select(m => m.Groups[0].Value).ToList();
-                        }
+                        //makes a list all values inside ''
+                        var result = new List<string>();
+                        int start = 1;
 
+                        do
+                        {
+                            int end = value.IndexOf("'", start);
+                            string next = value.Substring(start, end - start);
+                            result.Add(next);
+                            start = value.IndexOf("'", end + 1) + 1;
+                        } while (start > 0);
+
+                        if (result.Count() == 1) Settings[key] = result.Single(); //a list with one element is converted into a single string
+                        else Settings[key] = result;
 
                     }
                     else if (int.TryParse(value, out int result))
