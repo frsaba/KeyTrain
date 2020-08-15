@@ -194,17 +194,16 @@ namespace KeyTrain
                 Run r = (Run)ic.ElementAt(i);
 
                 string t = displayText(Text.Substring(mborders[i], mborders[i + 1] - mborders[i]));
-                if (t.EndsWith(" ") || t.EndsWith(spaceReplacement))
-                {
-                    t += ZWSP;
-                }
-                else
+                //if (t.EndsWith(spaceReplacement))
+                if (t.EndsWith(" ") == false && t.EndsWith(spaceReplacement) == false)
                 {
                     t += wordJoiner;
                 }
+                if (i % 2 == 1)//Are we drawing an error?
+                {
+                    t = t.Replace(" ", spaceReplacement);
+                }
                 r.Text = t;
-                if (i % 2 == 1) //Are we drawing an error?
-                    r.Text = r.Text.Replace(" ", spaceReplacement);
             }
 
         }
