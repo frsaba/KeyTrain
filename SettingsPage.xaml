@@ -20,17 +20,20 @@
                 <Setter Property="Margin" Value="25,20,10,10"/>
                 <Setter Property="Foreground" Value="Silver"/>
             </Style>
+            <Style TargetType="{x:Type RadioButton}">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Foreground" Value="Silver"/>
+                <Setter Property="FontSize"  Value="20"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
+            </Style>
+     
+
         </Grid.Resources>
 
         <StackPanel Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top">
 
             <TextBlock  Text="KeyTrain Settings"  FontSize="30" FontWeight="Bold" MinWidth="250"/>
-            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="45" >
-                <TextBlock  Text="Dictionary files"   ToolTip="Text file(s) containing the words/phrases the generator can use, one phrase per line" FontSize="20"  Margin="40,0,18,0" VerticalAlignment="Center"/>
-                <Button Click="dictFileButton_Click" HorizontalAlignment="Right" VerticalAlignment="Center"  Width="35" Height="35" Margin="0,0,20,0" ToolTip="Choose from file explorer">
-                    <Image Source="icons/appbar.folder.ellipsis.png"/>
-                </Button>
-            </Grid>
+            
             <Grid Height="70" ToolTip="Maximum length of each generated text chunk in characters">
                 <TextBlock  Text="Lesson length"  FontSize="20" Margin="40,5,10,25"/>
                 <TextBox x:Name="lengthBox" Text="{Binding Path=(local:SettingsPage.LessonLength), UpdateSourceTrigger=PropertyChanged}"  Width="35" Height="25" HorizontalAlignment="Right" Margin="0,0,20,0" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
@@ -58,6 +61,22 @@
                 <Button x:Name="RevertButton" ToolTip="Reset to previous" Click="Page_Loaded" HorizontalAlignment="Right" Margin="0,15,210,0" VerticalAlignment="Top"  Width="40" Height="40" >
                     <Image Source="icons/appbar.reset.png"/>
                 </Button>
+            </Grid>
+            <Grid Height="60" Margin="0,10,25,10">
+                <TextBlock  Text="Text Generation"  FontSize="20" Margin="0,5,10,25" FontWeight="Bold"/>
+                <RadioButton x:Name="radio_randomized" GroupName="Generator"  Foreground="Silver" VerticalAlignment="Bottom" IsChecked="False" Margin="10,0,0,0">Randomized</RadioButton>
+                <RadioButton  x:Name="radio_custom" GroupName="Generator" Foreground="Silver" VerticalAlignment="Bottom" IsChecked="True" HorizontalAlignment="Right">Custom Text</RadioButton>
+            </Grid>
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="45" Opacity="{Binding ElementName=radio_randomized, Path=IsChecked}">
+                <TextBlock  Text="Dictionary files"  ToolTip="Text file(s) containing the words/phrases the generator can use, one phrase per line" FontSize="20"  Margin="10,0,18,0" VerticalAlignment="Center"/>
+                <Button Click="dictFileButton_Click" HorizontalAlignment="Right" VerticalAlignment="Center"  Width="35" Height="35" Margin="0,0,20,0" ToolTip="Choose from file explorer">
+                    <Image Source="icons/appbar.folder.ellipsis.png"/>
+                </Button>
+            </Grid>
+            <Grid Margin="10,-45,10,10" Opacity="{Binding ElementName=radio_custom, Path=IsChecked}">
+                <TextBox Text="Lorem ipsum dolor sit amet" Foreground="Silver" Background="#1f1f1f" 
+                         FontFamily="Consolas" TextWrapping="Wrap" MaxLines="1" AcceptsReturn="True" AcceptsTab="True" 
+                         VerticalAlignment="Top" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" Height="100" Padding="5"/>
             </Grid>
         </StackPanel>
     </Grid>
