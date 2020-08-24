@@ -74,8 +74,8 @@
                 </Button>
             </Grid>
             <Grid Margin="10,-40,20,10" Opacity="{Binding ElementName=radio_custom, Path=IsChecked}">
-                <TextBox Text="Lorem ipsum dolor sit amet" Foreground="Silver" Background="#1f1f1f" 
-                         FontFamily="Consolas" TextWrapping="Wrap" MaxLines="1" AcceptsReturn="True" AcceptsTab="True" 
+                <TextBox Text="{Binding Path=(local:SettingsPage.PresetText), UpdateSourceTrigger=PropertyChanged}" Foreground="Silver" Background="#1f1f1f" 
+                         FontFamily="Consolas" TextWrapping="Wrap" MaxLines="1" AcceptsReturn="False" AcceptsTab="False" 
                          VerticalAlignment="Top" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" Height="100" Padding="5"/>
             </Grid>
         </StackPanel>
