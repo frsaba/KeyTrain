@@ -23,6 +23,7 @@ namespace KeyTrain
             {"profilePath", "Profile/profile.kts" },
             {"dictionaryPath", "Resources/dictionaryEN.txt" },
             {"capitalsLevel", 2 },
+            {"generator", "random" },
             {"presetText", "Lorem ipsum dolor sit amet" },
             {"emphasizedLetters", "" }//0: force lower, 1: keep existing, 2: half-half 3: first letter, 4: all caps
         };

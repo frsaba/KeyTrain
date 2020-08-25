@@ -44,6 +44,18 @@ namespace KeyTrain
             get => settings_copy["presetText"];
             set { settings_copy["presetText"] = value; OnPropertyChanged(); }
         }
+        public bool RandomGenerator
+        {
+            get => settings_copy["generator"] == "random";
+            set { settings_copy["generator"] = value ? "random" : "custom"; OnPropertyChanged(); }
+        }
+        public bool PresetGenerator
+        {
+            get => settings_copy["generator"] != "random";
+            set { settings_copy["generator"] = value ? "custom" : "random"; OnPropertyChanged(); }
+        }
+
+
         public int CapitalsLevel
         {
             get => settings_copy["capitalsLevel"];
