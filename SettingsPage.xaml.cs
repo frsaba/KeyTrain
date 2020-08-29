@@ -11,6 +11,8 @@ using System.Diagnostics;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using System.Windows.Data;
+using System.Globalization;
 
 namespace KeyTrain
 {
@@ -54,7 +56,6 @@ namespace KeyTrain
             get => settings_copy["generator"] != "random";
             set { settings_copy["generator"] = value ? "custom" : "random"; OnPropertyChanged(); }
         }
-
 
         public int CapitalsLevel
         {
@@ -116,6 +117,23 @@ namespace KeyTrain
             {
                 OnPropertyChanged(key);
             }
+        }
+    }
+
+    public class BoolToVisibility : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if(value is bool)
+            {
+                return (bool)value ? Visibility.Visible : Visibility.Collapsed;
+            }
+            return Visibility.Hidden;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }
