@@ -128,7 +128,10 @@ namespace KeyTrain
             ConfigManager.ReadConfigFile();
             Focusable = true;
             RandomizedLesson.seed = new Random().Next();
-            Generator = RandomizedLesson.FromDictionaryFiles(CFG["dictionaryPath"]);
+
+            Generator = CFG["generator"] == "random" ? 
+                RandomizedLesson.FromDictionaryFiles(CFG["dictionaryPath"]):  
+                new PresetTextLesson(CFG["presetText"]);
             Text = Generator.CurrentText;
             LetterRating.SetParent(letterRatings, this);
             cursorBlinker = new Timer((e) => {

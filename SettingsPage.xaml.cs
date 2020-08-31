@@ -93,7 +93,7 @@ namespace KeyTrain
         {
             window.LoadMainPage();
         }
-
+        
 
         //TODO: hooks for each config value change: functions to call whenever a setting gets updated
         private void Apply_Click(object sender, RoutedEventArgs e)
@@ -101,7 +101,9 @@ namespace KeyTrain
             //settings_copy["lessonLength"] = (int)lengthslider.Value;
             ConfigManager.Settings.dicts = settings_copy.dicts;
 
-            MainPage.Generator = RandomizedLesson.FromDictionaryFiles(ConfigManager.dictionaryPaths);
+            MainPage.Generator = RandomGenerator ? 
+                RandomizedLesson.FromDictionaryFiles(ConfigManager.dictionaryPaths) : 
+                new PresetTextLesson(ConfigManager.Settings["presetText"]);
             MainPage.Text = MainPage.Generator.NextText();
 
             //Trace.WriteLine(ConfigManager.lessonLength);

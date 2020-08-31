@@ -24,8 +24,8 @@ namespace KeyTrain
             {"dictionaryPath", "Resources/dictionaryEN.txt" },
             {"capitalsLevel", 2 },
             {"generator", "random" },
-            {"presetText", "Lorem ipsum dolor sit amet" },
-            {"emphasizedLetters", "" }//0: force lower, 1: keep existing, 2: half-half 3: first letter, 4: all caps
+            {"presetText", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt" },
+            {"emphasizedLetters", "" } //0: force lower, 1: keep existing, 2: half-half 3: first letter, 4: all caps
         };
         static Dictionary<string, dynamic> userSettings = new Dictionary<string, dynamic>();
         static Dictionary<string, dynamic> styleSheet = new Dictionary<string, dynamic>();

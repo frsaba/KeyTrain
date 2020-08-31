@@ -39,6 +39,12 @@ namespace KeyTrain
             text = text.Trim();
 
             alphabet = text.ToUpper().ToHashSet();
+            characterFrequencyCount = new DefaultDict<char, int>();
+            foreach (char c in text.ToUpper())
+            {
+                characterFrequencyCount[c] += 1;
+            }
+
 
             queuedTexts = new List<string>();
 
