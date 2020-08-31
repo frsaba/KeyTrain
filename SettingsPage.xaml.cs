@@ -104,7 +104,7 @@ namespace KeyTrain
             MainPage.Generator = RandomGenerator ? 
                 RandomizedLesson.FromDictionaryFiles(ConfigManager.dictionaryPaths) : 
                 new PresetTextLesson(ConfigManager.Settings["presetText"]);
-            MainPage.Text = MainPage.Generator.NextText();
+            MainPage.Text = MainPage.Generator.CurrentText;
 
             //Trace.WriteLine(ConfigManager.lessonLength);
             ConfigManager.WriteConfigFile();

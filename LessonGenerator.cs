@@ -2,11 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Text.RegularExpressions;
-using System.Windows.Media.TextFormatting;
 using static Pythonic.ListHelpers;
 
 namespace KeyTrain
@@ -48,6 +43,7 @@ namespace KeyTrain
 
             queuedTexts = new List<string>();
 
+            //TODO:
             //Divide up the text into about to equal chunks, each of which is smaller than maxLength
             int start = 0;
             int remaining = text.Length;
@@ -75,6 +71,11 @@ namespace KeyTrain
         {
             currTextid++;
             return CurrentText;
+        }
+
+        public void Restart()
+        {
+            currTextid = 0;
         }
     }
 

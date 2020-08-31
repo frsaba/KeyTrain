@@ -465,8 +465,14 @@ namespace KeyTrain
 
         private void RestartButton_Click(object sender, RoutedEventArgs e)
         {
+            if (Generator.GetType() == typeof(PresetTextLesson))
+            {
+                ((PresetTextLesson)Generator).Restart();
+                Text = Generator.CurrentText;
+            }
             Reset();
             ResetCursorBlink();
+
         }
 
         private void Page_LostFocus(object sender, RoutedEventArgs e)
