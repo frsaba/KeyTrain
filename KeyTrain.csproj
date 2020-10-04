@@ -42,7 +42,7 @@
 
   <ItemGroup>
     <Reference Include="PythonicHelpers">
-      <HintPath>..\..\PythonicHelpers\bin\Release\netcoreapp3.1\PythonicHelpers.dll</HintPath>
+      <HintPath>..\PythonicHelpers\bin\Release\netcoreapp3.1\PythonicHelpers.dll</HintPath>
     </Reference>
   </ItemGroup>
 

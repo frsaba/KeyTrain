@@ -28,6 +28,7 @@
                 <oxy:Plot x:Name="wpmplot" Margin="30,40,30,55" Background="Transparent" TextColor="White" PlotAreaBorderColor="White" SelectionColor="Red" LegendTextColor="White" PlotMargins="15,15,15,15" LegendItemAlignment="Center" IsManipulationEnabled="False">
                     <oxy:Plot.Series>
                         <oxy:ScatterSeries x:Name="wpmline" MarkerFill="#FF35BB9C" MarkerSize="3" MarkerType="Circle"/>
+                        <oxy:ScatterSeries x:Name="missesline" MarkerFill="#FFB92727" MarkerSize="2" MarkerType="Circle"/>
                     </oxy:Plot.Series>
                     <oxy:Plot.Axes>
                         <oxy:LinearAxis Position="Bottom" AbsoluteMinimum="-200" Minimum="0" Maximum="2500" />
