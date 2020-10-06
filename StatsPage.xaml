@@ -4,26 +4,41 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:KeyTrain"
+      xmlns:oxy="http://oxyplot.org/wpf"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="StatsPage"
-      Loaded="Page_Loaded">
-    <Page.DataContext>
-        <local:StatsPage/>
-    </Page.DataContext>
+      Loaded="Page_Loaded"
+      KeyUp="Page_KeyUp">
+    <!--<Page.DataContext>
+        <local:Plotter/>
+    </Page.DataContext>-->
     <Grid>
         <Grid.Resources>
             <Style TargetType="{x:Type TextBlock}">
-                <Setter Property="Margin" Value="25,20,10,10"/>
+                <!--<Setter Property="Margin" Value="25,20,10,10"/>-->
                 <Setter Property="Foreground" Value="Silver"/>
             </Style>
         </Grid.Resources>
-        <TextBlock Text="KeyTrain Statistics" FontSize="30" FontWeight="Bold"/>
+        <TextBlock Text="KeyTrain Statistics" FontSize="30" FontWeight="Bold" Margin="25,20,10,10"/>
         <Button x:Name="CloseButton" ToolTip="Close" Click="Close_Click" HorizontalAlignment="Right" Margin="0,15,10,0" VerticalAlignment="Top"  Width="40" Height="40" >
             <Image Source="icons/appbar.arrow.right.png"></Image>
         </Button>
         <ScrollViewer Margin="10,65,10,10">
-           
+            <Grid>
+                <oxy:Plot x:Name="wpmplot" Margin="30,40,30,55" Background="Transparent" TextColor="White" PlotAreaBorderColor="White" SelectionColor="Red" LegendTextColor="White" PlotMargins="15,15,15,15" LegendItemAlignment="Center" IsManipulationEnabled="False">
+                    <oxy:Plot.Series>
+                        <oxy:ScatterSeries x:Name="wpmline" MarkerFill="#FF35BB9C" MarkerSize="3" MarkerType="Circle"/>
+                        <oxy:ScatterSeries x:Name="missesline" MarkerFill="#FFB92727" MarkerSize="2" MarkerType="Circle"/>
+                    </oxy:Plot.Series>
+                    <oxy:Plot.Axes>
+                        <oxy:LinearAxis Position="Bottom" AbsoluteMinimum="-200" Minimum="0" Maximum="2500" />
+                        <oxy:LinearAxis Position="Left" AbsoluteMinimum="0" AbsoluteMaximum="200" Minimum="30" Maximum="120" MajorGridlineColor="#40FFFFFF" MajorGridlineStyle="Dash" MajorStep="5" MinorGridlineColor="#20FDFBFB" MinorGridlineStyle="None" MinorStep="1" />
+                    </oxy:Plot.Axes>
+                </oxy:Plot>
+                <Slider x:Name="wpmSmoothSlider" Width="300" Value="20" ValueChanged="Slider_ValueChanged" Minimum="0" Maximum="800" TickFrequency="1" Margin="50,10,10,10" HorizontalAlignment="Left" IsSnapToTickEnabled="False"/>
+
+            </Grid>
         </ScrollViewer>
     </Grid>
 </Page>

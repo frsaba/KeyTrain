@@ -2,11 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Text.RegularExpressions;
-using System.Windows.Media.TextFormatting;
 using static Pythonic.ListHelpers;
 
 namespace KeyTrain
@@ -21,6 +16,7 @@ namespace KeyTrain
         public abstract string CurrentText { get; }
         public abstract string NextText();
         public abstract HashSet<char> alphabet { get; protected set; }
+        public DefaultDict<char, int> characterFrequencyCount { get; protected set; }
     }
     /// <summary>
     /// Keyboard lessons with predefined text, split into chunks
@@ -38,9 +34,16 @@ namespace KeyTrain
             text = text.Trim();
 
             alphabet = text.ToUpper().ToHashSet();
+            characterFrequencyCount = new DefaultDict<char, int>();
+            foreach (char c in text.ToUpper())
+            {
+                characterFrequencyCount[c] += 1;
+            }
+
 
             queuedTexts = new List<string>();
 
+            //TODO:
             //Divide up the text into about to equal chunks, each of which is smaller than maxLength
             int start = 0;
             int remaining = text.Length;
@@ -68,6 +71,11 @@ namespace KeyTrain
         {
             currTextid++;
             return CurrentText;
+        }
+
+        public void Restart()
+        {
+            currTextid = 0;
         }
     }
 
@@ -168,7 +176,7 @@ namespace KeyTrain
             var options = ConcatToList<IEnumerable<string>>(
                 dict.Where(word => normal.All(e => word.ToUpper().Contains(e))),
                 dict.Where(word => normal.Any(e => word.ToUpper().Contains(e))),
-                dict ).First(d => d.Count() > minSampleSize).ToList();
+                dict ).OrderBy(d => d.Count()).First(d => d.Count() > minSampleSize).ToList();
             punctuation = emphasized.Where(c => char.IsPunctuation(c)).ToList();
             if(emphasized.Any(c => char.IsWhiteSpace(c)))
             {
@@ -193,6 +201,13 @@ namespace KeyTrain
 
             //all characters which appear at least 50 times in the dictionary
             alphabet = dict.SelectMany(x => x.ToUpper()).GroupBy(x => x).Where(x => x.Count() > 50).SelectMany(x => x).ToHashSet();
+
+            characterFrequencyCount = new DefaultDict<char, int>();
+            foreach (char c in dictonary.SelectMany(w => w.ToUpper().ToCharArray()))
+            {
+                characterFrequencyCount[c] += 1;
+            }
+
             NextText();
         }
 

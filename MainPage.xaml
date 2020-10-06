@@ -23,7 +23,7 @@
             <Button x:Name="SettingsButton" Click="SettingsButton_Click" HorizontalAlignment="Right" Margin="0,15,10,0" VerticalAlignment="Top" ToolTip="Open settings">
                 <Image Source="icons/appbar.cog.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50"></Image>
             </Button>
-            <Button x:Name="StatsButton" Click="StatsButton_Click" HorizontalAlignment="Right" Margin="0,65,10,0" VerticalAlignment="Top" ToolTip="Open settings">
+            <Button x:Name="StatsButton" Click="StatsButton_Click" HorizontalAlignment="Right" Margin="0,65,10,0" VerticalAlignment="Top" ToolTip="Open statistics">
                 <Image Source="icons/appbar.graph.line.up.png" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50"></Image>
             </Button>
             <Grid x:Name="HUD_WPM" Margin="110,0,0,123" ToolTip="WPM:" RenderTransformOrigin="0,0" HorizontalAlignment="Left">

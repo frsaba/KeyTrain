@@ -14,7 +14,7 @@ using System.Windows.Controls.Primitives;
 using System.Threading;
 using System.ComponentModel;
 using static KeyTrain.DarkStyles.MainPage;
-using KeyTrainWPF;
+using KeyTrain;
 
 namespace KeyTrain
 {
@@ -31,12 +31,12 @@ namespace KeyTrain
         public static LessonGenerator Generator;
         public static string selectedChars { get => CFG["emphasizedLetters"]; set => CFG["emphasizedLetters"] = value; }
         
-    SortedSet<int> misses = new SortedSet<int>();
+        SortedSet<int> misses = new SortedSet<int>();
         static Stopwatch timer;
         public static KeyTrainStats stats = new KeyTrainStats();
 
         int ratingsDrawn = 0;
-        static TimeSpan[] times;
+        static List<TimeSpan> times;
 
         static class Pointer
         {
@@ -128,7 +128,10 @@ namespace KeyTrain
             ConfigManager.ReadConfigFile();
             Focusable = true;
             RandomizedLesson.seed = new Random().Next();
-            Generator = RandomizedLesson.FromDictionaryFiles(CFG["dictionaryPath"]);
+
+            Generator = CFG["generator"] == "random" ? 
+                RandomizedLesson.FromDictionaryFiles(CFG["dictionaryPath"]):  
+                new PresetTextLesson(CFG["presetText"]);
             Text = Generator.CurrentText;
             LetterRating.SetParent(letterRatings, this);
             cursorBlinker = new Timer((e) => {
@@ -194,17 +197,16 @@ namespace KeyTrain
                 Run r = (Run)ic.ElementAt(i);
 
                 string t = displayText(Text.Substring(mborders[i], mborders[i + 1] - mborders[i]));
-                if (t.EndsWith(" ") || t.EndsWith(spaceReplacement))
-                {
-                    //t += ZWSP;
-                }
-                else
+                //if (t.EndsWith(spaceReplacement))
+                if (t.EndsWith(" ") == false && t.EndsWith(spaceReplacement) == false)
                 {
                     t += wordJoiner;
                 }
+                if (i % 2 == 1)//Are we drawing an error?
+                {
+                    t = t.Replace(" ", spaceReplacement);
+                }
                 r.Text = t;
-                if (i % 2 == 1) //Are we drawing an error?
-                    r.Text = r.Text.Replace(" ", spaceReplacement);
             }
 
         }
@@ -212,7 +214,7 @@ namespace KeyTrain
         //TODO: ignore newline/control characters
         private void Window_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-
+        
             //Backspace
             if (e.Text == "\b")
             {
@@ -244,6 +246,10 @@ namespace KeyTrain
             if (c == Pointer.letter && mistakes.Text.Length == wordJoiner.Length)
             {
                 timer.Stop();
+                while(Pointer.position >= times.Count)
+                {
+                    times.Add(TimeSpan.Zero);
+                }
                 times[Pointer.position] = timer.Elapsed;
                 ResetCursorBlink();
                 Pointer.position++;
@@ -264,6 +270,12 @@ namespace KeyTrain
         }
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
+            //Bypass newline if it's not in the text
+            if(e.Key == Key.Enter && Text.Contains('\n') == false)
+            {
+                e.Handled = true;
+            }
+
             //Reset with Ctrl+R
             if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.R)
             {
@@ -302,7 +314,7 @@ namespace KeyTrain
             typed.Text = ""; mistakes.Text = wordJoiner; active.Text = ""; remaining.Text = Text;
             misses.Clear();
             timer = new Stopwatch();
-            times = new TimeSpan[Text.Length];
+            times = new List<TimeSpan>();
             Pointer.position = 0;
             List<Inline> inlines = new List<Inline>();
             inlines.AddRange(ConcatToList<Run>(typed, mistakes, active, remaining));
@@ -352,7 +364,7 @@ namespace KeyTrain
             var keys = lrs.Keys.
                 OrderBy(c => !lrs[c].active)
                 .ThenBy(c => !char.IsLetterOrDigit(c))
-                .ThenBy(c => stats.charTimes[c].average);
+                .ThenByDescending(c => Generator.characterFrequencyCount[c]);
 
             foreach (char k in keys)
             {
@@ -459,8 +471,14 @@ namespace KeyTrain
 
         private void RestartButton_Click(object sender, RoutedEventArgs e)
         {
+            if (Generator.GetType() == typeof(PresetTextLesson))
+            {
+                ((PresetTextLesson)Generator).Restart();
+                Text = Generator.CurrentText;
+            }
             Reset();
             ResetCursorBlink();
+
         }
 
         private void Page_LostFocus(object sender, RoutedEventArgs e)
