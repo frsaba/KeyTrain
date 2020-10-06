@@ -9,6 +9,7 @@ using OxyPlot;
 using System.Linq;
 using OxyPlot.Axes;
 using OxyPlot.Series;
+using System.Windows.Input;
 
 namespace KeyTrain
 {
@@ -35,6 +36,7 @@ namespace KeyTrain
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             window = (MainWindow)Window.GetWindow(this);
+            Keyboard.Focus(wpmplot);
             wpmplot.Title = "WPM";
             var xaxis = wpmplot.Axes.ElementAt(0);
             var yaxis = wpmplot.Axes.ElementAt(1);
@@ -97,5 +99,13 @@ namespace KeyTrain
             
         }
 
+        private void Page_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+
+            if(e.Key == Key.Escape)
+            {
+                window.LoadMainPage();
+            }
+        }
     }
 }

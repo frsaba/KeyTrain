@@ -214,7 +214,7 @@ namespace KeyTrain
         //TODO: ignore newline/control characters
         private void Window_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-
+        
             //Backspace
             if (e.Text == "\b")
             {
@@ -270,6 +270,12 @@ namespace KeyTrain
         }
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
+            //Bypass newline if it's not in the text
+            if(e.Key == Key.Enter && Text.Contains('\n') == false)
+            {
+                e.Handled = true;
+            }
+
             //Reset with Ctrl+R
             if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.R)
             {

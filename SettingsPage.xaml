@@ -7,7 +7,8 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="SettingsPage"
-      Loaded="Page_Loaded" ScrollViewer.VerticalScrollBarVisibility="Auto">
+      Loaded="Page_Loaded" ScrollViewer.VerticalScrollBarVisibility="Auto"
+      KeyUp="Page_KeyUp">
 
     <Grid  TextElement.Foreground="Silver" TextElement.FontSize="15" ClipToBounds="True">
 

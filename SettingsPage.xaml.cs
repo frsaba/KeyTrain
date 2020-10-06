@@ -113,11 +113,24 @@ namespace KeyTrain
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            Keyboard.Focus(ApplyButton);
             window = (MainWindow)Window.GetWindow(this);
             settings_copy = ConfigManager.Settings.Clone();
             foreach (string key in settings_copy.Keys.Append("capitalDescription"))
             {
                 OnPropertyChanged(key);
+            }
+        }
+
+        private void Page_KeyUp(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Escape)
+            {
+                window.LoadMainPage();
+            }
+            if(e.Key == Key.Enter)
+            {
+                Apply_Click(sender, e);
             }
         }
     }

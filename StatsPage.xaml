@@ -8,7 +8,8 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="StatsPage"
-      Loaded="Page_Loaded">
+      Loaded="Page_Loaded"
+      KeyUp="Page_KeyUp">
     <!--<Page.DataContext>
         <local:Plotter/>
     </Page.DataContext>-->
