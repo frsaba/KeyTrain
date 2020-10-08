@@ -36,6 +36,22 @@ namespace KeyTrain
             InitializeComponent();
         }
 
+        public List<string> dictFilesSelected
+        {
+            get
+            {
+                string v = settings_copy["dictionaryPath"];
+                return v.Split().ToList();
+            }
+            set { settings_copy["dictionaryPath"] = value;
+                Trace.WriteLine(dictFilesSelected);
+                OnPropertyChanged(); }
+        }
+        public string[] dictFiles
+        {
+            get => Directory.GetFiles("Resources");
+        }
+
         public int LessonLength
         {
             get => settings_copy["lessonLength"]; 
@@ -45,6 +61,11 @@ namespace KeyTrain
         {
             get => settings_copy["presetText"];
             set { settings_copy["presetText"] = value; OnPropertyChanged(); }
+        }
+        public bool ExtraSpace
+        {
+            get =>  settings_copy["extraSpace"] == 1;
+            set { settings_copy["extraSpace"] = value ? 1:0; OnPropertyChanged(); }
         }
         public bool RandomGenerator
         {
@@ -99,6 +120,7 @@ namespace KeyTrain
         private void Apply_Click(object sender, RoutedEventArgs e)
         {
             //settings_copy["lessonLength"] = (int)lengthslider.Value;
+            settings_copy["dictionaryPath"] = dictFileList.SelectedItems as List<string>;
             ConfigManager.Settings.dicts = settings_copy.dicts;
 
             MainPage.Generator = RandomGenerator ? 
@@ -133,6 +155,7 @@ namespace KeyTrain
                 Apply_Click(sender, e);
             }
         }
+
     }
 
     public class BoolToVisibility : IValueConverter

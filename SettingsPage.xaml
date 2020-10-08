@@ -4,6 +4,8 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:KeyTrain"
+      xmlns:wpfxc="clr-namespace:Xceed.Wpf.Toolkit.Core;assembly=DotNetProjects.Wpf.Extended.Toolkit"
+      xmlns:wpfx="http://schemas.xceed.com/wpf/xaml/toolkit"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="SettingsPage"
@@ -11,7 +13,6 @@
       KeyUp="Page_KeyUp">
 
     <Grid  TextElement.Foreground="Silver" TextElement.FontSize="15" ClipToBounds="True">
-
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
@@ -47,6 +48,10 @@
                 <TextBlock Text="{Binding Path=(local:SettingsPage.capitalDescription), UpdateSourceTrigger=PropertyChanged}" Width="150" Height="25" HorizontalAlignment="Right" Margin="0,0,20,0" VerticalAlignment="Bottom" TextAlignment="Right" />
                 <Slider x:Name="capitalslider"  Value="{Binding Path=(local:SettingsPage.CapitalsLevel)}" Minimum="0" Maximum="4"  Margin="65,0,175,4" TickFrequency="1" />
             </Grid>
+            <Grid Height="70">
+                <TextBlock  Text="Extra space at the end"  FontSize="20" Margin="40,20,10,10" />
+                <CheckBox x:Name="extraspace" IsChecked="{Binding Path=(local:SettingsPage.ExtraSpace), UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Right" VerticalAlignment="Center"></CheckBox>
+            </Grid>
         </StackPanel>
         <StackPanel Grid.Column="1">
             <Grid>
@@ -69,17 +74,22 @@
                 <RadioButton x:Name="radio_randomized" GroupName="Generator" IsChecked="{Binding Path=(local:SettingsPage.RandomGenerator), UpdateSourceTrigger=PropertyChanged}"  Foreground="Silver" VerticalAlignment="Bottom" Margin="10,0,0,0">Randomized</RadioButton>
                 <RadioButton  x:Name="radio_custom" GroupName="Generator" IsChecked="{Binding Path=(local:SettingsPage.PresetGenerator), UpdateSourceTrigger=PropertyChanged}" Foreground="Silver" VerticalAlignment="Bottom" HorizontalAlignment="Right">Custom text</RadioButton>
             </Grid>
-            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="45" Visibility="{Binding ElementName=radio_randomized, Path=IsChecked, Converter={StaticResource BoolToVisibility}}">
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="45" Visibility="Visible">
                 <TextBlock  Text="Dictionary files"  ToolTip="Text file(s) containing the words/phrases the generator can use, one phrase per line" FontSize="20"  Margin="10,0,18,0" VerticalAlignment="Center"/>
-                <Button Click="dictFileButton_Click" HorizontalAlignment="Right" VerticalAlignment="Center"  Width="35" Height="35" Margin="0,0,20,0" ToolTip="Choose from file explorer">
+                
+                <!--<Button Click="dictFileButton_Click" HorizontalAlignment="Right" VerticalAlignment="Center"  Width="35" Height="35" Margin="0,0,20,0" ToolTip="Choose from file explorer">
                     <Image Source="icons/appbar.folder.ellipsis.png"/>
-                </Button>
+                </Button>-->
             </Grid>
-            <Grid Margin="10,10,20,10" Visibility="{Binding Path=(local:SettingsPage.PresetGenerator), Converter={StaticResource BoolToVisibility} }">
+            <Grid>
+                <wpfx:CheckListBox Name="dictFileList" ItemsSource="{Binding Path=(local:SettingsPage.dictFiles)}" SelectedItemsOverride="{Binding Path=(local:SettingsPage.dictFilesSelected), Mode=TwoWay}">
+                </wpfx:CheckListBox>
+            </Grid>
+            <!--<Grid Margin="10,10,20,10" Visibility="{Binding Path=(local:SettingsPage.PresetGenerator), Converter={StaticResource BoolToVisibility} }">
                 <TextBox Text="{Binding Path=(local:SettingsPage.PresetText), UpdateSourceTrigger=PropertyChanged}" Foreground="Silver" Background="#1f1f1f" 
                          FontFamily="Consolas" TextWrapping="Wrap" MaxLines="1" AcceptsReturn="False" AcceptsTab="False" 
                          VerticalAlignment="Top" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" Height="100" Padding="5"/>
-            </Grid>
+            </Grid>-->
         </StackPanel>
     </Grid>
 </Page>

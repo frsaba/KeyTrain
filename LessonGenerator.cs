@@ -96,6 +96,7 @@ namespace KeyTrain
         Random NextRandom() => new Random(seed + MainPage.stats.WPMLOG.Count + offset); //
         const int minSampleSize = 10; //minimum amount of words deemed enough to pick from and seem random
         int capitals => ConfigManager.Settings["capitalsLevel"];
+        int extraSpace => ConfigManager.Settings["extraSpace"];
 
         /// <summary>
         /// Cleans dictionary of unwanted elements eg. control characters, too short or too long words
@@ -156,6 +157,10 @@ namespace KeyTrain
 
             }
             text = text.Trim();
+            if(extraSpace > 0)
+            {
+                text += " ";
+            }
             
             return text;
         }
