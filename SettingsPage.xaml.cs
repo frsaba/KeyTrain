@@ -40,8 +40,9 @@ namespace KeyTrain
         {
             get
             {
-                string v = settings_copy["dictionaryPath"];
-                return v.Split().ToList();
+                //string v = settings_copy["dictionaryPath"];
+                //return v.Split().ToList();
+                return settings_copy["dictionaryPath"];
             }
             set { settings_copy["dictionaryPath"] = value;
                 Trace.WriteLine(dictFilesSelected);

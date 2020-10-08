@@ -74,22 +74,24 @@
                 <RadioButton x:Name="radio_randomized" GroupName="Generator" IsChecked="{Binding Path=(local:SettingsPage.RandomGenerator), UpdateSourceTrigger=PropertyChanged}"  Foreground="Silver" VerticalAlignment="Bottom" Margin="10,0,0,0">Randomized</RadioButton>
                 <RadioButton  x:Name="radio_custom" GroupName="Generator" IsChecked="{Binding Path=(local:SettingsPage.PresetGenerator), UpdateSourceTrigger=PropertyChanged}" Foreground="Silver" VerticalAlignment="Bottom" HorizontalAlignment="Right">Custom text</RadioButton>
             </Grid>
-            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="45" Visibility="Visible">
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="45" Visibility="{Binding ElementName=radio_randomized, Path=IsChecked, Converter={StaticResource BoolToVisibility}}">
                 <TextBlock  Text="Dictionary files"  ToolTip="Text file(s) containing the words/phrases the generator can use, one phrase per line" FontSize="20"  Margin="10,0,18,0" VerticalAlignment="Center"/>
                 
-                <!--<Button Click="dictFileButton_Click" HorizontalAlignment="Right" VerticalAlignment="Center"  Width="35" Height="35" Margin="0,0,20,0" ToolTip="Choose from file explorer">
-                    <Image Source="icons/appbar.folder.ellipsis.png"/>
-                </Button>-->
             </Grid>
-            <Grid>
-                <wpfx:CheckListBox Name="dictFileList" ItemsSource="{Binding Path=(local:SettingsPage.dictFiles)}" SelectedItemsOverride="{Binding Path=(local:SettingsPage.dictFilesSelected), Mode=TwoWay}">
+            <Grid Visibility="{Binding ElementName=radio_randomized, Path=IsChecked, Converter={StaticResource BoolToVisibility}}">
+                <Button Click="dictFileButton_Click" HorizontalAlignment="Right" VerticalAlignment="Center"  Width="35" Height="35" Margin="0,0,20,0" ToolTip="Choose from file explorer">
+                    <Image Source="icons/appbar.folder.ellipsis.png"/>
+                </Button>
+                <wpfx:CheckListBox Name="dictFileList"
+                                   ItemsSource="{Binding Path=(local:SettingsPage.dictFiles)}" 
+                                   SelectedItemsOverride="{Binding Path=(local:SettingsPage.dictFilesSelected), Mode=TwoWay}" Margin="20,0,60,0" Background="#FF1F1F1F" BorderBrush="#FF3D3D3D">
                 </wpfx:CheckListBox>
             </Grid>
-            <!--<Grid Margin="10,10,20,10" Visibility="{Binding Path=(local:SettingsPage.PresetGenerator), Converter={StaticResource BoolToVisibility} }">
+            <Grid Margin="10,10,20,10" Visibility="{Binding Path=(local:SettingsPage.PresetGenerator), Converter={StaticResource BoolToVisibility} }">
                 <TextBox Text="{Binding Path=(local:SettingsPage.PresetText), UpdateSourceTrigger=PropertyChanged}" Foreground="Silver" Background="#1f1f1f" 
                          FontFamily="Consolas" TextWrapping="Wrap" MaxLines="1" AcceptsReturn="False" AcceptsTab="False" 
                          VerticalAlignment="Top" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" Height="100" Padding="5"/>
-            </Grid>-->
+            </Grid>
         </StackPanel>
     </Grid>
 </Page>
