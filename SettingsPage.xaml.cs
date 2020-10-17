@@ -40,12 +40,15 @@ namespace KeyTrain
         {
             get
             {
+                if (settings_copy["dictionaryPath"] is string)
+                    return new List<string>() { settings_copy["dictionaryPath"]};
+                else
                 //string v = settings_copy["dictionaryPath"];
                 //return v.Split().ToList();
                 return settings_copy["dictionaryPath"];
             }
             set { settings_copy["dictionaryPath"] = value;
-                Trace.WriteLine(dictFilesSelected);
+                //Trace.WriteLine(dictFilesSelected);
                 OnPropertyChanged(); }
         }
         public string[] dictFiles
@@ -121,7 +124,7 @@ namespace KeyTrain
         private void Apply_Click(object sender, RoutedEventArgs e)
         {
             //settings_copy["lessonLength"] = (int)lengthslider.Value;
-            settings_copy["dictionaryPath"] = dictFileList.SelectedItems as List<string>;
+            settings_copy["dictionaryPath"] = (dictFileList.SelectedItems as List<string>).Distinct().ToList();
             ConfigManager.Settings.dicts = settings_copy.dicts;
 
             MainPage.Generator = RandomGenerator ? 
