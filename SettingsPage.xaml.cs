@@ -71,6 +71,11 @@ namespace KeyTrain
             get =>  settings_copy["extraSpace"] == 1;
             set { settings_copy["extraSpace"] = value ? 1:0; OnPropertyChanged(); }
         }
+        public bool SuddenDeath
+        {
+            get => settings_copy["suddenDeath"] == 1;
+            set { settings_copy["suddenDeath"] = value ? 1 : 0; OnPropertyChanged(); }
+        }
         public bool RandomGenerator
         {
             get => settings_copy["generator"] == "random";

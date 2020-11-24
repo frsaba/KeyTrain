@@ -50,7 +50,7 @@
             <UniformGrid Name="letterRatings" Margin="50,110,54,0" Rows="0" Columns="0" HorizontalAlignment="Center" VerticalAlignment="Top" >
             </UniformGrid>
         </Grid>
-        <Grid x:Name="MainRealEstate" Margin="30,100,30,60">
+        <Grid x:Name="MainRealEstate" Margin="30,100,30,60" Background="#1f1f1f">
             <TextBlock x:Name="Main" FontFamily="Consolas" Focusable="True" Foreground="White" HorizontalAlignment="Center" TextWrapping="Wrap"  VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5" 
                        TextAlignment="Left" Grid.ColumnSpan="2" 
                        Text="dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore" MinWidth="200" LineHeight="42" SizeChanged="Main_SizeChanged">

@@ -36,7 +36,7 @@
                         <oxy:LinearAxis Position="Left" AbsoluteMinimum="0" AbsoluteMaximum="200" Minimum="30" Maximum="120" MajorGridlineColor="#40FFFFFF" MajorGridlineStyle="Dash" MajorStep="5" MinorGridlineColor="#20FDFBFB" MinorGridlineStyle="None" MinorStep="1" />
                     </oxy:Plot.Axes>
                 </oxy:Plot>
-                <Slider x:Name="wpmSmoothSlider" Width="300" Value="20" ValueChanged="Slider_ValueChanged" Minimum="0" Maximum="800" TickFrequency="1" Margin="50,10,10,10" HorizontalAlignment="Left" IsSnapToTickEnabled="False"/>
+                <Slider x:Name="wpmSmoothSlider" Width="300" Value="20" ValueChanged="Slider_ValueChanged" Minimum="0" Maximum="800" TickFrequency="1" Margin="50,10,10,10" HorizontalAlignment="Left" IsSnapToTickEnabled="True"/>
 
             </Grid>
         </ScrollViewer>

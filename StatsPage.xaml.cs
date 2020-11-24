@@ -42,7 +42,10 @@ namespace KeyTrain
             var yaxis = wpmplot.Axes.ElementAt(1);
             yaxis.Title = "WPM";
             xaxis.Title = "Sample";
-            if(wpmlog.Count > 0)
+
+            wpmSmoothSlider.Maximum = (int)Math.Max(5, Math.Min(800, Math.Floor(wpmlog.Count / 2.0) - 1));
+
+            if (wpmlog.Count > 0)
             {
                 xaxis.Maximum = wpmlog.Count;
                 yaxis.Minimum = wpmlog.Min();
@@ -54,7 +57,7 @@ namespace KeyTrain
 
         private void UpdateWPMChart()
         {
-            if (wpmlog.Count > 0)
+            if (wpmlog.Count > 1)
             {
 
                 var smoothness = (int)Math.Min(wpmSmoothSlider.Value, Math.Floor(wpmlog.Count / 2.0) - 1);

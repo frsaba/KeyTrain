@@ -30,7 +30,8 @@ namespace KeyTrain
 
         public static LessonGenerator Generator;
         public static string selectedChars { get => CFG["emphasizedLetters"]; set => CFG["emphasizedLetters"] = value; }
-        
+        public static int suddenDeath { get => CFG["suddenDeath"]; set => CFG["suddenDeath"] = value; }
+
         SortedSet<int> misses = new SortedSet<int>();
         static Stopwatch timer;
         public static KeyTrainStats stats = new KeyTrainStats();
@@ -239,7 +240,7 @@ namespace KeyTrain
             //Debug.Content = $"Key: {c}, Correct: {Cursor.letter}";
 
             //Hide cursor
-            Main.Cursor = Cursors.None;
+            MainRealEstate.Cursor = Cursors.None;
             lastMousePos = Mouse.GetPosition(Wrapper);
 
             //Correct letter and no running mistakes
@@ -256,8 +257,16 @@ namespace KeyTrain
             }
             else //Miss
             {
-                misses.Add(Pointer.position);
-                mistakes.Text += c;
+                if (suddenDeath != 0)
+                {
+                    Reset();
+                }
+                else
+                {
+                    misses.Add(Pointer.position);
+                    mistakes.Text += c;
+                }
+
             }
 
             timer.Start();
@@ -346,7 +355,7 @@ namespace KeyTrain
             HUD_misses.ToolTip = new ToolTip()
             {
                 Content = stats.charMisses.Count > 0 ? 
-                ( $"Overall error rate: {errorRate():p}\n" +
+                ( $"Accuracy: {1 - errorRate():p}\n" +
                 $"Average misses per lesson length: {errorsPerLength():0.##}") 
                 : "No data"
             };
@@ -418,7 +427,7 @@ namespace KeyTrain
             if ((lastMousePos - mousePos).Length > 2)
             {
                 //Unhide cursor
-                Main.Cursor = Cursors.Arrow;
+                MainRealEstate.Cursor = Cursors.Arrow;
             }
         }
 

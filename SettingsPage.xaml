@@ -48,9 +48,13 @@
                 <TextBlock Text="{Binding Path=(local:SettingsPage.capitalDescription), UpdateSourceTrigger=PropertyChanged}" Width="150" Height="25" HorizontalAlignment="Right" Margin="0,0,20,0" VerticalAlignment="Bottom" TextAlignment="Right" />
                 <Slider x:Name="capitalslider"  Value="{Binding Path=(local:SettingsPage.CapitalsLevel)}" Minimum="0" Maximum="4"  Margin="65,0,175,4" TickFrequency="1" />
             </Grid>
-            <Grid Height="70">
-                <TextBlock  Text="Extra space at the end"  FontSize="20" Margin="40,20,10,10" />
+            <Grid Height="40">
+                <TextBlock  Text="Extra space at the end"  FontSize="20" Margin="40,5,10,5" />
                 <CheckBox x:Name="extraspace" IsChecked="{Binding Path=(local:SettingsPage.ExtraSpace), UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Right" VerticalAlignment="Center"></CheckBox>
+            </Grid>
+            <Grid Height="40" ToolTip="Reset immediately after 1 mistake">
+                <TextBlock  Text="Sudden death"  FontSize="20" Margin="40,5,10,5" />
+                <CheckBox x:Name="suddendeath" IsChecked="{Binding Path=(local:SettingsPage.SuddenDeath), UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Right" VerticalAlignment="Center"></CheckBox>
             </Grid>
         </StackPanel>
         <StackPanel Grid.Column="1">
