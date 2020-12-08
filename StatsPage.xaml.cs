@@ -63,6 +63,7 @@ namespace KeyTrain
                 var smoothness = (int)Math.Min(wpmSmoothSlider.Value, Math.Floor(wpmlog.Count / 2.0) - 1);
                 var wpmpoints = new List<ScatterPoint>();
                 var misspoints = new List<ScatterPoint>();
+                var endpoints = new List<DataPoint>();
                 int start = smoothness;
                 int end = wpmlog.Count - smoothness;
                 int step = Math.Min(smoothness + 1, (int)Math.Ceiling(wpmlog.Count / 1000.0));
@@ -82,8 +83,12 @@ namespace KeyTrain
 
                 }
 
+                endpoints.Add(new DataPoint(0, Math.Round(wpmlog.Take(wpmlog.Count / 10).Average(), 2))); //average of first 10%
+                endpoints.Add(new DataPoint(wpmlog.Count, Math.Round((wpmlog as IEnumerable<double>).Reverse().Take(wpmlog.Count / 10).Average(), 2))); //average of last 10%
+
                 wpmline.ItemsSource = wpmpoints;
                 missesline.ItemsSource = misspoints;
+                endpointseries.ItemsSource = endpoints;
                 var xaxis = wpmplot.Axes.ElementAt(0);
                 var yaxis = wpmplot.Axes.ElementAt(1);
                 xaxis.Minimum = wpmpoints.Min(p => p.X) - 10;

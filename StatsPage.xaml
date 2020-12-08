@@ -30,6 +30,7 @@
                     <oxy:Plot.Series>
                         <oxy:ScatterSeries x:Name="wpmline" MarkerFill="#FF35BB9C" MarkerSize="3" MarkerType="Circle"/>
                         <oxy:ScatterSeries x:Name="missesline" MarkerFill="#FFB92727" MarkerSize="2" MarkerType="Circle"/>
+                        <oxy:LineSeries x:Name="endpointseries" Color="#FF155345" LineStyle="Dash" ></oxy:LineSeries>
                     </oxy:Plot.Series>
                     <oxy:Plot.Axes>
                         <oxy:LinearAxis Position="Bottom" AbsoluteMinimum="-200" Minimum="0" Maximum="2500" />
