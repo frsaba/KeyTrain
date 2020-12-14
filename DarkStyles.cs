@@ -19,7 +19,7 @@ namespace KeyTrain
     {
         public partial class MainPage : Page
         {
-            public static Color wrapperBackground { get; private set; } = (Color)ColorConverter.ConvertFromString("#1f1f1f");
+            //public static Color wrapperBackground { get; private set; } = (Color)ColorConverter.ConvertFromString("#1f1f1f");
             public static List<(Color color, double delta)> gainPalette { get; private set; } =
                 new List<(Color, double)>
                 {
@@ -36,7 +36,7 @@ namespace KeyTrain
                  remainingStyle = new SectionStyle();
 
             public static TimeSpan blinkTime = TimeSpan.FromMilliseconds(550);
-            public static (Color, Color) cursorBgColors = (Colors.Silver, wrapperBackground);
+            public static (Color, Color) cursorBgColors = (Colors.Silver, Colors.Transparent);
             public static (Color, Color) cursorFgColors = (Colors.Black, Colors.White);
 
             public const string ZWSP = "\u200b";                //Zero width space
@@ -56,7 +56,7 @@ namespace KeyTrain
                 {
                     startText = text;
                     fg = fgColor ?? Colors.White;
-                    bg = bgColor ?? wrapperBackground;
+                    bg = bgColor ?? Colors.Transparent;
                 }
             }
 
