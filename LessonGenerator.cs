@@ -86,6 +86,7 @@ namespace KeyTrain
     {
         private string text;
         private List<string> dict;
+        private List<string> cropped;
         private List<string> shuffled;
         private int place = 0;
         private int chunkLength;
@@ -101,11 +102,11 @@ namespace KeyTrain
         /// <summary>
         /// Cleans dictionary of unwanted elements eg. control characters, too short or too long words
         /// </summary>
-        /// <param name="dirty"></param>
+        /// <param name="d"></param>
         /// <returns></returns>
-        private List<string> Sanitize(IEnumerable<string> dirty)
+        private List<string> Crop(IEnumerable<string> d)
         {
-            return dirty.Where(w => w.Length > 2).ToList();
+            return d.Where(w => w.Length > 1).Skip(0).Take(ConfigManager.proficiency * d.Count() / 100).ToList();
         }
 
 
@@ -179,6 +180,8 @@ namespace KeyTrain
         {
             var normal = emphasized.Where(c => char.IsLetterOrDigit(c));
             var options = ConcatToList<IEnumerable<string>>(
+                cropped.Where(word => normal.All(e => word.ToUpper().Contains(e))),
+                cropped.Where(word => normal.Any(e => word.ToUpper().Contains(e))),
                 dict.Where(word => normal.All(e => word.ToUpper().Contains(e))),
                 dict.Where(word => normal.Any(e => word.ToUpper().Contains(e))),
                 dict ).OrderBy(d => d.Count()).First(d => d.Count() > minSampleSize).ToList();
@@ -192,17 +195,25 @@ namespace KeyTrain
             shuffled = options.OrderBy(x => random.Next()).ToList();
         }
 
+        public void Recrop(string emphasized = "")
+        {
+            cropped = Crop(dict);
+            shuffled = cropped.OrderBy(x => random.Next()).ToList();
+            Emphasize(emphasized);
+        }
+
         /// <param name="dictonary">List of words the generator can use</param>
         /// <param name="maxLength">Exclusive maximum length of each generated text chunk</param>
         public RandomizedLesson(IEnumerable<string> dictonary, int maxLength = 0)
         {
             if (maxLength == 0) maxLength = defaultLessonLength;
 
-            dict = Sanitize(dictonary);
+            dict = dictonary.ToList();
             chunkLength = maxLength;
             random = NextRandom();
             place = 0;
-            shuffled = dict.OrderBy(x=> random.Next()).ToList();
+            cropped = Crop(dictonary);
+            shuffled = cropped.OrderBy(x=> random.Next()).ToList();
 
             //all characters which appear at least 50 times in the dictionary
             alphabet = dict.SelectMany(x => x.ToUpper()).GroupBy(x => x).Where(x => x.Count() > 50).SelectMany(x => x).ToHashSet();

@@ -15,19 +15,21 @@ namespace KeyTrain
     public static class ConfigManager
     {
         public static string profilePath => Settings["profilePath"];
-        public static dynamic dictionaryPaths { get => Settings["dictionaryPath"]; set => Settings["dictionaryPath"] = value; }
+        public static int proficiency { get => Settings["proficiency"]; set => Settings["proficiency"] = value; }
+    public static dynamic dictionaryPaths { get => Settings["dictionaryPath"]; set => Settings["dictionaryPath"] = value; }
         public static int  lessonLength { get => Settings["lessonLength"]; set => Settings["lessonLength"] = value; }
 
         static Dictionary<string, dynamic> defaultSettings = new Dictionary<string, dynamic>(){
-            {"lessonLength", 100 },
+            {"lessonLength", 70 },
             {"profilePath", "Profile/profile.kts" },
             {"dictionaryPath", "Resources/dictionaryEN.txt" },
             {"capitalsLevel", 2 },
-            {"extraSpace", 0 },
+            {"proficiency", 1 },
+            {"extraSpace", 1 },  //0: force lower, 1: keep existing, 2: half-half 3: first letter, 4: all caps
             {"suddenDeath", 0 },
             {"generator", "random" },
             {"presetText", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt" },
-            {"emphasizedLetters", "" } //0: force lower, 1: keep existing, 2: half-half 3: first letter, 4: all caps
+            {"emphasizedLetters", "e" }
         };
         static Dictionary<string, dynamic> userSettings = new Dictionary<string, dynamic>();
         static Dictionary<string, dynamic> styleSheet = new Dictionary<string, dynamic>();

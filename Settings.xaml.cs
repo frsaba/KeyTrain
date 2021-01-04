@@ -61,6 +61,11 @@ namespace KeyTrain
             get => settings_copy["lessonLength"]; 
             set { settings_copy["lessonLength"] = value; OnPropertyChanged(); }
         }
+        public int Proficiency
+        {
+            get => settings_copy["proficiency"];
+            set { settings_copy["proficiency"] = value; OnPropertyChanged(); }
+        }
         public string PresetText
         {
             get => settings_copy["presetText"];

@@ -29,6 +29,7 @@ namespace KeyTrain
         static ChainMap<string, dynamic> CFG = ConfigManager.Settings;
 
         public static LessonGenerator Generator;
+        static bool isRandomGen => Generator.GetType() == typeof(RandomizedLesson);
         public static string selectedChars { get => CFG["emphasizedLetters"]; set => CFG["emphasizedLetters"] = value; }
         public static int suddenDeath { get => CFG["suddenDeath"]; set => CFG["suddenDeath"] = value; }
 
@@ -74,7 +75,7 @@ namespace KeyTrain
                     selectedChars = isSelected ? selectedChars.Replace(letter.ToString(), "") : selectedChars + letter;
                     
 
-                    if (Generator.GetType() == typeof(RandomizedLesson))
+                    if (isRandomGen)
                     {
                         ((RandomizedLesson)Generator).Emphasize(selectedChars);
                         Text = Generator.NextText();
@@ -314,11 +315,27 @@ namespace KeyTrain
         public void NextText()
         {
             stats.Enter(Text, times, misses, timer.Elapsed.TotalMinutes);
+            ConfigManager.proficiency = Clamp((stats.WPMLOG.DefaultIfEmpty(0).Average() - 35 ));
+            //if (isRandomGen)
+            //{
+            //    ((RandomizedLesson)Generator).Recrop(emphasized:selectedChars);
+            //}
+            if(Generator is RandomizedLesson g)
+            {
+                g.Recrop(emphasized: selectedChars);
+            }
+            
             UpdateHUD();
 
             Text = Generator.NextText();
             Reset();
         }
+        /// <summary>
+        ///  Clamps value between 1-100 and converts to int
+        /// </summary>
+        /// <returns></returns>
+        int Clamp(double v) => Math.Max(1, Math.Min(100, (int) v));
+
         public void Reset(bool update = true)
         {
             typed.Text = ""; mistakes.Text = wordJoiner; active.Text = ""; remaining.Text = Text;

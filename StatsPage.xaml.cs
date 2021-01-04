@@ -82,9 +82,9 @@ namespace KeyTrain
                         y: Math.Round(misslog.Skip(i - smoothness).Take(smoothness + 1).Average() * (wpmlog.Max() / misslog.Max()), 2) + wpmlog.Min()));
 
                 }
-
-                endpoints.Add(new DataPoint(0, Math.Round(wpmlog.Take(wpmlog.Count / 10).Average(), 2))); //average of first 10%
-                endpoints.Add(new DataPoint(wpmlog.Count, Math.Round((wpmlog as IEnumerable<double>).Reverse().Take(wpmlog.Count / 10).Average(), 2))); //average of last 10%
+                int l = Math.Max(wpmlog.Count() / 10, 2);
+                endpoints.Add(new DataPoint(0, Math.Round(wpmlog.Take(l).Average(), 2))); //average of first 10%
+                endpoints.Add(new DataPoint(wpmlog.Count, Math.Round((wpmlog as IEnumerable<double>).Reverse().Take(l).Average(), 2))); //average of last 10%
 
                 wpmline.ItemsSource = wpmpoints;
                 missesline.ItemsSource = misspoints;
