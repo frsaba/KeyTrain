@@ -284,26 +284,27 @@ namespace KeyTrain
             {
                 e.Handled = true;
             }
+            if(Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                e.Handled = true;
+                switch (e.Key)
+                {
+                    case Key.R:  //Reset with Ctrl+R
+                        RestartButton_Click(sender, e);
+                        break;
+                    case Key.N:  //Reroll with Ctrl+N
+                        RerollButton_Click(sender, e);
+                        break;
+                    case Key.E:  //Export with Ctrl+E 
+                        KeyTrainSerializer.Serialize(stats, ConfigManager.profilePath);
+                        ConfigManager.WriteConfigFile();
+                        break;
+                    default:
+                        e.Handled = false;
+                        break;
 
-            //Reset with Ctrl+R
-            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.R)
-            {
-                RestartButton_Click(sender, e);
-                e.Handled = true;
-            }
-            //Reroll with Ctrl+N
-            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.N)
-            {
-                RerollButton_Click(sender, e);
-                e.Handled = true;
-            }
 
-            //Export with Ctrl+E 
-            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.E)
-            {
-                KeyTrainSerializer.Serialize(stats, ConfigManager.profilePath);
-                ConfigManager.WriteConfigFile();
-                e.Handled = true;
+                }
             }
         }
 
@@ -438,19 +439,9 @@ namespace KeyTrain
         /// </summary>
         private void Main_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (e.HeightChanged)
-            {
-                double singleLineHeight = Main.Padding.Top + Main.Padding.Bottom + Main.LineHeight;
 
-                if (Main.ActualHeight > singleLineHeight)
-                {
-                    Main.HorizontalAlignment = HorizontalAlignment.Left;
-                }
-                else
-                {
-                    Main.HorizontalAlignment = HorizontalAlignment.Center;
-                }
-            }
+            double singleLineHeight = Main.Padding.Top + Main.Padding.Bottom + Main.LineHeight;
+            Main.HorizontalAlignment = Main.ActualHeight > singleLineHeight ? HorizontalAlignment.Left : HorizontalAlignment.Center;
             SetMainRealEstate();
 
         }
