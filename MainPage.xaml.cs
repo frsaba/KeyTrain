@@ -23,6 +23,18 @@ namespace KeyTrain
     /// </summary>
     public partial class MainPage : Page
     {
+        //annoyingly, .GetWindow gives null until everything is rendered, but some events still fire that would use it
+        //Lazy<T> would sound right but it handles "first time referenced" rather than "not null anymore"
+        private MainWindow _window;
+        MainWindow window 
+        {
+            get
+            {
+                _window ??= ((MainWindow)Window.GetWindow(this));
+                return _window;
+            }
+        }
+
         public static string Text;
         static string displayText(string t) => t.Replace(" ", $"{ZWSP} ");
 
@@ -130,7 +142,6 @@ namespace KeyTrain
             ConfigManager.ReadConfigFile();
             Focusable = true;
             RandomizedLesson.seed = new Random().Next();
-
             Generator = CFG["generator"] == "random" ? 
                 RandomizedLesson.FromDictionaryFiles(CFG["dictionaryPath"]):  
                 new PresetTextLesson(CFG["presetText"]);
@@ -315,7 +326,7 @@ namespace KeyTrain
         public void NextText()
         {
             stats.Enter(Text, times, misses, timer.Elapsed.TotalMinutes);
-            ConfigManager.proficiency = Clamp((stats.WPMLOG.DefaultIfEmpty(0).Average() - 35 ));
+            ConfigManager.proficiency = Clamp(Math.Pow(stats.WPMLOG.DefaultIfEmpty(0).Average() / 2.5 - 8 , 1.4));
             //if (isRandomGen)
             //{
             //    ((RandomizedLesson)Generator).Recrop(emphasized:selectedChars);
@@ -333,7 +344,6 @@ namespace KeyTrain
         /// <summary>
         ///  Clamps value between 1-100 and converts to int
         /// </summary>
-        /// <returns></returns>
         int Clamp(double v) => Math.Max(1, Math.Min(100, (int) v));
 
         public void Reset(bool update = true)
@@ -409,7 +419,7 @@ namespace KeyTrain
 
         public void RatingsChanged(double windowWidth = 0, double spacing = 2)
         {
-            Window w = Window.GetWindow(this);
+            Window w = window;
             if(w != null)
             {
 
@@ -428,11 +438,11 @@ namespace KeyTrain
 
         private void SetMainRealEstate()
         {
-            Window w = Window.GetWindow(this);
+            //Window w = Window.GetWindow(this);
             var realestatemargin = MainRealEstate.Margin;
             realestatemargin.Top = letterRatings.ActualHeight + 110; //HUD height auto doesn't give the proper value, nor does actualheight so we're using this estimation
             MainRealEstate.Margin = realestatemargin;
-            w.MinHeight = letterRatings.ActualHeight + Main.ActualHeight + 220; //220 to account for HUD height and margins carved space
+            window.MinHeight = letterRatings.ActualHeight + Main.ActualHeight + 220; //220 to account for HUD height and margins carved space
         }
 
 
@@ -470,14 +480,8 @@ namespace KeyTrain
             UpdateHUD();
         }
 
-        private void SettingsButton_Click(object sender, RoutedEventArgs e)
-        {
-            ((MainWindow)Window.GetWindow(this)).LoadSettingsPage();
-        }
-        private void StatsButton_Click(object sender, RoutedEventArgs e)
-        {
-            ((MainWindow)Window.GetWindow(this)).LoadStatsPage();
-        }
+        private void SettingsButton_Click(object sender, RoutedEventArgs e) => window.LoadSettingsPage();
+        private void StatsButton_Click(object sender, RoutedEventArgs e) => window.LoadStatsPage();
 
         private void RerollButton_Click(object sender, RoutedEventArgs e)
         {

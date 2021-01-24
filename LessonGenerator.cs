@@ -106,6 +106,7 @@ namespace KeyTrain
         /// <returns></returns>
         private List<string> Crop(IEnumerable<string> d)
         {
+            //return d.Where(w => w.Length > 1).Skip(0).Take(500).ToList();
             return d.Where(w => w.Length > 1).Skip(0).Take(ConfigManager.proficiency * d.Count() / 100).ToList();
         }
 
@@ -208,11 +209,11 @@ namespace KeyTrain
         {
             if (maxLength == 0) maxLength = defaultLessonLength;
 
-            dict = dictonary.ToList();
+            dict = dictonary.OrderBy(w => Difficulty(w)).ToList();
             chunkLength = maxLength;
             random = NextRandom();
             place = 0;
-            cropped = Crop(dictonary);
+            cropped = Crop(dict);
             shuffled = cropped.OrderBy(x=> random.Next()).ToList();
 
             //all characters which appear at least 50 times in the dictionary
@@ -245,7 +246,32 @@ namespace KeyTrain
             if (maxlength == 0) maxlength = defaultLessonLength;
             return new RandomizedLesson(File.ReadAllLines(dictionaryFile).ToList(), maxlength);
         }
+        /// <summary>
+        /// Classifies a word by its perceived difficulty
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
+        int Difficulty(string word)
+        {
+            int result = 0;
+            DefaultDict<string, int> scoring = new DefaultDict<string, int>()
+            {
+                { "e", 1 },
+                { "frdinas", 2 },
+                { "thlk", 3 },
+                { "omc", 5 },
+                { "uwbghpé", 8 },
+                { "zqxí", 20 },
+                { "óúű", 25 },
+                { "", 15 }
+            };
+
+            foreach (char ch in word)
+            {
+                result += scoring[scoring.Keys.Where(k => k.Contains(ch)).DefaultIfEmpty("").First()];
+            }
+            return result;
+        }
 
     }
-
 }
